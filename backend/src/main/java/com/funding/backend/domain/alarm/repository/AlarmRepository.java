@@ -4,7 +4,7 @@ import com.funding.backend.domain.alarm.entity.Alarm;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
-public interface NotificationRepository extends JpaRepository<Alarm, Long> {
+public interface AlarmRepository extends JpaRepository<Alarm, Long> {
 
 
 }
