@@ -1,5 +1,6 @@
 package com.funding.backend.domain.user.entity;
 
+import com.funding.backend.domain.alarm.entity.Alarm;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.role.entity.Role;
 import com.funding.backend.global.auditable.Auditable;
@@ -53,7 +54,7 @@ public class User extends Auditable { // Auditable 상속
     @Column(name = "bank", nullable = false)
     private String bank;
 
-    @Column(name = "bank", nullable = false)
+    @Column(name = "introduce", nullable = false)
     private String introduce;
 
     @Column(name = "portfolio_address", nullable = false)
@@ -73,6 +74,9 @@ public class User extends Auditable { // Auditable 상속
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true,  fetch = FetchType.LAZY)
     List<Project> projectList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true,  fetch = FetchType.LAZY)
+    List<Alarm> alarmList = new ArrayList<>();
 
 
 

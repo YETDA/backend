@@ -9,7 +9,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "notifications")
+@Table(name = "alarms")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -37,7 +37,6 @@ public class Alarm extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnore
     private User user;
 
 

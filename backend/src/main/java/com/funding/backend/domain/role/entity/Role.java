@@ -19,7 +19,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name="roles")
+@Table(name="role")
 @Getter
 @Setter
 @AllArgsConstructor

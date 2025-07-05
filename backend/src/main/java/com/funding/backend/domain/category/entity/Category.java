@@ -1,6 +1,7 @@
 package com.funding.backend.domain.category.entity;
 
 import com.funding.backend.domain.project.entity.Project;
+import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.global.auditable.Auditable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -44,9 +45,9 @@ public class Category extends Auditable {
 
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, orphanRemoval = false)
-    @ToString.Exclude
-    List<Project> projectList = new ArrayList<>(); //해당 카테고리에 속한 아이템 리스트
+    List<Project> projectList = new ArrayList<>();
 
-
+    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, orphanRemoval = false)
+    List<Purchase> purchaseList = new ArrayList<>();
 
 }
