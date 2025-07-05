@@ -1,15 +1,23 @@
 package com.funding.backend.domain.user.entity;
 
+import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.role.entity.Role;
 import com.funding.backend.global.auditable.Auditable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -63,13 +71,8 @@ public class User extends Auditable { // Auditable 상속
     @Column(name = "sso_provider", length = 50)
     private String ssoProvider;
 
-
-
-
-
-
-
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true,  fetch = FetchType.LAZY)
+    List<Project> projectList = new ArrayList<>();
 
 
 

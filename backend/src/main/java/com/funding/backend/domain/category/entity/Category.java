@@ -1,8 +1,8 @@
-package com.funding.backend.domain.projectImage.entity;
-
+package com.funding.backend.domain.category.entity;
 
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.global.auditable.Auditable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,39 +11,42 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.cache.spi.support.AbstractReadWriteAccess.Item;
 
 @Entity
-@Table(name="project_images")
+@Table(name = "categories")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
 @ToString
-public class Image extends Auditable {
+public class Category extends Auditable {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id")
+    private Long id; // PK
+
+    @Column(name = "name", nullable = false)
+    private String name; // 카테고리 이름
 
 
-    @NotBlank
-    @Column(name = "image_url", nullable = false)
-    private String imageUrl;
+    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, orphanRemoval = false)
+    @ToString.Exclude
+    List<Project> projectList = new ArrayList<>(); //해당 카테고리에 속한 아이템 리스트
 
 
-    @ManyToOne
-    @JoinColumn(name = "project_id",nullable = false)
-    private Project project;
 
-
-    
 }
