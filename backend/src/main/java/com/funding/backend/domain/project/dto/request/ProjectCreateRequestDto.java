@@ -1,6 +1,5 @@
 package com.funding.backend.domain.project.dto.request;
 
-import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ProjectRequestDto {
+public class ProjectCreateRequestDto {
 
     @NotNull(message = "프로젝트 타입은 필수입니다.")
     private ProjectType projectType;
