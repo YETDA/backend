@@ -39,9 +39,6 @@ public class Purchase extends Auditable {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
-    private PurchaseCategory purchaseCategory;
 
     @Column(name = "git_address", nullable = false)
     private String gitAddress;
@@ -53,7 +50,7 @@ public class Purchase extends Auditable {
     @Column(name = "average_delivery_time")
     private String averageDeliveryTime;
 
-    @Lob
+
     @Column(name = "file")
     private String file;
 

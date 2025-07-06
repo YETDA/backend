@@ -43,7 +43,4 @@ public class PurchaseCategory extends Auditable {
     @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, orphanRemoval = false)
     List<Project> projectList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, orphanRemoval = false)
-    List<Purchase> purchaseList = new ArrayList<>();
-
 }
