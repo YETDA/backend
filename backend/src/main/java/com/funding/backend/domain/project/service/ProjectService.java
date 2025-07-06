@@ -5,9 +5,11 @@ import com.funding.backend.domain.pricingPlan.entity.PricingPlan;
 import com.funding.backend.domain.pricingPlan.repository.PricingRepository;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
+import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
+import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.domain.purchase.service.PurchaseService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.enums.ProjectStatus;
@@ -56,8 +58,7 @@ public class ProjectService {
 
     @Transactional
     public Project updateProject(Long projectId, ProjectCreateRequestDto dto) {
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PROJECT_NOT_FOUND));
+        Project project = findProjectById(projectId);
 
         // 권한 체크로 -> 로그인 완료되면 구현
         //validProjectUser(project.getUser(), loginUser);
@@ -77,6 +78,15 @@ public class ProjectService {
 
         return projectRepository.save(project);
     }
+
+    public PurchaseProjectResponseDto getPurchaseProject(Long projectId) {
+        Project project = findProjectById(projectId);
+
+        Purchase purchase = purchaseService.findByProject(project);
+
+        return new PurchaseProjectResponseDto(project, purchase);
+    }
+
 
 
     public Project findProjectById(Long id){
