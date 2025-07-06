@@ -1,6 +1,6 @@
 package com.funding.backend.domain.purchase.entity;
 
-import com.funding.backend.domain.category.entity.Category;
+import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.enums.ProvidingMethod;
 import com.funding.backend.global.auditable.Auditable;
@@ -41,7 +41,7 @@ public class Purchase extends Auditable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+    private PurchaseCategory purchaseCategory;
 
     @Column(name = "git_address", nullable = false)
     private String gitAddress;
