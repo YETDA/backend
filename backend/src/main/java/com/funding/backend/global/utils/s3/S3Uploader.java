@@ -7,10 +7,15 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.funding.backend.domain.project.entity.Project;
+import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.CreateRandomNumber;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +31,11 @@ public class S3Uploader {
     private String bucket;
 
     private final AmazonS3 amazonS3;
+
+    @Value("${url.s3}")
+    private String S3_FIX_URL;
+
+
 
 
     // S3에 이미지 등록
@@ -81,6 +91,17 @@ public class S3Uploader {
         return amazonS3.getUrl(bucket, uniqueFileName).toString();
     }
 
+    //이미지 리스트 저장
+    public List<String> saveMultiImages(List<MultipartFile> multipartFileList) throws IOException {
+        List<String> imageUrl = new ArrayList<>();
+        for(MultipartFile image : multipartFileList){
+            imageUrl.add(uploadFile(image));
+        }
+
+        return imageUrl;
+    }
+
+
     // S3에 이미지 삭제
     public void deleteFile(String imageUrl) {
         try {
@@ -93,5 +114,67 @@ public class S3Uploader {
             throw new BusinessLogicException(ExceptionCode.S3_DELETE_ERROR);
         }
     }
+
+    public List<ProjectImage> autoImagesUploadAndDelete(List<ProjectImage> beforeImages, List<MultipartFile> newImages, Project project) {
+        // 기존 저장된 storedFileName 리스트
+        List<String> beforeFileNames = beforeImages.stream()
+                .map(ProjectImage::getStoredFileName)
+                .toList();
+
+        // 새로운 파일 이름 리스트 (originalName → 비교용 아님!)
+        List<String> newOriginalNames = newImages.stream()
+                .map(MultipartFile::getOriginalFilename)
+                .toList();
+
+        // 새로 업로드할 파일들: storedFileName이 없기 때문에 originalFilename만 비교해서 유사 필터링 (주의: 완전 정확하지 않음)
+        List<MultipartFile> imagesToUpload = newImages.stream()
+                .filter(file -> beforeImages.stream().noneMatch(
+                        img -> img.getOriginalFilename().equals(file.getOriginalFilename())
+                ))
+                .toList();
+
+        // 삭제할 파일들: before 중에서 newOriginalNames에 없는 originalFilename
+        List<ProjectImage> imagesToDelete = beforeImages.stream()
+                .filter(img -> !newOriginalNames.contains(img.getOriginalFilename()))
+                .toList();
+
+        // 실제 업로드 수행
+        List<ProjectImage> uploadedImages = new ArrayList<>();
+        for (MultipartFile file : imagesToUpload) {
+            try {
+                String imageUrl = uploadFile(file); // → S3에 저장하고 URL 리턴
+                String storedFileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+
+                uploadedImages.add(ProjectImage.builder()
+                        .imageUrl(imageUrl)
+                        .storedFileName(storedFileName)
+                        .originalFilename(file.getOriginalFilename())
+                        .project(project)
+                        .build());
+            } catch (IOException e) {
+                throw new RuntimeException("파일 업로드 실패: " + file.getOriginalFilename(), e);
+            }
+        }
+
+        // 삭제 수행
+        for (ProjectImage image : imagesToDelete) {
+            deleteFile(image.getStoredFileName()); // UUID 기반 이름으로 삭제
+        }
+
+        // 결과 리스트: 기존 유지 + 새로 추가
+        List<ProjectImage> result = beforeImages.stream()
+                .filter(img -> !imagesToDelete.contains(img))
+                .collect(Collectors.toList());
+
+        result.addAll(uploadedImages);
+
+        return result;
+    }
+
+
+
+
+
+
 
 }
