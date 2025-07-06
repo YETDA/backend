@@ -3,7 +3,7 @@ version: '3' # Docker Compose 버전 명시
 services:
   mysql:
     image: mysql:8.0
-    container_name: juseyo-mysql-container
+    container_name: yetda-mysql-container
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: rootpw # MySQL 루트 비밀번호
@@ -20,11 +20,11 @@ services:
       timeout: 5s
       retries: 3
     networks:
-      - juseyo-network
+      - yetda-network
 
   redis:
     image: redis:latest
-    container_name: juseyo-redis
+    container_name: yetda-redis
     restart: always
     ports:
       - "6379:6379"
@@ -36,7 +36,7 @@ services:
       timeout: 5s
       retries: 3
     networks:
-      - juseyo-network
+      - yetda-network
 
   flask-recommender:
     build:
@@ -46,7 +46,7 @@ services:
       - "5000:5000"
     restart: unless-stopped
     networks:
-      - juseyo-network
+      - yetda-network
 
 
 
@@ -55,5 +55,5 @@ volumes:
   redis-data:
 
 networks:
-  juseyo-network:
+  yetda-network:
     driver: bridge
