@@ -55,12 +55,12 @@ public class ProjectService {
     }
 
     @Transactional
-    public Project updateProject(Long projectId, ProjectCreateRequestDto dto, User loginUser) {
+    public Project updateProject(Long projectId, ProjectCreateRequestDto dto) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PROJECT_NOT_FOUND));
 
-        // 권한 체크
-        validProjectUser(project.getUser(), loginUser);
+        // 권한 체크로 -> 로그인 완료되면 구현
+        //validProjectUser(project.getUser(), loginUser);
 
         // 전체 필드 덮어쓰기
         project.setTitle(dto.getTitle());

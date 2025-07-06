@@ -2,6 +2,7 @@ package com.funding.backend.domain.project.controller;
 
 
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
+import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -56,12 +58,14 @@ public class ProjectController {
             @PathVariable Long projectId,
             @RequestBody @Valid ProjectCreateRequestDto requestDto
     ) {
-        projectService.updatePurchaseProject(projectId, requestDto);
+        projectService.updateProject(projectId, requestDto);
         return new ResponseEntity<>(
                 ApiResponse.of(HttpStatus.OK.value(), "구매형 프로젝트 수정 성공"),
                 HttpStatus.OK
         );
     }
+
+
 
 
 
