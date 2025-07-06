@@ -26,8 +26,6 @@ public class ImageService {
         return saveImage(multipartFile);
     }
 
-
-
     public void deleteImage(String fileName){
         s3Uploader.deleteFile(fileName);
     }
