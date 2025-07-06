@@ -83,15 +83,6 @@ public class S3Uploader {
         return amazonS3.getUrl(bucket, uniqueFileName).toString();
     }
 
-    //이미지 리스트 저장
-    public List<String> saveMultiImages(List<MultipartFile> multipartFileList) throws IOException {
-        List<String> imageUrl = new ArrayList<>();
-        for(MultipartFile image : multipartFileList){
-            imageUrl.add(uploadFile(image));
-        }
-
-        return imageUrl;
-    }
 
 
     // S3에 이미지 삭제
