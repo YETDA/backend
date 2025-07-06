@@ -1,12 +1,17 @@
 package com.funding.backend.domain.project.dto.request;
 
+import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
 import com.funding.backend.enums.ProjectType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.websocket.OnMessage;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Getter
@@ -17,14 +22,12 @@ public class ProjectCreateRequestDto {
     @NotNull(message = "프로젝트 타입은 필수입니다.")
     private ProjectType projectType;
 
-    @NotNull(message = "카테고리는 필수입니다.")
-    private Long categoryId;
+    @NotNull(message = "구매 카테고리는 필수입니다.")
+    private PurchaseCategory purchaseCategory;
 
     @NotNull(message = "가격 정책은 필수입니다.")
     private Long pricingPlanId;
 
-    @NotBlank(message = "커버 이미지는 필수입니다.")
-    private String coverImage;
 
     @NotBlank(message = "제목은 필수입니다.")
     @Size(max = 100, message = "제목은 100자 이내여야 합니다.")
@@ -40,6 +43,12 @@ public class ProjectCreateRequestDto {
     private String content;
 
     private String field; // 선택 값이므로 필수 아님
+
+    //이미지
+    private List<MultipartFile> contentImage = new ArrayList<>();
+
+    //커버 이미지
+    private MultipartFile coverImage;
 
     // 하위 타입 DTO
     private DonationProjectDetail donationDetail;

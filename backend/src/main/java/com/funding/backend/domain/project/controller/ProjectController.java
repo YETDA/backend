@@ -30,17 +30,33 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    @PostMapping
+    @PostMapping("/donation")
     @Operation(
-            summary = "프로젝트 생성",
-            description = "기부/구매형 프로젝트를 생성합니다.")
-    public ResponseEntity<?> createProject(@RequestBody @Valid ProjectCreateRequestDto requestDto) {
-        projectService.createProject(requestDto);
+            summary = "기부형 프로젝트 생성",
+            description = "기부형 프로젝트(Donation)를 생성합니다. 목표 금액, 시작일, 종료일 등을 포함합니다."
+    )
+    public ResponseEntity<?> createDonationProject(@RequestBody @Valid DonationProjectCreateRequestDto requestDto) {
+        projectService.createDonationProject(requestDto);
         return new ResponseEntity<>(
-                ApiResponse.of(HttpStatus.CREATED.value(), "프로젝트 생성 성공"),
+                ApiResponse.of(HttpStatus.CREATED.value(), "기부형 프로젝트 생성 성공"),
                 HttpStatus.CREATED
         );
     }
+
+    @PostMapping("/purchase")
+    @Operation(
+            summary = "구매형 프로젝트 생성",
+            description = "구매형 프로젝트(Purchase)를 생성합니다. 제공 방식, Git 주소, 다운로드 제한 등의 정보를 포함합니다."
+    )
+    public ResponseEntity<?> createPurchaseProject(@RequestBody @Valid PurchaseProjectCreateRequestDto requestDto) {
+        projectService.createPurchaseProject(requestDto);
+        return new ResponseEntity<>(
+                ApiResponse.of(HttpStatus.CREATED.value(), "구매형 프로젝트 생성 성공"),
+                HttpStatus.CREATED
+        );
+    }
+
+
 
 
 

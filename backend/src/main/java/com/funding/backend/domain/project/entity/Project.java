@@ -76,8 +76,6 @@ public class Project extends Auditable {
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "field")
-    private String field;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = false)
     List<ProjectImage> projectImage = new ArrayList<>();
