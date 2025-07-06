@@ -40,7 +40,7 @@ public class PurchaseCategory extends Auditable {
     private String name; // 카테고리 이름
 
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, orphanRemoval = false)
+    @OneToMany(mappedBy = "purchaseCategory", cascade = CascadeType.REMOVE, orphanRemoval = false)
     List<Project> projectList = new ArrayList<>();
 
 }
