@@ -53,7 +53,7 @@ public class Project extends Auditable {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "purchase_category_id")
     private PurchaseCategory purchaseCategory;
 
     @ManyToOne
