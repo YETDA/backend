@@ -87,6 +87,21 @@ public class ProjectService {
         return new PurchaseProjectResponseDto(project, purchase);
     }
 
+    @Transactional
+    public void deletePurchaseProject(Long projectId) {
+        Project project = findProjectById(projectId);
+
+//        // 권한 체크 (로그인 유저 필요 시 매개변수 추가)
+//        validProjectUser(project.getUser(), getCurrentUser());
+
+        // 연결된 Purchase도 삭제
+        purchaseService.deletePurchase(purchaseService.findByProject(project));
+
+        // 프로젝트 삭제
+        projectRepository.delete(project);
+    }
+
+
 
 
     public Project findProjectById(Long id){

@@ -57,6 +57,15 @@ public class PurchaseService {
     }
 
 
+    @Transactional
+    public void deletePurchase(Purchase purchase){
+        purchaseRepository.findById(purchase.getId())
+                .orElseThrow(()->new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));
+
+        purchaseRepository.delete(purchase);
+    }
+
+
     public Purchase findByProject(Project project){
         return purchaseRepository.findByProject(project)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));

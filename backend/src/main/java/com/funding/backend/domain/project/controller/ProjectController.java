@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -76,6 +77,22 @@ public class ProjectController {
         PurchaseProjectResponseDto response = projectService.getPurchaseProject(projectId);
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/purchase/{projectId}")
+    @Operation(
+            summary = "구매형 프로젝트 삭제",
+            description = "구매형 프로젝트(Purchase)를 삭제합니다. 해당 프로젝트의 생성자만 삭제할 수 있습니다."
+    )
+    public ResponseEntity<?> deletePurchaseProject(
+            @PathVariable Long projectId
+    ) {
+        projectService.deletePurchaseProject(projectId);
+        return new ResponseEntity<>(
+                ApiResponse.of(HttpStatus.OK.value(), "구매형 프로젝트 삭제 성공"),
+                HttpStatus.OK
+        );
+    }
+
 
 
 
