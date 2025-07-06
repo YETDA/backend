@@ -14,7 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,6 +46,23 @@ public class ProjectController {
                 HttpStatus.CREATED
         );
     }
+
+    @PutMapping("/purchase/{projectId}")
+    @Operation(
+            summary = "구매형 프로젝트 수정",
+            description = "기존 구매형 프로젝트(Purchase)를 수정합니다."
+    )
+    public ResponseEntity<?> updatePurchaseProject(
+            @PathVariable Long projectId,
+            @RequestBody @Valid ProjectCreateRequestDto requestDto
+    ) {
+        projectService.updatePurchaseProject(projectId, requestDto);
+        return new ResponseEntity<>(
+                ApiResponse.of(HttpStatus.OK.value(), "구매형 프로젝트 수정 성공"),
+                HttpStatus.OK
+        );
+    }
+
 
 
 
