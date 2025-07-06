@@ -50,23 +50,15 @@ public class S3Uploader {
         // 랜덤한 UUID를 이용한 고유 파일명 생성
         String uniqueFileName = CreateRandomNumber.timeBasedRandomName() + "." + ext;
 
-        String contentType = "";
 
-        //content type을 지정해서 올려주지 않으면 자동으로 "application/octet-stream"으로 고정이 되서 링크 클릭시 웹에서 열리는게 아니라 자동 다운이 시작됨.
-        switch (ext) {
-            case "jpeg":
-                contentType = "image/jpeg";
-                break;
-            case "png":
-                contentType = "image/png";
-                break;
-            case "txt":
-                contentType = "text/plain";
-                break;
-            case "csv":
-                contentType = "text/csv";
-                break;
-        }
+
+        String contentType = switch (ext) {
+            case "jpeg", "jpg" -> "image/jpeg";
+            case "png" -> "image/png";
+            case "txt" -> "text/plain";
+            case "csv" -> "text/csv";
+            default -> "application/octet-stream";
+        };
 
         try {
             ObjectMetadata metadata = new ObjectMetadata();

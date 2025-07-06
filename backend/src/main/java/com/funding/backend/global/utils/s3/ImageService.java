@@ -63,15 +63,23 @@ public class ImageService {
     public List<ProjectImage> updateImageList(List<ProjectImage> beforeImages, List<MultipartFile> newImages, Project project) {
         List<ProjectImage> updated = s3Uploader.autoImagesUploadAndDelete(beforeImages, newImages, project);
 
-        // DB에 새로 추가된 건 저장
+        // 새로 추가된 이미지 저장
         for (ProjectImage image : updated) {
             if (image.getId() == null) {
                 projectImageRepository.save(image);
             }
         }
 
+        // 삭제된 이미지 DB에서도 제거
+        for (ProjectImage oldImage : beforeImages) {
+            if (!updated.contains(oldImage)) {
+                projectImageRepository.delete(oldImage);
+            }
+        }
+
         return updated;
     }
+
 
 
 
