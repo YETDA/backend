@@ -1,4 +1,4 @@
-package com.funding.backend.domain.category.entity;
+package com.funding.backend.domain.purchaseCategory.entity;
 
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.purchase.entity.Purchase;
@@ -6,12 +6,9 @@ import com.funding.backend.global.auditable.Auditable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
@@ -22,17 +19,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.cache.spi.support.AbstractReadWriteAccess.Item;
 
 @Entity
-@Table(name = "categories")
+@Table(name = "purchase_categorys")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
 @ToString
-public class Category extends Auditable {
+public class PurchaseCategory extends Auditable {
 
 
     @Id
@@ -46,8 +42,5 @@ public class Category extends Auditable {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, orphanRemoval = false)
     List<Project> projectList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, orphanRemoval = false)
-    List<Purchase> purchaseList = new ArrayList<>();
 
 }
