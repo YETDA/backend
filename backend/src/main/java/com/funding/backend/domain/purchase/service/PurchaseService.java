@@ -1,7 +1,11 @@
 package com.funding.backend.domain.purchase.service;
 
+import com.funding.backend.domain.project.dto.response.PurchaseOptionResponseDto;
+import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
 import com.funding.backend.domain.purchase.dto.request.PurchaseProjectDetail;
 import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
+import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
+import com.funding.backend.domain.purchaseCategory.service.PurchaseCategoryService;
 import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
 import com.funding.backend.domain.purchase.dto.request.PurchaseOptionRequestDto;
 import com.funding.backend.domain.project.entity.Project;
@@ -32,15 +36,16 @@ public class PurchaseService {
     private final PurchaseOptionRepository purchaseOptionRepository;
     private final S3Uploader s3Uploader;
 
+    private final PurchaseCategoryService purchaseCategoryService;
     @Transactional
     public void createPurchase(Project project, PurchaseProjectDetail dto){
-        String fileUrl = "";
+        PurchaseCategory purchaseCategory = purchaseCategoryService.findPurchaseCategoryById(dto.getPurchaseDetail().getPurchaseCategoryId());
         Purchase purchase = Purchase.builder()
                 .project(project)
-                .file(fileUrl)
                 .averageDeliveryTime(dto.getGetAverageDeliveryTime())
                 .gitAddress(dto.getGitAddress())
                 .providingMethod(dto.getProvidingMethod())
+                .purchaseCategory(purchaseCategory)
                 .build();
         Purchase savePurchase = purchaseRepository.save(purchase);
 
@@ -63,6 +68,11 @@ public class PurchaseService {
     @Transactional
     public void updatePurchase(Project project, PurchaseUpdateRequestDto dto) {
         Purchase purchase = findByProject(project);
+
+        if (dto.getPurchaseCategoryId() != null) {
+            PurchaseCategory category = purchaseCategoryService.findPurchaseCategoryById(dto.getPurchaseCategoryId());
+            purchase.setPurchaseCategory(category);
+        }
 
         Optional.ofNullable(dto.getGitAddress())
                 .ifPresent(purchase::setGitAddress);
@@ -117,6 +127,28 @@ public class PurchaseService {
             }
         }
     }
+
+    public PurchaseProjectResponseDto createPurchaseProjectResponse(Project project) {
+        Purchase detail = findByProject(project);
+
+        List<PurchaseOptionResponseDto> optionDtos = detail.getPurchaseOptionList().stream()
+                .map(PurchaseOptionResponseDto::new).toList();
+
+        return new PurchaseProjectResponseDto(
+                project.getId(),
+                project.getTitle(),
+                project.getIntroduce(),
+                project.getContent(),
+                project.getProjectType(),
+                detail.getPurchaseCategory().getName(),
+                detail.getProvidingMethod(),
+                detail.getGitAddress(),
+                detail.getPurchaseCategory().getId(),
+                detail.getAverageDeliveryTime(),
+                optionDtos
+        );
+    }
+
 
 
 }

@@ -4,6 +4,7 @@ import com.funding.backend.domain.donation.service.DonationService;
 import com.funding.backend.domain.pricingPlan.repository.PricingRepository;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
+import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
@@ -48,11 +49,9 @@ public class ProjectService {
     @Transactional
     public void createPurchaseProject(ProjectCreateRequestDto dto){
         List<ProjectImage> projectImage = new ArrayList<>();
-        PurchaseCategory purchaseCategory = purchaseCategoryService.findPurchaseCategoryById(dto.getPurchaseDetail().getPurchaseCategoryId());
         String coverImage = "";
         Optional<User> user = userRepository.findById(Long.valueOf(2));
         Project project = Project.builder()
-                .purchaseCategory(purchaseCategory)
                 .introduce(dto.getIntroduce())
                 .title(dto.getTitle())
                 .content(dto.getContent())
@@ -72,7 +71,7 @@ public class ProjectService {
     @Transactional
     public void  updatePurchaseProject(Long projectId, PurchaseUpdateRequestDto purchaseUpdateRequestDto) {
         Project project = findProjectById(projectId);
-        PurchaseCategory purchaseCategory = purchaseCategoryService.findPurchaseCategoryById(purchaseUpdateRequestDto.getPurchaseCategoryId());
+
 
         // 권한 체크로 -> 로그인 완료되면 구현
         //validProjectUser(project.getUser(), loginUser);
@@ -80,7 +79,6 @@ public class ProjectService {
         // 프로젝트 기본 필드 수정
         project.setTitle(purchaseUpdateRequestDto.getTitle());
         project.setIntroduce(purchaseUpdateRequestDto.getIntroduce());
-        project.setPurchaseCategory(purchaseCategory);
 
         // 프로젝트 상세 내용 업데이트
         project.setContent(purchaseUpdateRequestDto.getContent());
@@ -130,6 +128,20 @@ public class ProjectService {
             throw new BusinessLogicException(ExceptionCode.NOT_PROJECT_CREATOR);
         }
     }
+
+    public ProjectResponseDto getProjectDetail(Long projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 프로젝트입니다."));
+
+        if (project.getProjectType() == ProjectType.PURCHASE) {
+            return createPurchaseProjectResponse(project);
+        } else if (project.getProjectType() == ProjectType.DONATION) {
+            return createDonationProjectResponse(project);
+        } else {
+            throw new IllegalArgumentException("지원하지 않는 프로젝트 타입입니다.");
+        }
+    }
+
 
 
 

@@ -1,11 +1,16 @@
 package com.funding.backend.domain.project.controller;
 
 
+import com.funding.backend.domain.donation.dto.response.DonationProjectResponseDto;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
+import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -32,6 +37,16 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "프로젝트 관리 컨트롤러")
 @Slf4j
 public class ProjectController {
+
+    private final ProjectService projectService;
+
+    @GetMapping("/{projectId}")
+    @Operation(summary = "프로젝트 상세 조회", description = "타입에 따라 응답이 달라집니다.")
+    public ResponseEntity<ProjectResponseDto> getProjectDetail(@PathVariable Long projectId) {
+        ProjectResponseDto response = projectService.getProjectDetail(projectId);
+        return ResponseEntity.ok(response);
+    }
+
 
 
 
