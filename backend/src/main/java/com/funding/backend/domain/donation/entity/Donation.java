@@ -40,8 +40,8 @@ public class Donation extends Auditable {
     @JoinColumn(name = "category_id", nullable = false)
     private PurchaseCategory purchaseCategory;
 
-    @Column(name = "price_coal")
-    private Long priceCoal;
+    @Column(name = "price_goal")
+    private Long priceGoal;
 
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
