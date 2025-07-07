@@ -1,5 +1,7 @@
 package com.funding.backend.domain.project.entity;
 
+import com.funding.backend.domain.donation.entity.Donation;
+import com.funding.backend.domain.donationCategory.entity.DonationCategory;
 import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
 import com.funding.backend.domain.like.entity.Like;
 import com.funding.backend.domain.notice.entity.Notice;
@@ -55,6 +57,10 @@ public class Project extends Auditable {
 
 
     @ManyToOne
+    @JoinColumn(name = "donation_main_category_id")
+    private DonationCategory donationCategory;
+
+    @ManyToOne
     @JoinColumn(name = "management_id")
     private PricingPlan pricingPlan;
 
@@ -77,6 +83,9 @@ public class Project extends Auditable {
 
     @OneToOne(mappedBy = "project", cascade = CascadeType.REMOVE)
     private Purchase purchase;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = false)
+    List<Donation> donationList = new ArrayList<>();
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = false)
     List<Notice> noticeList = new ArrayList<>();

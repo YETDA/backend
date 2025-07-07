@@ -66,6 +66,13 @@ public enum ExceptionCode {
     INVALID_S3_URL_FORMAT(400, "잘못된 S3 URL 형식입니다."),
     ETAG_HASH_FAILED(500, "ETag 해시 계산에 실패하였습니다."),
     MD5_HASH_FAILED(500, "MD5 해시 생성에 실패하였습니다."),
+
+    //후원 예외처리
+    DONATION_NOT_FOUND(404, "존재하지 않는 후원 프로젝트 입니다. "),
+    //후원 메인 카테고리 예외처리
+    DONATION_CATEGORY_NOT_FOUND(404, "존재하지 않는 후원 프로젝트 카테고리 입니다. "),
+
+
     
     //요금제 예외 처리
     PRICING_PLAN_NOT_FOUND(404, "존재하지 않는 요금제 입니다");

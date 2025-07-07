@@ -4,6 +4,7 @@ import com.funding.backend.domain.donation.entity.Donation;
 import com.funding.backend.domain.donation.repository.DonationRepository;
 import com.funding.backend.domain.donation.dto.request.DonationProjectDetail;
 import com.funding.backend.domain.project.entity.Project;
+import com.funding.backend.global.utils.s3.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DonationService {
 
   private final DonationRepository donationRepository;
+  private final S3Uploader s3Uploader;
 
   @Transactional
   public void createDonation(Project project, DonationProjectDetail dto){
@@ -27,6 +29,6 @@ public class DonationService {
         .gitAddress(dto.getGitAddress())
         .deployAddress(dto.getDeployAddress())
         .build();
-    donationRepository.save(donation);
+    Donation saveDonation = donationRepository.save(donation);
   }
 }
