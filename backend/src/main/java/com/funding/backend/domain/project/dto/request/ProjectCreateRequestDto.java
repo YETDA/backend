@@ -25,8 +25,6 @@ public class ProjectCreateRequestDto {
     @NotNull(message = "프로젝트 타입은 필수입니다.")
     private ProjectType projectType;
 
-    @NotNull(message = "구매 카테고리는 필수입니다.")
-    private Long purchaseCategoryId;
 
     @NotNull(message = "가격 정책은 필수입니다.")
     private Long pricingPlanId;

@@ -11,6 +11,8 @@ import com.funding.backend.domain.project.repository.ProjectRepository;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.domain.purchase.service.PurchaseService;
+import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
+import com.funding.backend.domain.purchaseCategory.service.PurchaseCategoryService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
@@ -34,16 +36,17 @@ public class ProjectService {
     private final DonationService donationService;
     private final PricingRepository pricingRepository;
     private final PricingService pricingService;
-    private final PurchaseCategoryService
+    private final PurchaseCategoryService purchaseCategoryService;
 
 
     @Transactional
     public void createPurchaseProject(ProjectCreateRequestDto dto){
         List<ProjectImage> projectImage = new ArrayList<>();
+        PurchaseCategory purchaseCategory = purchaseCategoryService.findPurchaseCategoryById(dto.getPurchaseDetail().getPurchaseCategoryId());
         String coverImage = "";
         User user = new User();
         Project project = Project.builder()
-                .purchaseCategory(dto.getPurchaseDetail().getPurchaseCategory())
+                .purchaseCategory(purchaseCategory)
                 .introduce(dto.getIntroduce())
                 .title(dto.getTitle())
                 .projectImage(projectImage)
@@ -60,6 +63,7 @@ public class ProjectService {
     @Transactional
     public Project updateProject(Long projectId, ProjectCreateRequestDto dto) {
         Project project = findProjectById(projectId);
+        PurchaseCategory purchaseCategory = purchaseCategoryService.findPurchaseCategoryById(dto.getPurchaseDetail().getPurchaseCategoryId());
 
         // 권한 체크로 -> 로그인 완료되면 구현
         //validProjectUser(project.getUser(), loginUser);
@@ -72,7 +76,7 @@ public class ProjectService {
         project.setProjectStatus(ProjectStatus.UNDER_REVIEW); // 수정 시에도 초기화할지 여부는 정책에 따라 조절
         project.setPricingPlan(pricingService.findById(dto.getPricingPlanId()));
         project.setProjectType(ProjectType.PURCHASE); // 고정값
-        project.setPurchaseCategory(dto.getPurchaseDetail().getPurchaseCategory());
+        project.setPurchaseCategory(purchaseCategory);
 
         // Purchase도 함께 수정
         purchaseService.updatePurchase(project, dto.getPurchaseDetail());

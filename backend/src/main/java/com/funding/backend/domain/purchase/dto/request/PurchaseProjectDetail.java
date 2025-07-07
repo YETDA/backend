@@ -22,6 +22,9 @@ public class PurchaseProjectDetail {
     @NotBlank(message = "Git 주소는 필수입니다.")
     private String gitAddress;
 
+    @NotNull(message = "구매 카테고리는 필수입니다.")
+    private Long purchaseCategoryId;
+
     @NotNull(message = "평균 전송 소용시간은 필수입니다." )
     @Size(max = 20, message = "평균시간은 작성 길이는 20자 이내여야 합니다.")
     private String getAverageDeliveryTime;
