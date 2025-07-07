@@ -8,8 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@Schema(name = "Notice Update Request DTO", description = "공지사항 수정 DTO")
 public class NoticeUpdateRequestDto {
 
     @NotBlank(message = "제목은 필수입니다.")
