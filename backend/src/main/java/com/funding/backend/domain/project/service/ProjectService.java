@@ -92,13 +92,6 @@ public class ProjectService {
         purchaseService.updatePurchase(project,purchaseUpdateRequestDto);
     }
 
-    public PurchaseProjectResponseDto getPurchaseProject(Long projectId) {
-        Project project = findProjectById(projectId);
-
-        Purchase purchase = purchaseService.findByProject(project);
-
-        return new PurchaseProjectResponseDto(project, purchase);
-    }
 
     @Transactional
     public void deletePurchaseProject(Long projectId) {
@@ -134,9 +127,9 @@ public class ProjectService {
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 프로젝트입니다."));
 
         if (project.getProjectType() == ProjectType.PURCHASE) {
-            return createPurchaseProjectResponse(project);
-        } else if (project.getProjectType() == ProjectType.DONATION) {
-            return createDonationProjectResponse(project);
+            return purchaseService.createPurchaseProjectResponse(project);
+//        } else if (project.getProjectType() == ProjectType.DONATION) {
+//            return createDonationProjectResponse(project);
         } else {
             throw new IllegalArgumentException("지원하지 않는 프로젝트 타입입니다.");
         }

@@ -39,7 +39,8 @@ public class PurchaseService {
     private final PurchaseCategoryService purchaseCategoryService;
     @Transactional
     public void createPurchase(Project project, PurchaseProjectDetail dto){
-        PurchaseCategory purchaseCategory = purchaseCategoryService.findPurchaseCategoryById(dto.getPurchaseDetail().getPurchaseCategoryId());
+        PurchaseCategory purchaseCategory = purchaseCategoryService.findPurchaseCategoryById(dto.getPurchaseCategoryId());
+
         Purchase purchase = Purchase.builder()
                 .project(project)
                 .averageDeliveryTime(dto.getGetAverageDeliveryTime())
@@ -135,17 +136,7 @@ public class PurchaseService {
                 .map(PurchaseOptionResponseDto::new).toList();
 
         return new PurchaseProjectResponseDto(
-                project.getId(),
-                project.getTitle(),
-                project.getIntroduce(),
-                project.getContent(),
-                project.getProjectType(),
-                detail.getPurchaseCategory().getName(),
-                detail.getProvidingMethod(),
-                detail.getGitAddress(),
-                detail.getPurchaseCategory().getId(),
-                detail.getAverageDeliveryTime(),
-                optionDtos
+               project,detail,optionDtos
         );
     }
 
