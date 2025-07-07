@@ -21,10 +21,14 @@ public class NoticeReseponseDto {
     @Schema(description = "생성일", example = "2025-07-15T14:25:14.293Z")
     private LocalDateTime createdAt;
 
+    @Schema(description = "수정일", example = "2025-07-16T14:25:14.293Z")
+    private LocalDateTime modifiedAt;
+
     public NoticeReseponseDto(Notice notice) {
         this.id = notice.getId();
         this.noticeTitle = notice.getTitle();
         this.noticeContent = notice.getContent();
         this.createdAt = notice.getCreatedAt();
+        this.modifiedAt = notice.getModifiedAt();
     }
 }

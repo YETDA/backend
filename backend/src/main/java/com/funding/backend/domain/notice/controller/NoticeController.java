@@ -1,6 +1,7 @@
 package com.funding.backend.domain.notice.controller;
 
 import com.funding.backend.domain.notice.dto.request.NoticeCreateRequestDto;
+import com.funding.backend.domain.notice.dto.request.NoticeUpdateRequestDto;
 import com.funding.backend.domain.notice.dto.response.NoticeReseponseDto;
 import com.funding.backend.domain.notice.service.NoticeService;
 import com.funding.backend.global.utils.ApiResponse;
@@ -32,5 +33,21 @@ public class NoticeController {
 
         NoticeReseponseDto noticeResponse = noticeService.createNotice(/* loginUserId, */projectId, noticeCreateRequestDto);
         return ResponseEntity.ok(ApiResponse.of(201, "공지사항 생성 성공", noticeResponse));
+    }
+
+    // TODO: 추후 회원 기능 개발 시 주석 해제
+    @Operation(
+            summary = "공지사항 수정",
+            description = "프로젝트 생성자가 공지사항을 수정합니다."
+//            security = @SecurityRequirement(name = "JWT")
+    )
+    @PutMapping("/{noticeId}")
+    public ResponseEntity<ApiResponse<NoticeReseponseDto>> updateNotice(
+            /* Long loginUserId, */
+            @PathVariable Long noticeId,
+            @RequestBody NoticeUpdateRequestDto noticeUpdateRequestDto) {
+
+        NoticeReseponseDto noticeResponse = noticeService.updateNotice(/* loginUserId, */noticeId, noticeUpdateRequestDto);
+        return ResponseEntity.ok(ApiResponse.of(200, "공지사항 수정 성공", noticeResponse));
     }
 }
