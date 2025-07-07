@@ -1,4 +1,4 @@
-package com.funding.backend.domain.option.entity;
+package com.funding.backend.domain.purchaseOption.entity;
 
 import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.enums.OptionStatus;
