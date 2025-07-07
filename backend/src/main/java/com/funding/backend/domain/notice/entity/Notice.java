@@ -11,16 +11,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "notices")
 @Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
@@ -34,9 +31,9 @@ public class Notice extends Auditable {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
-    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
-    private String content;
-
     @Column(name = "title", length = 100, nullable = false)
     private String title;
+
+    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
+    private String content;
 }

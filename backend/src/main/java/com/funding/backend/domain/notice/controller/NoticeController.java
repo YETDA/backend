@@ -1,0 +1,36 @@
+package com.funding.backend.domain.notice.controller;
+
+import com.funding.backend.domain.notice.dto.request.NoticeCreateRequestDto;
+import com.funding.backend.domain.notice.dto.response.NoticeReseponseDto;
+import com.funding.backend.domain.notice.service.NoticeService;
+import com.funding.backend.global.utils.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/v1/notice")
+@RequiredArgsConstructor
+@Tag(name = "공지사항 관리 API", description = "공지사항 관련 API 입니다.")
+public class NoticeController {
+
+    private final NoticeService noticeService;
+
+    // TODO: 추후 회원 기능 개발 시 주석 해제
+    @Operation(
+            summary = "공지사항 생성",
+            description = "프로젝트 생성자가 공지사항을 생성합니다."
+//            security = @SecurityRequirement(name = "JWT")
+    )
+    @PostMapping("/{projectId}")
+    public ResponseEntity<ApiResponse<NoticeReseponseDto>> createNotice(
+            /* Long loginUserId, */
+            @PathVariable Long projectId,
+            @RequestBody NoticeCreateRequestDto noticeCreateRequestDto) {
+
+        NoticeReseponseDto noticeResponse = noticeService.createNotice(/* loginUserId, */projectId, noticeCreateRequestDto);
+        return ResponseEntity.ok(ApiResponse.of(201, "공지사항 생성 성공", noticeResponse));
+    }
+}
