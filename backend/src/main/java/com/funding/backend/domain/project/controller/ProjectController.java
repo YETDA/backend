@@ -41,7 +41,7 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping("/{projectId}")
-    @Operation(summary = "프로젝트 상세 조회", description = "타입에 따라 응답이 달라집니다.")
+    @Operation(summary = "프로젝트 상세 조회", description = "구매용, 후원용에 따라 응답 형식이 달라집니다. ")
     public ResponseEntity<ProjectResponseDto> getProjectDetail(@PathVariable Long projectId) {
         ProjectResponseDto response = projectService.getProjectDetail(projectId);
         return ResponseEntity.ok(response);
