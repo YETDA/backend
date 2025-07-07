@@ -51,5 +51,15 @@ public class PurchaseOption extends Auditable {
     @Column(name = "price", nullable = false)
     private Long price;
 
+    @Column(name = "file_url")
+    private String fileUrl;
 
+    @Column(name = "original_file_name")
+    private String originalFileName;
+
+    @Column(name = "file_size")
+    private Long fileSize;
+
+    @Column(name = "file_type")
+    private String fileType;
 }

@@ -1,6 +1,5 @@
-package com.funding.backend.domain.project.dto.request;
+package com.funding.backend.domain.purchase.dto.request;
 
-import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
 import com.funding.backend.enums.ProvidingMethod;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,13 +22,14 @@ public class PurchaseProjectDetail {
     private String gitAddress;
 
     @NotNull(message = "구매 카테고리는 필수입니다.")
-    private PurchaseCategory purchaseCategory;
+    private Long purchaseCategoryId;
 
     @NotNull(message = "평균 전송 소용시간은 필수입니다." )
     @Size(max = 20, message = "평균시간은 작성 길이는 20자 이내여야 합니다.")
     private String getAverageDeliveryTime;
 
-    private String file;
+    private List<PurchaseOptionRequestDto> purchaseOptionList;
 
-    private List<PurchaseOptionDto> options;
+
+
 }
