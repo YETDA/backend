@@ -8,6 +8,7 @@ import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.domain.purchase.repository.PurchaseRepository;
 import com.funding.backend.domain.purchaseOption.repository.PurchaseOptionRepository;
+import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.s3.S3FileInfo;

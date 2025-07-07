@@ -68,21 +68,12 @@ public class S3Uploader {
             metadata.setContentType(contentType);
 
             //S3에 파일 업로드
-            amazonS3.putObject(new PutObjectRequest(bucket, uniqueFileName, multipartFile.getInputStream(), metadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            amazonS3.putObject(new PutObjectRequest(bucket, uniqueFileName, multipartFile.getInputStream(), metadata));
         } catch (AmazonServiceException e) {
             e.printStackTrace();
         } catch (SdkClientException e) {
             e.printStackTrace();
         }
-
-//        //object 정보 가져오기 (디버깅용) 데이터 잘 들어갔는지 확인하려고
-//        ListObjectsV2Result listObjectsV2Result = amazonS3.listObjectsV2(bucket);
-//        List<S3ObjectSummary> objectSummaries = listObjectsV2Result.getObjectSummaries();
-//
-//        for (S3ObjectSummary object: objectSummaries) {
-//            log.info("object = " + object.toString());
-//        }
         return amazonS3.getUrl(bucket, uniqueFileName).toString();
     }
 
@@ -187,8 +178,7 @@ public class S3Uploader {
             metadata.setContentType(contentType);
             metadata.setContentLength(multipartFile.getSize());
 
-            amazonS3.putObject(new PutObjectRequest(bucket, uniqueFileName, multipartFile.getInputStream(), metadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            amazonS3.putObject(new PutObjectRequest(bucket, uniqueFileName, multipartFile.getInputStream(), metadata));
 
             String fileUrl = amazonS3.getUrl(bucket, uniqueFileName).toString();
 

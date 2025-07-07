@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,7 +40,7 @@ public class PurchaseController {
     private final PurchaseService purchaseService;
 
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = {"multipart/form-data"})
     @Operation(summary = "구매형 프로젝트 생성", description = "구매형 프로젝트 생성")
     public ResponseEntity<?> createPurchaseProject(
             @RequestPart("requestDto") @Valid ProjectCreateRequestDto requestDto,

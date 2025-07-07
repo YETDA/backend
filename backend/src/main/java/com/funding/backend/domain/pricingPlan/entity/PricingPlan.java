@@ -41,8 +41,8 @@ public class PricingPlan extends Auditable {
     @Column(name = "platform_fee", nullable = false)
     private Long platformFee;
 
-    @Column(name = "patment_fee", nullable = false)
-    private Long payment_fee;
+    @Column(name = "payment_fee", nullable = false)
+    private Long paymentFee;
 
 
     @OneToMany(mappedBy = "pricingPlan", cascade = CascadeType.REMOVE, orphanRemoval = false)
