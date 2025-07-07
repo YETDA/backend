@@ -39,7 +39,8 @@ public class ImageService {
 
     public List<ProjectImage> saveImageList(List<MultipartFile> images, Project project) {
         List<ProjectImage> savedList = new ArrayList<>();
-        for (MultipartFile image : images) {
+        for (int i = 0; i < images.size(); i++) {
+            MultipartFile image = images.get(i);
             try {
                 String url = s3Uploader.uploadFile(image);
                 String storedName = url.substring(url.lastIndexOf("/") + 1);
@@ -49,6 +50,7 @@ public class ImageService {
                         .storedFileName(storedName)
                         .originalFilename(image.getOriginalFilename())
                         .project(project)
+                        .imageOrder(i) // 순서 저장
                         .build();
 
                 savedList.add(projectImageRepository.save(pi));
@@ -58,6 +60,7 @@ public class ImageService {
         }
         return savedList;
     }
+
 
 
     public List<ProjectImage> updateImageList(List<ProjectImage> beforeImages, List<MultipartFile> newImages, Project project) {

@@ -50,7 +50,7 @@ public class ProjectImage extends Auditable {
     private Project project;
 
     @Column(name = "image_order")
-    private String imageOrder;
+    private Integer imageOrder;
 
 
 }
