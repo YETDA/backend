@@ -20,7 +20,6 @@ import lombok.experimental.SuperBuilder;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
 public class Notice extends Auditable {
 
     @Id

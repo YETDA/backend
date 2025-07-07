@@ -71,6 +71,22 @@ public class NoticeService {
         return new NoticeReseponseDto(notice);
     }
 
+    @Transactional
+    /**
+     * 공지사항을 삭제합니다.
+     *
+     * @param noticeId 공지사항 ID
+     */
+    public void deleteNotice(/* Long loginUserId, */Long noticeId) {
+
+//        User loginUser = userService.findUserById(loginUserId);
+//
+//        projectService.validProjectUser(notice.getProject().getUser(), loginUser);
+
+        Notice notice = findNoticeById(noticeId);
+        noticeRepository.delete(notice);
+    }
+
 
     /**
      * 공지사항 ID를 기준으로 공지사항을 조회합니다.
