@@ -2,6 +2,8 @@ package com.funding.backend.domain.purchase.service;
 
 import com.funding.backend.domain.project.dto.response.PurchaseOptionResponseDto;
 import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
+import com.funding.backend.domain.project.repository.ProjectRepository;
+import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.purchase.dto.request.PurchaseProjectDetail;
 import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
 import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
@@ -34,9 +36,11 @@ public class PurchaseService {
 
     private final PurchaseRepository purchaseRepository;
     private final PurchaseOptionRepository purchaseOptionRepository;
+    private final ProjectRepository projectRepository;
     private final S3Uploader s3Uploader;
 
     private final PurchaseCategoryService purchaseCategoryService;
+
     @Transactional
     public void createPurchase(Project project, PurchaseProjectDetail dto){
         PurchaseCategory purchaseCategory = purchaseCategoryService.findPurchaseCategoryById(dto.getPurchaseCategoryId());
@@ -88,10 +92,12 @@ public class PurchaseService {
 
     }
 
-
     @Transactional
-    public void deletePurchase(Purchase purchase){
-        purchaseRepository.findById(purchase.getId())
+    public void deletePurchase(Long projectId){
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(()->new BusinessLogicException(ExceptionCode.PROJECT_NOT_FOUND));
+
+        Purchase purchase = purchaseRepository.findById(findByProject(project).getId())
                 .orElseThrow(()->new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));
 
         purchaseRepository.delete(purchase);

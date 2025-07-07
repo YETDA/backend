@@ -93,19 +93,7 @@ public class ProjectService {
     }
 
 
-    @Transactional
-    public void deletePurchaseProject(Long projectId) {
-        Project project = findProjectById(projectId);
 
-//        // 권한 체크 (로그인 유저 필요 시 매개변수 추가)
-//        validProjectUser(project.getUser(), getCurrentUser());
-
-        // 연결된 Purchase도 삭제
-        purchaseService.deletePurchase(purchaseService.findByProject(project));
-
-        // 프로젝트 삭제
-        projectRepository.delete(project);
-    }
 
 
 
@@ -136,8 +124,15 @@ public class ProjectService {
     }
 
 
+    @Transactional
+    public void deleteProject(Long projectId) {
+        //삭제 하려는 유저가 본인인지 확인하는 로직 필요
+        //validProjectUser(project.getUser(), getCurrentUser());
 
-
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("해당 프로젝트가 존재하지 않습니다."));
+        projectRepository.delete(project);
+    }
 
 
 }

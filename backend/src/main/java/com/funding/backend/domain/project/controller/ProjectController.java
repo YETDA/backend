@@ -48,6 +48,18 @@ public class ProjectController {
     }
 
 
+    @DeleteMapping("/{projectId}")
+    @Operation(
+            summary = "프로젝트 삭제",
+            description = "프로젝트를 삭제합니다. 구매형/후원형에 관계없이 공통으로 삭제됩니다."
+    )
+    public ResponseEntity<ApiResponse> deleteProject(@PathVariable Long projectId) {
+        projectService.deleteProject(projectId);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 삭제 성공"));
+    }
+
+
+
 
 
 }
