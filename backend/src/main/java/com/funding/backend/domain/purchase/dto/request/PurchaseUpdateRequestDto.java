@@ -35,8 +35,6 @@ public class PurchaseUpdateRequestDto {
     @Size(max = 1000, message = "소개글은 1000자 이내여야 합니다.")
     private String content;
 
-    private String field; // 선택 값이므로 필수 아님
-
     //이미지
     private List<MultipartFile> contentImage = new ArrayList<>();
 
