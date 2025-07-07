@@ -8,9 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PurchaseOptionDto {
+public class PurchaseOptionRequestDto {
     private String title;
     private String content;
     private Long price;
+    private String fileUrl;
     private OptionStatus optionStatus;
 }

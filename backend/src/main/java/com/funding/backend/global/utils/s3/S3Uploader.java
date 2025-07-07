@@ -154,6 +154,43 @@ public class S3Uploader {
         return result;
     }
 
+    public S3FileInfo uploadAnyFile(MultipartFile multipartFile) throws IOException {
+        String originalFileName = multipartFile.getOriginalFilename();
+        String ext = originalFileName.substring(originalFileName.lastIndexOf('.') + 1).toLowerCase();
+        String uniqueFileName = CreateRandomNumber.timeBasedRandomName() + "." + ext;
+
+        // 기본 MIME 설정
+        String contentType = switch (ext) {
+            case "jpeg", "jpg" -> "image/jpeg";
+            case "png" -> "image/png";
+            case "pdf" -> "application/pdf";
+            case "zip" -> "application/zip";
+            case "txt" -> "text/plain";
+            case "csv" -> "text/csv";
+            case "py" -> "text/x-python";
+            case "html" -> "text/html";
+            case "docx" -> "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            case "pptx" -> "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+            default -> "application/octet-stream";
+        };
+
+        try {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(contentType);
+            metadata.setContentLength(multipartFile.getSize());
+
+            amazonS3.putObject(new PutObjectRequest(bucket, uniqueFileName, multipartFile.getInputStream(), metadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+
+            String fileUrl = amazonS3.getUrl(bucket, uniqueFileName).toString();
+
+            return new S3FileInfo(fileUrl, originalFileName, multipartFile.getSize(), contentType);
+        } catch (AmazonServiceException | SdkClientException e) {
+            throw new RuntimeException("파일 업로드 실패: " + originalFileName, e);
+        }
+    }
+
+
 
 
 

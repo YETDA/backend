@@ -3,6 +3,7 @@ package com.funding.backend.domain.purchase.controller;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
+import com.funding.backend.domain.purchase.service.PurchaseService;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,27 +35,30 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class PurchaseController {
     private final ProjectService projectService;
-
+    private final PurchaseService purchaseService;
 
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(
-            summary = "구매형 프로젝트 생성",
-            description = "구매형 프로젝트(Purchase)를 생성합니다. 제공 방식, Git 주소, 다운로드 제한 등의 정보를 포함합니다."
-    )
+    @Operation(summary = "구매형 프로젝트 생성", description = "구매형 프로젝트 생성")
     public ResponseEntity<?> createPurchaseProject(
             @RequestPart("requestDto") @Valid ProjectCreateRequestDto requestDto,
-            @RequestPart(value = "contentImage", required = false) List<MultipartFile> contentImage
+            @RequestPart(value = "contentImage", required = false) List<MultipartFile> contentImages,
+            @RequestPart(value = "optionFiles", required = false) List<MultipartFile> optionFiles
     ) {
-        requestDto.setContentImage(contentImage);
+        // 프로젝트 이미지 저장
+        requestDto.setContentImage(contentImages);
+
+
+        //프로젝트 구매 옵션 파일 저장 후 url 매핑
+        purchaseService.matchOptionFilesToDto(requestDto.getPurchaseDetail().getPurchaseOptionList(), optionFiles);
+
 
         projectService.createPurchaseProject(requestDto);
 
-        return new ResponseEntity<>(
-                ApiResponse.of(HttpStatus.CREATED.value(), "구매형 프로젝트 생성 성공"),
-                HttpStatus.CREATED
-        );
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.of(HttpStatus.CREATED.value(), "구매형 프로젝트 생성 성공"));
     }
+
 
     @PutMapping("/{projectId}")
     @Operation(

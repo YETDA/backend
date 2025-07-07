@@ -2,18 +2,23 @@ package com.funding.backend.domain.purchase.service;
 
 import com.funding.backend.domain.purchase.dto.request.PurchaseProjectDetail;
 import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
-import com.funding.backend.domain.purchase.dto.request.PurchaseOptionDto;
+import com.funding.backend.domain.purchase.dto.request.PurchaseOptionRequestDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.domain.purchase.repository.PurchaseRepository;
 import com.funding.backend.domain.purchaseOption.repository.PurchaseOptionRepository;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
+import com.funding.backend.global.utils.s3.S3FileInfo;
+import com.funding.backend.global.utils.s3.S3Uploader;
+import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +28,7 @@ public class PurchaseService {
 
     private final PurchaseRepository purchaseRepository;
     private final PurchaseOptionRepository purchaseOptionRepository;
+    private final S3Uploader s3Uploader;
 
     @Transactional
     public void createPurchase(Project project, PurchaseProjectDetail dto){
@@ -34,21 +40,22 @@ public class PurchaseService {
                 .gitAddress(dto.getGitAddress())
                 .providingMethod(dto.getProvidingMethod())
                 .build();
+        Purchase savePurchase = purchaseRepository.save(purchase);
 
         // 옵션 저장
-        if (dto.getOptions() != null && !dto.getOptions().isEmpty()) {
-            for (PurchaseOptionDto optionDto : dto.getOptions()) {
+        if (dto.getPurchaseOptionList() != null && !dto.getPurchaseOptionList().isEmpty()) {
+            for (PurchaseOptionRequestDto optionDto : dto.getPurchaseOptionList()) {
                 PurchaseOption option = PurchaseOption.builder()
-                        .purchase(purchase)
+                        .purchase(savePurchase)
                         .title(optionDto.getTitle())
                         .content(optionDto.getContent())
+                        .fileUrl(optionDto.getFileUrl())
                         .price(optionDto.getPrice())
                         .optionStatus(optionDto.getOptionStatus())
                         .build();
                 purchaseOptionRepository.save(option);
             }
         }
-        purchaseRepository.save(purchase);
     }
 
     @Transactional
@@ -87,5 +94,32 @@ public class PurchaseService {
         return purchaseRepository.findByProject(project)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));
     }
+
+
+    //파일 이름을, dto에 저장 할 수 있게
+    public void matchOptionFilesToDto(
+            List<PurchaseOptionRequestDto> purchaseOptionRequestDto,
+            List<MultipartFile> files
+    ) {
+        if (purchaseOptionRequestDto == null || files == null) return;
+
+        if (purchaseOptionRequestDto.size() != files.size()) {
+            throw new BusinessLogicException(ExceptionCode.PURCHASE_OPTION_FILE_COUNT);
+        }
+
+        for (int i = 0; i < purchaseOptionRequestDto.size(); i++) {
+            MultipartFile file = files.get(i);
+            try {
+                S3FileInfo fileInfo = s3Uploader.uploadAnyFile(file);
+
+                PurchaseOptionRequestDto option = purchaseOptionRequestDto.get(i);
+                option.setFileUrl(fileInfo.fileUrl());
+
+            } catch (IOException e) {
+                throw new RuntimeException("옵션 파일 업로드 실패: " + file.getOriginalFilename(), e);
+            }
+        }
+    }
+
 
 }

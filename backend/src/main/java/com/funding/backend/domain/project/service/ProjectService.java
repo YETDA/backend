@@ -18,6 +18,7 @@ import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
+import com.funding.backend.global.utils.s3.ImageService;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class ProjectService {
     private final PricingRepository pricingRepository;
     private final PricingService pricingService;
     private final PurchaseCategoryService purchaseCategoryService;
+    private final ImageService imageService;
 
 
     @Transactional
@@ -57,6 +59,8 @@ public class ProjectService {
                 .user(user)
                 .build();
         Project saveProject = projectRepository.save(project);
+
+        imageService.saveImageList(dto.getContentImage(),saveProject);
         purchaseService.createPurchase(saveProject,dto.getPurchaseDetail());
     }
 

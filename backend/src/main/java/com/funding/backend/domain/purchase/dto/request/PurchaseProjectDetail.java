@@ -1,6 +1,5 @@
 package com.funding.backend.domain.purchase.dto.request;
 
-import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
 import com.funding.backend.enums.ProvidingMethod;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,7 +28,8 @@ public class PurchaseProjectDetail {
     @Size(max = 20, message = "평균시간은 작성 길이는 20자 이내여야 합니다.")
     private String getAverageDeliveryTime;
 
-    private String file;
+    private List<PurchaseOptionRequestDto> purchaseOptionList;
 
-    private List<PurchaseOptionDto> options;
+
+
 }
