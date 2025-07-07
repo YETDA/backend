@@ -7,9 +7,11 @@ import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,7 +21,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -33,13 +37,19 @@ public class PurchaseController {
 
 
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "구매형 프로젝트 생성",
             description = "구매형 프로젝트(Purchase)를 생성합니다. 제공 방식, Git 주소, 다운로드 제한 등의 정보를 포함합니다."
     )
-    public ResponseEntity<?> createPurchaseProject(@RequestBody @Valid ProjectCreateRequestDto requestDto) {
+    public ResponseEntity<?> createPurchaseProject(
+            @RequestPart("requestDto") @Valid ProjectCreateRequestDto requestDto,
+            @RequestPart(value = "contentImage", required = false) List<MultipartFile> contentImage
+    ) {
+        requestDto.setContentImage(contentImage);
+
         projectService.createPurchaseProject(requestDto);
+
         return new ResponseEntity<>(
                 ApiResponse.of(HttpStatus.CREATED.value(), "구매형 프로젝트 생성 성공"),
                 HttpStatus.CREATED

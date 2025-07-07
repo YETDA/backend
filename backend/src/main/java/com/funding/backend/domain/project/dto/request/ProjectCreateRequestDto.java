@@ -1,7 +1,9 @@
 package com.funding.backend.domain.project.dto.request;
 
+import com.funding.backend.domain.purchase.dto.request.PurchaseProjectDetail;
 import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
 import com.funding.backend.enums.ProjectType;
+import com.funding.backend.global.validator.annotaion.ValidProjectDetail;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -17,13 +19,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 @NoArgsConstructor
+@ValidProjectDetail
 public class ProjectCreateRequestDto {
 
     @NotNull(message = "프로젝트 타입은 필수입니다.")
     private ProjectType projectType;
 
     @NotNull(message = "구매 카테고리는 필수입니다.")
-    private PurchaseCategory purchaseCategory;
+    private Long purchaseCategoryId;
 
     @NotNull(message = "가격 정책은 필수입니다.")
     private Long pricingPlanId;
@@ -46,9 +49,6 @@ public class ProjectCreateRequestDto {
 
     //이미지
     private List<MultipartFile> contentImage = new ArrayList<>();
-
-    //커버 이미지
-    private MultipartFile coverImage;
 
     // 하위 타입 DTO
     private DonationProjectDetail donationDetail;

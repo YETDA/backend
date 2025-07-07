@@ -34,6 +34,7 @@ public class ProjectService {
     private final DonationService donationService;
     private final PricingRepository pricingRepository;
     private final PricingService pricingService;
+    private final PurchaseCategoryService
 
 
     @Transactional

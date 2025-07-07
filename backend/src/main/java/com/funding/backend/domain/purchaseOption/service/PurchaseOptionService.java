@@ -1,9 +1,7 @@
 package com.funding.backend.domain.purchaseOption.service;
 
-import com.funding.backend.domain.project.dto.request.PurchaseOptionDto;
 import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.domain.purchase.repository.PurchaseRepository;
-import com.funding.backend.domain.purchase.service.PurchaseService;
 import com.funding.backend.domain.purchaseOption.dto.request.PurchaseOptionRequestDto;
 import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
 import com.funding.backend.domain.purchaseOption.repository.PurchaseOptionRepository;

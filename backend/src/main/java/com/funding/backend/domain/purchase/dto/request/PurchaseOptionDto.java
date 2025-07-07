@@ -1,4 +1,4 @@
-package com.funding.backend.domain.project.dto.request;
+package com.funding.backend.domain.purchase.dto.request;
 
 import com.funding.backend.enums.OptionStatus;
 import lombok.Getter;

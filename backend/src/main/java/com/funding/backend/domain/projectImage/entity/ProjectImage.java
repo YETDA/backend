@@ -49,5 +49,8 @@ public class ProjectImage extends Auditable {
     @JoinColumn(name = "project_id",nullable = false)
     private Project project;
 
+    @Column(name = "image_order")
+    private String imageOrder;
+
 
 }
