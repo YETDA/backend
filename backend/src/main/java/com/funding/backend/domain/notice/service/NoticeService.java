@@ -33,9 +33,9 @@ public class NoticeService {
      * @return 생성된 공지사항 정보
      */
     @Transactional
-    public NoticeReseponseDto createNotice(/* Long loginUserId, */Long projectId, NoticeCreateRequestDto noticeCreateRequestDto) {
+    public NoticeReseponseDto createNotice(/* Long loginUserId, */NoticeCreateRequestDto noticeCreateRequestDto) {
 
-        Project project = projectService.findProjectById(projectId);
+        Project project = projectService.findProjectById(noticeCreateRequestDto.getProjectId());
 //        User loginUser = userService.findUserById(loginUserId);
 
 //        projectService.validProjectUser(project.getUser(), loginUser);
@@ -73,6 +73,7 @@ public class NoticeService {
         return new NoticeReseponseDto(notice);
     }
 
+    // TODO: 추후 회원 기능 개발 시 주석 해제
     @Transactional
     /**
      * 공지사항을 삭제합니다.

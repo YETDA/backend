@@ -9,6 +9,10 @@ import lombok.Getter;
 @Schema(name = "Notice Create Request DTO", description = "공지사항 생성 DTO")
 public class NoticeCreateRequestDto {
 
+    @NotBlank(message = "프로젝트 ID는 필수입니다.")
+    @Schema(description = "프로젝트 ID", example = "1")
+    private Long projectId;
+
     @NotBlank(message = "제목은 필수입니다.")
     @Size(max = 100, message = "제목은 100자 이내여야 합니다.")
     @Schema(description = "공지사항 제목", example = "펀딩 결제 안내")

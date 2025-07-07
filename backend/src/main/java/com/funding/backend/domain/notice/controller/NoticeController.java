@@ -29,13 +29,12 @@ public class NoticeController {
             description = "프로젝트 생성자가 공지사항을 생성합니다."
 //            security = @SecurityRequirement(name = "JWT")
     )
-    @PostMapping("/{projectId}")
+    @PostMapping
     public ResponseEntity<ApiResponse<NoticeReseponseDto>> createNotice(
             /* Long loginUserId, */
-            @PathVariable Long projectId,
             @RequestBody @Valid NoticeCreateRequestDto noticeCreateRequestDto) {
 
-        NoticeReseponseDto noticeResponse = noticeService.createNotice(/* loginUserId, */projectId, noticeCreateRequestDto);
+        NoticeReseponseDto noticeResponse = noticeService.createNotice(/* loginUserId, */noticeCreateRequestDto);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.CREATED.value(), "공지사항 생성 성공", noticeResponse));
     }
 
