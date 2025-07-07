@@ -39,18 +39,22 @@ public class ImageService {
 
     public List<ProjectImage> saveImageList(List<MultipartFile> images, Project project) {
         List<ProjectImage> savedList = new ArrayList<>();
-        for (int i = 0; i < images.size(); i++) {
-            MultipartFile image = images.get(i);
+        for (MultipartFile image : images) {
             try {
                 String url = s3Uploader.uploadFile(image);
+
+                //uuid이름 cat.jpg -> alskdjf12.jpg
                 String storedName = url.substring(url.lastIndexOf("/") + 1);
 
                 ProjectImage pi = ProjectImage.builder()
                         .imageUrl(url)
+                        //여기는 alskdjf12.jpg  저장
                         .storedFileName(storedName)
+                        //여기는 cat.jgg 저장
                         .originalFilename(image.getOriginalFilename())
+                        //파일 사이즈
+                        .fileSize(image.getSize())
                         .project(project)
-                        .imageOrder(i) // 순서 저장
                         .build();
 
                 savedList.add(projectImageRepository.save(pi));
@@ -62,18 +66,19 @@ public class ImageService {
     }
 
 
-
     public List<ProjectImage> updateImageList(List<ProjectImage> beforeImages, List<MultipartFile> newImages, Project project) {
+        // S3 업로드 및 삭제 로직 포함
         List<ProjectImage> updated = s3Uploader.autoImagesUploadAndDelete(beforeImages, newImages, project);
 
-        // 새로 추가된 이미지 저장
-        for (ProjectImage image : updated) {
-            if (image.getId() == null) {
-                projectImageRepository.save(image);
-            }
+        // 순서 재정렬 (프론트에서 보낸 순서를 기준으로)
+        for (int i = 0; i < updated.size(); i++) {
+            ProjectImage image = updated.get(i);
+            image.setImageOrder(i);
+            projectImageRepository.save(image);
         }
 
-        // 삭제된 이미지 DB에서도 제거
+
+        // 삭제된 이미지 DB 제거
         for (ProjectImage oldImage : beforeImages) {
             if (!updated.contains(oldImage)) {
                 projectImageRepository.delete(oldImage);

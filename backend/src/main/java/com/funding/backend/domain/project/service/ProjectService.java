@@ -1,7 +1,6 @@
 package com.funding.backend.domain.project.service;
 
 import com.funding.backend.domain.donation.service.DonationService;
-import com.funding.backend.domain.pricingPlan.entity.PricingPlan;
 import com.funding.backend.domain.pricingPlan.repository.PricingRepository;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
@@ -9,6 +8,7 @@ import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDt
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
+import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
 import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.domain.purchase.service.PurchaseService;
 import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
@@ -33,12 +33,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
-    private final PurchaseService purchaseService;
     private final DonationService donationService;
     private final PricingRepository pricingRepository;
+
     private final PricingService pricingService;
     private final PurchaseCategoryService purchaseCategoryService;
     private final ImageService imageService;
+    private final PurchaseService purchaseService;
 
 
     @Transactional
@@ -65,27 +66,28 @@ public class ProjectService {
     }
 
     @Transactional
-    public Project updateProject(Long projectId, ProjectCreateRequestDto dto) {
+    public Project updatePurchaseProject(Long projectId, PurchaseUpdateRequestDto purchaseUpdateRequestDto) {
         Project project = findProjectById(projectId);
-        PurchaseCategory purchaseCategory = purchaseCategoryService.findPurchaseCategoryById(dto.getPurchaseDetail().getPurchaseCategoryId());
+        PurchaseCategory purchaseCategory = purchaseCategoryService.findPurchaseCategoryById(purchaseUpdateRequestDto.getPurchaseCategoryId());
 
         // 권한 체크로 -> 로그인 완료되면 구현
         //validProjectUser(project.getUser(), loginUser);
 
-        // 전체 필드 덮어쓰기
-        project.setTitle(dto.getTitle());
-        project.setIntroduce(dto.getIntroduce());
-        project.setCoverImage(""); // 실제 업로드된 커버 이미지가 있다면 dto로부터 가져와서 설정
-        project.setProjectImage(new ArrayList<>()); // 추후 이미지 DTO에서 변환
-        project.setProjectStatus(ProjectStatus.UNDER_REVIEW); // 수정 시에도 초기화할지 여부는 정책에 따라 조절
-        project.setPricingPlan(pricingService.findById(dto.getPricingPlanId()));
-        project.setProjectType(ProjectType.PURCHASE); // 고정값
+        // 프로젝트 기본 필드 수정
+        project.setTitle(purchaseUpdateRequestDto.getTitle());
+        project.setIntroduce(purchaseUpdateRequestDto.getIntroduce());
         project.setPurchaseCategory(purchaseCategory);
 
-        // Purchase도 함께 수정
-        purchaseService.updatePurchase(project, dto.getPurchaseDetail());
+        // 프로젝트 상세 내용 업데이트
+        project.setContent(purchaseUpdateRequestDto.getContent());
 
-        return projectRepository.save(project);
+        // 이미지 업데이트
+        List<ProjectImage> updatedImages = imageService.updateImageList
+                (project.getProjectImage(), purchaseUpdateRequestDto.getContentImage(), project);
+        project.setProjectImage(updatedImages);
+        projectRepository.save(project);
+        // Purchase 관련 필드 업데이트
+        purchaseService.updatePurchase(project,purchaseUpdateRequestDto);
     }
 
     public PurchaseProjectResponseDto getPurchaseProject(Long projectId) {

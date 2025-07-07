@@ -53,6 +53,11 @@ public class ProjectImage extends Auditable {
     private Integer imageOrder;
 
 
+    @Column(name = "file_size")
+    private Long fileSize;
+
+
+
 
 
 }

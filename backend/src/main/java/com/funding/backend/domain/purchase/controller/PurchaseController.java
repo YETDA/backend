@@ -3,6 +3,7 @@ package com.funding.backend.domain.purchase.controller;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
+import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
 import com.funding.backend.domain.purchase.service.PurchaseService;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -67,9 +68,9 @@ public class PurchaseController {
     )
     public ResponseEntity<?> updatePurchaseProject(
             @PathVariable Long projectId,
-            @RequestBody @Valid ProjectCreateRequestDto requestDto
+            @RequestBody @Valid PurchaseUpdateRequestDto requestDto
     ) {
-        projectService.updateProject(projectId, requestDto);
+        projectService.updatePurchaseProject(projectId, requestDto);
         return new ResponseEntity<>(
                 ApiResponse.of(HttpStatus.OK.value(), "구매형 프로젝트 수정 성공"),
                 HttpStatus.OK

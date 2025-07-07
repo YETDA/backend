@@ -1,6 +1,7 @@
 package com.funding.backend.domain.purchase.service;
 
 import com.funding.backend.domain.purchase.dto.request.PurchaseProjectDetail;
+import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
 import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
 import com.funding.backend.domain.purchase.dto.request.PurchaseOptionRequestDto;
 import com.funding.backend.domain.project.entity.Project;
@@ -59,9 +60,8 @@ public class PurchaseService {
     }
 
     @Transactional
-    public void updatePurchase(Project project, PurchaseProjectDetail dto) {
+    public void updatePurchase(Project project, PurchaseUpdateRequestDto dto) {
         Purchase purchase = findByProject(project);
-        String file = dto.getFile();
 
         Optional.ofNullable(dto.getGitAddress())
                 .ifPresent(purchase::setGitAddress);
@@ -69,12 +69,8 @@ public class PurchaseService {
         Optional.ofNullable(dto.getProvidingMethod())
                 .ifPresent(purchase::setProvidingMethod);
 
-        Optional.ofNullable(dto.getGetAverageDeliveryTime())
+        Optional.ofNullable(dto.getAverageDeliveryTime())
                 .ifPresent(purchase::setAverageDeliveryTime);
-
-
-        Optional.ofNullable(file)
-                .ifPresent(purchase::setFile);
 
         purchaseRepository.save(purchase);
 
