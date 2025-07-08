@@ -37,6 +37,18 @@ dependencies {
 
     //swagger 의존성
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
+
+    // 인증/인가
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+    // jwt
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    // redis
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    //gson - json 메시지를 다루기 위한 라이브러리
+    implementation("com.google.code.gson:gson")
 }
 
 tasks.withType<Test> {

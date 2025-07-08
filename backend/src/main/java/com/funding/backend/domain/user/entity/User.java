@@ -7,8 +7,6 @@ import com.funding.backend.global.auditable.Auditable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -45,19 +43,19 @@ public class User extends Auditable { // Auditable 상속
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "email", nullable = false, length = 100)
+    @Column(name = "email", nullable = true, length = 100)
     private String email;
 
-    @Column(name = "account", nullable = false)
+    @Column(name = "account", nullable = true)
     private String account;
 
-    @Column(name = "bank", nullable = false)
+    @Column(name = "bank", nullable = true)
     private String bank;
 
-    @Column(name = "introduce", nullable = false)
+    @Column(name = "introduce", nullable = true)
     private String introduce;
 
-    @Column(name = "portfolio_address", nullable = false)
+    @Column(name = "portfolio_address", nullable = true)
     private String portfolioAddress;
 
 
@@ -72,17 +70,11 @@ public class User extends Auditable { // Auditable 상속
     @Column(name = "sso_provider", length = 50)
     private String ssoProvider;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true,  fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     List<Project> projectList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true,  fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     List<Alarm> alarmList = new ArrayList<>();
-
-
-
-
-
-
 
 
 }
