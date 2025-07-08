@@ -62,20 +62,31 @@ public class PurchaseController {
     }
 
 
-    @PutMapping("/{projectId}")
-    @Operation(
-            summary = "구매형 프로젝트 수정",
-            description = "기존 구매형 프로젝트(Purchase)를 수정합니다."
-    )
+    @PutMapping(value = "/{projectId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "구매형 프로젝트 수정", description = "기존 구매형 프로젝트(Purchase)를 수정합니다.")
     public ResponseEntity<?> updatePurchaseProject(
             @PathVariable Long projectId,
-            @RequestBody @Valid PurchaseUpdateRequestDto requestDto
+            @RequestPart("requestDto") @Valid PurchaseUpdateRequestDto requestDto,
+            @RequestPart(value = "contentImages", required = false) List<MultipartFile> contentImages
     ) {
+        requestDto.setContentImage(contentImages);
         projectService.updatePurchaseProject(projectId, requestDto);
-        return new ResponseEntity<>(
-                ApiResponse.of(HttpStatus.OK.value(), "구매형 프로젝트 수정 성공"),
-                HttpStatus.OK
-        );
+
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "구매형 프로젝트 수정 성공"));
+    }
+
+
+
+    @GetMapping("/{projectId}")
+    @Operation(
+            summary = "구매형 프로젝트 상세 조회",
+            description = "구매형 프로젝트(Purchase)의 상세 정보를 조회합니다. 제목, 소개, Git 주소, 제공 방식, 가격제도, 파일 정보 등을 반환합니다."
+    )
+    public ResponseEntity<PurchaseProjectResponseDto> getPurchaseProject(
+            @PathVariable Long projectId
+    ) {
+        PurchaseProjectResponseDto response = projectService.getPurchaseProject(projectId);
+        return ResponseEntity.ok(response);
     }
 
 
