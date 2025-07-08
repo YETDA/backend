@@ -137,7 +137,7 @@ public class S3Uploader {
 
                     orderedResult.add(uploaded);
                 } catch (IOException e) {
-                    throw new RuntimeException("파일 업로드 실패: " + originalName, e);
+                    throw new BusinessLogicException(ExceptionCode.FILE_UPLOAD_FAILED);
                 }
             }
         }

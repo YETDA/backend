@@ -4,6 +4,7 @@ import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
 import com.funding.backend.domain.purchase.service.PurchaseService;
+import com.funding.backend.enums.ProvidingMethod;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,16 +44,9 @@ public class PurchaseController {
             @RequestPart(value = "contentImage", required = false) List<MultipartFile> contentImages,
             @RequestPart(value = "optionFiles", required = false) List<MultipartFile> optionFiles
     ) {
-        // 프로젝트 이미지 저장
         requestDto.setContentImage(contentImages);
-
-
-        //프로젝트 구매 옵션 파일 저장 후 url 매핑
-        purchaseService.matchOptionFilesToDto(requestDto.getPurchaseDetail().getPurchaseOptionList(), optionFiles);
-
-
+        requestDto.setOptionFiles(optionFiles);
         projectService.createPurchaseProject(requestDto);
-
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.of(HttpStatus.CREATED.value(), "구매형 프로젝트 생성 성공"));
     }

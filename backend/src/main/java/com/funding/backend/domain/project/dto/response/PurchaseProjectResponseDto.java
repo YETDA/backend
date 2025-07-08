@@ -18,7 +18,6 @@ public class PurchaseProjectResponseDto implements ProjectResponseDto {
     private String introduce;
     private String content;
     private String gitAddress;
-    private ProvidingMethod providingMethod;
     private Long purchaseCategoryId;
     private String purchaseCategoryName;
     private String averageDeliveryTime;
@@ -32,7 +31,6 @@ public class PurchaseProjectResponseDto implements ProjectResponseDto {
         this.introduce = project.getIntroduce();
         this.content = project.getContent();
         this.gitAddress = purchase.getGitAddress();
-        this.providingMethod = purchase.getProvidingMethod();
 
         if (purchase.getPurchaseCategory() != null) {
             this.purchaseCategoryId = purchase.getPurchaseCategory().getId();

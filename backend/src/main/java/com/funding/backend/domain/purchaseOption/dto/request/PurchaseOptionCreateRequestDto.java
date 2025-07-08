@@ -1,6 +1,7 @@
 package com.funding.backend.domain.purchaseOption.dto.request;
 
 import com.funding.backend.enums.OptionStatus;
+import com.funding.backend.enums.ProvidingMethod;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -20,11 +21,11 @@ public class PurchaseOptionCreateRequestDto {
     @NotNull
     private Long price;
 
-
+    @NotNull
+    private ProvidingMethod providingMethod;// DOWNLOAD, EMAIL 등
 
     @NotNull
     private OptionStatus optionStatus;
 
-    @NotNull
     private MultipartFile file;
 }

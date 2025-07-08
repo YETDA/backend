@@ -66,7 +66,7 @@ public class ImageService {
 
                 savedList.add(projectImageRepository.save(pi));
             } catch (IOException e) {
-                throw new RuntimeException("이미지 업로드 실패", e);
+                throw new BusinessLogicException(ExceptionCode.IMAGE_UPLOAD_FAILED);
             }
         }
         return savedList;

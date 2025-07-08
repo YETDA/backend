@@ -2,6 +2,7 @@ package com.funding.backend.domain.purchaseOption.entity;
 
 import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.enums.OptionStatus;
+import com.funding.backend.enums.ProvidingMethod;
 import com.funding.backend.global.auditable.Auditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,6 +45,10 @@ public class PurchaseOption extends Auditable {
     @Enumerated(EnumType.STRING)
     @Column(name = "option_status", nullable = false)
     private OptionStatus optionStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "providing_method")
+    private ProvidingMethod providingMethod; // 다운로드, 이메일 중 하나
 
     @Column(name = "content", length = 100, nullable = false)
     private String content;
