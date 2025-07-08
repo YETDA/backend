@@ -38,10 +38,25 @@ public class ProjectImage extends Auditable {
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
+    @Column
+    private String originalFilename;
+
+    @Column
+    private String storedFileName;
+
 
     @ManyToOne
     @JoinColumn(name = "project_id",nullable = false)
     private Project project;
+
+    @Column(name = "image_order")
+    private Integer imageOrder;
+
+
+    @Column(name = "file_size")
+    private Long fileSize;
+
+
 
 
 

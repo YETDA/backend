@@ -1,9 +1,12 @@
 package com.funding.backend.domain.purchase.entity;
 
+import com.funding.backend.domain.like.entity.Like;
 import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
 import com.funding.backend.domain.project.entity.Project;
+import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
 import com.funding.backend.enums.ProvidingMethod;
 import com.funding.backend.global.auditable.Auditable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,7 +18,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,8 +56,15 @@ public class Purchase extends Auditable {
     @Column(name = "average_delivery_time")
     private String averageDeliveryTime;
 
+    @ManyToOne
+    @JoinColumn(name = "purchase_category_id")
+    private PurchaseCategory purchaseCategory;
 
-    @Column(name = "file")
-    private String file;
+
+    @OneToMany(mappedBy = "purchase", cascade = CascadeType.REMOVE, orphanRemoval = false)
+    List<PurchaseOption> purchaseOptionList = new ArrayList<>();
+
+
+
 
 }

@@ -1,4 +1,4 @@
-package com.funding.backend.domain.option.entity;
+package com.funding.backend.domain.purchaseOption.entity;
 
 import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.enums.OptionStatus;
@@ -51,5 +51,15 @@ public class PurchaseOption extends Auditable {
     @Column(name = "price", nullable = false)
     private Long price;
 
+    @Column(name = "file_url")
+    private String fileUrl;
 
+    @Column(name = "original_file_name")
+    private String originalFileName;
+
+    @Column(name = "file_size")
+    private Long fileSize;
+
+    @Column(name = "file_type")
+    private String fileType;
 }
