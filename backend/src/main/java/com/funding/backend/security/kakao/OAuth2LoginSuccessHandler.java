@@ -40,8 +40,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         boolean isNewUser = user.getUserActive() == null;
 
         // 프로필 이미지 최초 저장
-        if (user.getImage() == null && oAuth2User.getAttributes().get("profile_image") != null) {
-            String kakaoImageUrl = oAuth2User.getAttributes().get("profile_image").toString();
+        if (user.getImage() != null && user.getImage().contains("k.kakaocdn.net")) {
+            String kakaoImageUrl = user.getImage();
             log.info("📸 카카오 프로필 이미지 URL: {}", kakaoImageUrl);
 
             try {
@@ -56,6 +56,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
                 String uploadedUrl = imageService.saveImage(mockFile);
                 user.setImage(uploadedUrl);
+                userRepository.save(user);
             } catch (Exception e) {
                 log.warn("❌ 프로필 이미지 S3 업로드 실패", e);
             }
