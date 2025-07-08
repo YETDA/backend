@@ -5,6 +5,7 @@ import com.funding.backend.domain.role.repository.RoleRepository;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.enums.RoleType;
+import com.funding.backend.enums.UserActive;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -38,7 +39,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String email = (String) kakaoAccount.get("email");
         String image = (String) profile.get("profile_image_url");
 
-        // 사용자 조회 or 가입
+        // 사용자 조회 or 신규 가입
         User user = userRepository.findBySocialIdAndSsoProvider(socialId, provider)
                 .orElseGet(() -> {
                     Role role = roleRepository.findByRole(RoleType.USER)
@@ -51,6 +52,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                             .name(nickname)
                             .email(email)
                             .image(image)
+                            .userActive(UserActive.ACTIVE)
                             .build());
                 });
 

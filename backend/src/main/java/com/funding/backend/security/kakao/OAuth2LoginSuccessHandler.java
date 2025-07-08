@@ -2,6 +2,7 @@ package com.funding.backend.security.kakao;
 
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
+import com.funding.backend.enums.UserActive;
 import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.security.jwt.JwtTokenizer;
 import com.funding.backend.security.jwt.RefreshTokenService;
@@ -35,6 +36,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         User user = oAuth2User.getUser();
 
+        // 최초 회원가입 판단
+        boolean isNewUser = user.getUserActive() == null;
+
         // 프로필 이미지 최초 저장
         if (user.getImage() == null && oAuth2User.getAttributes().get("profile_image") != null) {
             String kakaoImageUrl = oAuth2User.getAttributes().get("profile_image").toString();
@@ -42,7 +46,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
             try {
                 URL url = new URL(kakaoImageUrl);
-                String fileName = "kakao-profile.jpg"; // 확장자 없으면 jpg 기본
+                String fileName = "kakao-profile.jpg";
                 MockMultipartFile mockFile = new MockMultipartFile(
                         fileName,
                         fileName,
@@ -52,10 +56,19 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
                 String uploadedUrl = imageService.saveImage(mockFile);
                 user.setImage(uploadedUrl);
-                userRepository.save(user); // 변경된 이미지 URL 저장
             } catch (Exception e) {
                 log.warn("❌ 프로필 이미지 S3 업로드 실패", e);
             }
+        }
+
+        // 최초 가입 시 userActive 설정 및 저장
+        if (isNewUser) {
+            user.setUserActive(UserActive.ACTIVE);
+        }
+
+        // 변경 사항 저장
+        if (isNewUser || user.getImage() == null) {
+            userRepository.save(user);
         }
 
         // 1. 매 로그인 시 AccessToken은 새로 발급

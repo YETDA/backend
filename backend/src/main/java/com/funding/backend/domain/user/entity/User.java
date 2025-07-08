@@ -3,10 +3,13 @@ package com.funding.backend.domain.user.entity;
 import com.funding.backend.domain.alarm.entity.Alarm;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.role.entity.Role;
+import com.funding.backend.enums.UserActive;
 import com.funding.backend.global.auditable.Auditable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -58,7 +61,6 @@ public class User extends Auditable { // Auditable 상속
     @Column(name = "portfolio_address", nullable = true)
     private String portfolioAddress;
 
-
     @Column(name = "image", nullable = true)
     private String image;
 
@@ -69,6 +71,12 @@ public class User extends Auditable { // Auditable 상속
     //사용된 oauth 이름, kakao, naver.
     @Column(name = "sso_provider", length = 50)
     private String ssoProvider;
+
+    //사용자 활성상태(active/stop)
+    @Column(name = "user_active", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserActive userActive = UserActive.ACTIVE;
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     List<Project> projectList = new ArrayList<>();
