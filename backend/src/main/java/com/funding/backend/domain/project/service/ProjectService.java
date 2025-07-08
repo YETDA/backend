@@ -4,6 +4,7 @@ import com.funding.backend.domain.donation.service.DonationService;
 import com.funding.backend.domain.pricingPlan.repository.PricingRepository;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
+import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
@@ -48,11 +49,9 @@ public class ProjectService {
     @Transactional
     public void createPurchaseProject(ProjectCreateRequestDto dto){
         List<ProjectImage> projectImage = new ArrayList<>();
-        PurchaseCategory purchaseCategory = purchaseCategoryService.findPurchaseCategoryById(dto.getPurchaseDetail().getPurchaseCategoryId());
         String coverImage = "";
         Optional<User> user = userRepository.findById(Long.valueOf(2));
         Project project = Project.builder()
-                .purchaseCategory(purchaseCategory)
                 .introduce(dto.getIntroduce())
                 .title(dto.getTitle())
                 .content(dto.getContent())
@@ -72,7 +71,7 @@ public class ProjectService {
     @Transactional
     public void  updatePurchaseProject(Long projectId, PurchaseUpdateRequestDto purchaseUpdateRequestDto) {
         Project project = findProjectById(projectId);
-        PurchaseCategory purchaseCategory = purchaseCategoryService.findPurchaseCategoryById(purchaseUpdateRequestDto.getPurchaseCategoryId());
+
 
         // 권한 체크로 -> 로그인 완료되면 구현
         //validProjectUser(project.getUser(), loginUser);
@@ -81,7 +80,6 @@ public class ProjectService {
         // 프로젝트 기본 필드 수정
         project.setTitle(purchaseUpdateRequestDto.getTitle());
         project.setIntroduce(purchaseUpdateRequestDto.getIntroduce());
-        project.setPurchaseCategory(purchaseCategory);
 
         // 프로젝트 상세 내용 업데이트
         project.setContent(purchaseUpdateRequestDto.getContent());
@@ -95,27 +93,8 @@ public class ProjectService {
         purchaseService.updatePurchase(project,purchaseUpdateRequestDto);
     }
 
-    public PurchaseProjectResponseDto getPurchaseProject(Long projectId) {
-        Project project = findProjectById(projectId);
 
-        Purchase purchase = purchaseService.findByProject(project);
 
-        return new PurchaseProjectResponseDto(project, purchase);
-    }
-
-    @Transactional
-    public void deletePurchaseProject(Long projectId) {
-        Project project = findProjectById(projectId);
-
-//        // 권한 체크 (로그인 유저 필요 시 매개변수 추가)
-//        validProjectUser(project.getUser(), getCurrentUser());
-
-        // 연결된 Purchase도 삭제
-        purchaseService.deletePurchase(purchaseService.findByProject(project));
-
-        // 프로젝트 삭제
-        projectRepository.delete(project);
-    }
 
 
 
@@ -132,8 +111,27 @@ public class ProjectService {
         }
     }
 
+    public ProjectResponseDto getProjectDetail(Long projectId) {
+        Project project = findProjectById(projectId);
+
+        if (project.getProjectType() == ProjectType.PURCHASE) {
+            return purchaseService.createPurchaseProjectResponse(project);
+//        } else if (project.getProjectType() == ProjectType.DONATION) {
+//            return createDonationProjectResponse(project);
+        } else {
+            throw new BusinessLogicException(ExceptionCode.INVALID_PROJECT_TYPE);
+        }
+    }
 
 
+    @Transactional
+    public void deleteProject(Long projectId) {
+        //삭제 하려는 유저가 본인인지 확인하는 로직 필요
+        //validProjectUser(project.getUser(), getCurrentUser());
+
+        Project project = findProjectById(projectId);
+        projectRepository.delete(project);
+    }
 
 
 }
