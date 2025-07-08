@@ -7,6 +7,9 @@ import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,22 +47,19 @@ public class LikeService {
         }
     }
 
-    public List<ProjectResponseDto> getLikedProjects(/* Long userId */) {
+    public Page<ProjectResponseDto> getLikedProjects(/* Long userId, */ Pageable pageable) {
         // TODO: UserService 생성 시 주석 해제 후 new User() 부분 삭제
 //        User user = userService.findUserById(userId);
         User user = new User();
 
-        List<Like> likes = likeRepository.findByUser(user);
+        Page<Like> likes = likeRepository.findByUser(user, pageable);
 
         if (likes.isEmpty()) {
-            return List.of();
+            return new PageImpl<>(List.of());
         }
 
         // TODO: ProjectResponseDto 구현 뒤 주석 해제
-        return List.of();
-//        return likes.stream()
-//                .map(Like::getProject)
-//                .map(ProjectResponseDto::new)
-//                .collect(Collectors.toList());
+        return new PageImpl<>(List.of());
+//        return likes.map(like -> new ProjectResponseDto(like.getProject()));
     }
 }

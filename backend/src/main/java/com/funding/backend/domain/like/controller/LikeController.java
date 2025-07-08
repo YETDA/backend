@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 @Tag(name = "좋아요", description = "좋아요 관련 API 입니다.")
@@ -40,7 +43,7 @@ public class LikeController {
 //            security = @SecurityRequirement(name = "JWT")
     )
     @GetMapping("/project")
-    public ResponseEntity<ApiResponse<List<ProjectResponseDto>>> getLikedProjects(/* Long loginUserId */) {
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "", likeService.getLikedProjects(/* loginUserId */)));
+    public ResponseEntity<ApiResponse<Page<ProjectResponseDto>>> getLikedProjects(/* Long loginUserId, */ Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "", likeService.getLikedProjects(/* loginUserId, */ pageable)));
     }
 }
