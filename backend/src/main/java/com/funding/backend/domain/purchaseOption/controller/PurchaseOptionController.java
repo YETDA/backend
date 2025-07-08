@@ -1,6 +1,6 @@
 package com.funding.backend.domain.purchaseOption.controller;
 
-import com.funding.backend.domain.project.dto.response.PurchaseOptionResponseDto;
+import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionResponseDto;
 import com.funding.backend.domain.purchaseOption.dto.request.PurchaseOptionCreateRequestDto;
 import com.funding.backend.domain.purchaseOption.dto.request.PurchaseOptionUpdateRequestDto;
 import com.funding.backend.domain.purchaseOption.service.PurchaseOptionService;
@@ -17,13 +17,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -96,6 +96,22 @@ public class PurchaseOptionController {
             }
         });
     }
+
+    @DeleteMapping("/{optionId}")
+    @Operation(
+            summary = "구매 옵션 삭제",
+            description = "구매 옵션 ID(optionId)를 기반으로 해당 구매 옵션(PurchaseOption)을 삭제합니다."
+    )
+    public ResponseEntity<ApiResponse<Void>> deletePurchaseOption(
+            @PathVariable Long optionId
+    ) {
+        purchaseOptionService.deletePurchaseOption(optionId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "구매 옵션 삭제 성공"));
+
+    }
+
 
 
 

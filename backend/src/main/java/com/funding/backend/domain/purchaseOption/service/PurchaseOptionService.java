@@ -1,19 +1,16 @@
 package com.funding.backend.domain.purchaseOption.service;
 
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
-import com.funding.backend.domain.project.dto.response.PurchaseOptionResponseDto;
+import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
-import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.purchase.dto.request.PurchaseOptionRequestDto;
 import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.domain.purchase.repository.PurchaseRepository;
-import com.funding.backend.domain.purchase.service.PurchaseService;
 import com.funding.backend.domain.purchaseOption.dto.request.PurchaseOptionCreateRequestDto;
 import com.funding.backend.domain.purchaseOption.dto.request.PurchaseOptionUpdateRequestDto;
 import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
 import com.funding.backend.domain.purchaseOption.repository.PurchaseOptionRepository;
-import com.funding.backend.enums.OptionStatus;
 import com.funding.backend.enums.ProvidingMethod;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
@@ -80,6 +77,8 @@ public class PurchaseOptionService {
 
     @Transactional
     public void updatePurchaseOption(Long purchaseOptionId, PurchaseOptionUpdateRequestDto requestDto) {
+        //수정하려는 사람이 해당 프로젝트를 생성한 사람인지 확인하는 로직 필요
+
         PurchaseOption purchaseOption = findPurchaseOptionById(purchaseOptionId);
 
         ProvidingMethod method = requestDto.getProvidingMethod();
@@ -273,6 +272,12 @@ public class PurchaseOptionService {
 
         return purchaseRepository.findByProject(project)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));
+    }
+
+    @Transactional
+    public void deletePurchaseOption(Long optionId){
+        PurchaseOption purchaseOption = findPurchaseOptionById(optionId);
+        purchaseOptionRepository.delete(purchaseOption);
     }
 
 

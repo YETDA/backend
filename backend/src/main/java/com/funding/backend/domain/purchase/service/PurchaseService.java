@@ -1,37 +1,26 @@
 package com.funding.backend.domain.purchase.service;
 
-import com.funding.backend.domain.project.dto.response.PurchaseOptionResponseDto;
+import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionResponseDto;
 import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
 import com.funding.backend.domain.project.repository.ProjectRepository;
-import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.purchase.dto.request.PurchaseProjectDetail;
 import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
 import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
 import com.funding.backend.domain.purchaseCategory.service.PurchaseCategoryService;
-import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
-import com.funding.backend.domain.purchase.dto.request.PurchaseOptionRequestDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.domain.purchase.repository.PurchaseRepository;
 import com.funding.backend.domain.purchaseOption.repository.PurchaseOptionRepository;
 import com.funding.backend.domain.purchaseOption.service.PurchaseOptionService;
-import com.funding.backend.domain.user.repository.UserRepository;
-import com.funding.backend.enums.ProvidingMethod;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.s3.ImageService;
-import com.funding.backend.global.utils.s3.S3FileInfo;
-import com.funding.backend.global.utils.s3.S3Uploader;
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor

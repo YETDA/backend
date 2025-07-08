@@ -1,4 +1,4 @@
-package com.funding.backend.domain.project.dto.response;
+package com.funding.backend.domain.purchaseOption.dto.response;
 
 import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
 import com.funding.backend.enums.OptionStatus;
@@ -17,6 +17,7 @@ public class PurchaseOptionResponseDto {
     private String fileUrl;
     private OptionStatus optionStatus;
     private ProvidingMethod providingMethod;
+    private Long purchaseOptionId;
 
 
     public PurchaseOptionResponseDto(PurchaseOption purchaseOption){
@@ -26,5 +27,6 @@ public class PurchaseOptionResponseDto {
         this.fileUrl = purchaseOption.getFileUrl();
         this.optionStatus = purchaseOption.getOptionStatus();
         this.providingMethod = purchaseOption.getProvidingMethod();
+        this.purchaseOptionId=purchaseOption.getId();
     }
 }

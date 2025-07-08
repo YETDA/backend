@@ -3,8 +3,7 @@ package com.funding.backend.domain.project.dto.response;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.domain.purchase.entity.Purchase;
-import com.funding.backend.enums.OptionStatus;
-import com.funding.backend.enums.ProvidingMethod;
+import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionResponseDto;
 import lombok.Getter;
 import lombok.Setter;
 
