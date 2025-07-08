@@ -40,7 +40,7 @@ public class PurchaseOptionController {
             @PathVariable Long projectId,
             @ModelAttribute @Valid PurchaseOptionCreateRequestDto requestDto
     ) {
-        purchaseOptionService.createPurchaseProject(projectId,requestDto);
+        purchaseOptionService.createPurchaseOption(projectId,requestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.of(HttpStatus.CREATED.value(), "구매 옵션 생성 성공"));
@@ -51,6 +51,8 @@ public class PurchaseOptionController {
     @Operation(
             summary = "구매 옵션 수정",
             description = "구매 옵션(PurchaseOption)을 수정합니다. 파일, 가격, 상태, 설명 등을 변경할 수 있습니다."
+                    + " 파일은 선택적으로 업로드할 수 있습니다."
+
     )
     public ResponseEntity<ApiResponse<Void>> updatePurchaseOption(
             @PathVariable Long optionId,

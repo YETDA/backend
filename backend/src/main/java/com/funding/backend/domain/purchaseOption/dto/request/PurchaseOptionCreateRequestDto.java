@@ -20,6 +20,8 @@ public class PurchaseOptionCreateRequestDto {
     @NotNull
     private Long price;
 
+
+
     @NotNull
     private OptionStatus optionStatus;
 

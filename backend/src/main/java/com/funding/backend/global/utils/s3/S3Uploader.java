@@ -13,6 +13,11 @@ import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.CreateRandomNumber;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +26,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -184,9 +190,32 @@ public class S3Uploader {
 
             return new S3FileInfo(fileUrl, originalFileName, multipartFile.getSize(), contentType);
         } catch (SdkClientException e) {
-            throw new RuntimeException("파일 업로드 실패: " + originalFileName, e);
+            throw new BusinessLogicException(ExceptionCode.FILE_UPLOAD_FAILED);
         }
     }
+
+
+    //이미지 비교할때 이거 써도 될듯 ETag;
+    //이건 필요한 fileUrl return
+    public String extractKeyFromUrl(String fileUrl) {
+        try {
+            URL url = new URL(fileUrl);
+            String path = url.getPath(); // "/20250707_185045_e8e6edb7f3.png"
+            return path.startsWith("/") ? path.substring(1) : path;
+        } catch (MalformedURLException e) {
+            log.info("fileUrl" + fileUrl);
+            throw new BusinessLogicException(ExceptionCode.INVALID_S3_URL_FORMAT);
+        }
+    }
+
+
+    //이건 fileUrl로 eTag 알려줌
+    public String getETag(String fileUrl) {
+        // S3Client로 해당 객체의 ETag 조회
+        String key = extractKeyFromUrl(fileUrl);
+        return amazonS3.getObjectMetadata(bucket, key).getETag();
+    }
+
 
 
 
