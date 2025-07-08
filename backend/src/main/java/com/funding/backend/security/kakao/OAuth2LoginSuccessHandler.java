@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.URL;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -79,6 +80,16 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 user.getName(),
                 user.getRole().getRole()
         );
+
+        // 쿠키 생성
+        ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
+                .httpOnly(true)
+                .secure(true) // HTTPS 배포 환경이라면 true
+                .path("/")
+                .sameSite("Strict")
+                .maxAge(JwtTokenizer.ACCESS_TOKEN_EXPIRE_TIME / 1000) // 초 단위
+                .build();
+        response.addHeader("Set-Cookie", accessTokenCookie.toString());
 
         // 2. RefreshToken은 Redis에 있으면 재사용, 없으면 발급 및 저장
         String refreshToken = refreshTokenService.getRefreshToken(user.getId());

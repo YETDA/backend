@@ -47,19 +47,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private String resolveToken(HttpServletRequest request) {
+        // 헤더
         String header = request.getHeader("Authorization");
         if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
             return header.substring(7);
         }
 
-        // 쿠키 확인
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
+        // 쿠키에서 accessToken 조회
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
                 if ("accessToken".equals(cookie.getName())) {
                     return cookie.getValue();
                 }
             }
         }
+
         return null;
     }
 }
