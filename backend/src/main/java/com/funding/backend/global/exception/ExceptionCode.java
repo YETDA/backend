@@ -7,6 +7,9 @@ public enum ExceptionCode {
     PROJECT_NOT_FOUND(404,"존재하지 않는 프로젝트 입니다."),
     NOT_PROJECT_CREATOR(403, "해당 프로젝트의 생성자가 아닙니다."),
 
+    //공지사항 예외 처리
+    NOTICE_NOT_FOUND(404, "존재하지 않는 공지사항 입니다."),
+
     //구매 예외처리
     PURCHASE_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 입니다. "),
 
