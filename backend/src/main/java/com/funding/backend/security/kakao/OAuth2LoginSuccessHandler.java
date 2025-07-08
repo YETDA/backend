@@ -1,23 +1,31 @@
 package com.funding.backend.security.kakao;
 
 import com.funding.backend.domain.user.entity.User;
+import com.funding.backend.domain.user.repository.UserRepository;
+import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.security.jwt.JwtTokenizer;
 import com.funding.backend.security.jwt.RefreshTokenService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URL;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtTokenizer jwtTokenizer;
     private final RefreshTokenService refreshTokenService;
+    private final ImageService imageService;
+    private final UserRepository userRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -26,6 +34,29 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         User user = oAuth2User.getUser();
+
+        // 프로필 이미지 최초 저장
+        if (user.getImage() == null && oAuth2User.getAttributes().get("profile_image") != null) {
+            String kakaoImageUrl = oAuth2User.getAttributes().get("profile_image").toString();
+            log.info("📸 카카오 프로필 이미지 URL: {}", kakaoImageUrl);
+
+            try {
+                URL url = new URL(kakaoImageUrl);
+                String fileName = "kakao-profile.jpg"; // 확장자 없으면 jpg 기본
+                MockMultipartFile mockFile = new MockMultipartFile(
+                        fileName,
+                        fileName,
+                        "image/jpeg",
+                        url.openStream()
+                );
+
+                String uploadedUrl = imageService.saveImage(mockFile);
+                user.setImage(uploadedUrl);
+                userRepository.save(user); // 변경된 이미지 URL 저장
+            } catch (Exception e) {
+                log.warn("❌ 프로필 이미지 S3 업로드 실패", e);
+            }
+        }
 
         // 1. 매 로그인 시 AccessToken은 새로 발급
         String accessToken = jwtTokenizer.createAccessToken(

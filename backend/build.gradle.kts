@@ -50,10 +50,8 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
     // redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    //gson - json 메시지를 다루기 위한 라이브러리
-    implementation("com.google.code.gson:gson")
 
-    }
+}
 
 tasks.withType<Test> {
     useJUnitPlatform()

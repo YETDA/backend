@@ -59,7 +59,7 @@ public class User extends Auditable { // Auditable 상속
     private String portfolioAddress;
 
 
-    @Column(name = "image", nullable = false)
+    @Column(name = "image", nullable = true)
     private String image;
 
     //oauth에서 제공된 user 식별 아이디
