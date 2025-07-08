@@ -77,17 +77,6 @@ public class PurchaseController {
 
 
 
-    @GetMapping("/{projectId}")
-    @Operation(
-            summary = "구매형 프로젝트 상세 조회",
-            description = "구매형 프로젝트(Purchase)의 상세 정보를 조회합니다. 제목, 소개, Git 주소, 제공 방식, 가격제도, 파일 정보 등을 반환합니다."
-    )
-    public ResponseEntity<PurchaseProjectResponseDto> getPurchaseProject(
-            @PathVariable Long projectId
-    ) {
-        PurchaseProjectResponseDto response = projectService.getPurchaseProject(projectId);
-        return ResponseEntity.ok(response);
-    }
 
 
     //프로젝트에서 삭제하는거 있긴한데, 혹시 몰라서 만들어둠
