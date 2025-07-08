@@ -14,4 +14,9 @@ public class PurchaseOptionRequestDto {
     private Long price;
     private String fileUrl;
     private OptionStatus optionStatus;
+    private String original_file_name;
+    private String file_type;
+    private Long file_size;
+
+
 }

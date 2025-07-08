@@ -49,14 +49,12 @@ public class ProjectService {
     @Transactional
     public void createPurchaseProject(ProjectCreateRequestDto dto){
         List<ProjectImage> projectImage = new ArrayList<>();
-        String coverImage = "";
-        Optional<User> user = userRepository.findById(Long.valueOf(2));
+        Optional<User> user = userRepository.findById(Long.valueOf(1));
         Project project = Project.builder()
                 .introduce(dto.getIntroduce())
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .projectImage(projectImage)
-                .coverImage(coverImage)
                 .projectStatus(ProjectStatus.UNDER_REVIEW) //처음 만들때는 심사중으로
                 .pricingPlan(pricingService.findById(dto.getPricingPlanId()))
                 .projectType(ProjectType.PURCHASE)

@@ -37,6 +37,7 @@ public class PurchaseOptionService {
         PurchaseOption purchaseOption = PurchaseOption.builder()
                 .optionStatus(requestDto.getOptionStatus())
                 .price(requestDto.getPrice())
+                .title(requestDto.getTitle())
                 .content(requestDto.getContent())
                 .fileSize(fileData.fileSize())
                 .originalFileName(fileData.originalFileName())

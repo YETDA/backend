@@ -62,6 +62,9 @@ public class PurchaseService {
                         .title(optionDto.getTitle())
                         .content(optionDto.getContent())
                         .fileUrl(optionDto.getFileUrl())
+                        .fileSize(optionDto.getFile_size())
+                        .fileType(optionDto.getFile_type())
+                        .originalFileName(optionDto.getOriginal_file_name())
                         .price(optionDto.getPrice())
                         .optionStatus(optionDto.getOptionStatus())
                         .build();
@@ -127,6 +130,9 @@ public class PurchaseService {
 
             PurchaseOptionRequestDto option = purchaseOptionRequestDto.get(i);
             option.setFileUrl(fileInfo.fileUrl());
+            option.setFile_type(fileInfo.fileType());
+            option.setFile_size(fileInfo.fileSize());
+            option.setOriginal_file_name(fileInfo.originalFileName());
 
         }
     }
