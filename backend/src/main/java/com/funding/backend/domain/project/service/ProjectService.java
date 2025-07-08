@@ -115,7 +115,6 @@ public class ProjectService {
 
 
 
-
     public Project findProjectById(Long id){
         return projectRepository.findById(id).orElseThrow(
                 () -> new BusinessLogicException(ExceptionCode.PROJECT_NOT_FOUND)

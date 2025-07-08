@@ -121,6 +121,7 @@ public class PurchaseOptionService {
                 .originalFileName(fileData.originalFileName())
                 .fileType(fileData.fileType())
                 .fileUrl(fileData.fileUrl())
+                .providingMethod(requestDto.getProvidingMethod())
                 .purchase(purchase)
                 .build();
         purchaseOptionRepository.save(option);
@@ -132,6 +133,7 @@ public class PurchaseOptionService {
                 .price(requestDto.getPrice())
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
+                .providingMethod(requestDto.getProvidingMethod())
                 .purchase(purchase)
                 .build();
         purchaseOptionRepository.save(option);
@@ -167,6 +169,7 @@ public class PurchaseOptionService {
                 .originalFileName(requestDto.getOriginalFileName())
                 .fileType(requestDto.getFileType())
                 .fileUrl(requestDto.getFileUrl())
+                .providingMethod(requestDto.getProvidingMethod())
                 .purchase(purchase)
                 .build();
         purchaseOptionRepository.save(option);
@@ -178,6 +181,7 @@ public class PurchaseOptionService {
                 .price(requestDto.getPrice())
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
+                .providingMethod(requestDto.getProvidingMethod())
                 .purchase(purchase)
                 .build();
         purchaseOptionRepository.save(option);
