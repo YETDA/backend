@@ -1,7 +1,7 @@
-package com.funding.backend.security.config;
+package com.funding.backend.global.config;
 
 import com.funding.backend.security.jwt.JwtAuthFilter;
-import com.funding.backend.security.kakao.OAuth2LoginSuccessHandler;
+import com.funding.backend.security.oauth.OAuth2LoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

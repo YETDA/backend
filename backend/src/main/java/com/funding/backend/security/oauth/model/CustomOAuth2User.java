@@ -1,4 +1,4 @@
-package com.funding.backend.security.kakao;
+package com.funding.backend.security.oauth.model;
 
 import com.funding.backend.domain.user.entity.User;
 import java.util.Collection;

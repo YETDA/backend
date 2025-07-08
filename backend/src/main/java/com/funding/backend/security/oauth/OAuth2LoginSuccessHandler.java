@@ -1,4 +1,4 @@
-package com.funding.backend.security.kakao;
+package com.funding.backend.security.oauth;
 
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
@@ -6,6 +6,7 @@ import com.funding.backend.enums.UserActive;
 import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.security.jwt.JwtTokenizer;
 import com.funding.backend.security.jwt.RefreshTokenService;
+import com.funding.backend.security.oauth.model.CustomOAuth2User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
