@@ -1,6 +1,7 @@
 package com.funding.backend.domain.purchaseOption.controller;
 
 import com.funding.backend.domain.purchaseOption.dto.request.PurchaseOptionCreateRequestDto;
+import com.funding.backend.domain.purchaseOption.dto.request.PurchaseOptionUpdateRequestDto;
 import com.funding.backend.domain.purchaseOption.service.PurchaseOptionService;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,6 +45,23 @@ public class PurchaseOptionController {
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.of(HttpStatus.CREATED.value(), "구매 옵션 생성 성공"));
     }
+
+
+    @PutMapping(value = "/{optionId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(
+            summary = "구매 옵션 수정",
+            description = "구매 옵션(PurchaseOption)을 수정합니다. 파일, 가격, 상태, 설명 등을 변경할 수 있습니다."
+    )
+    public ResponseEntity<ApiResponse<Void>> updatePurchaseOption(
+            @PathVariable Long optionId,
+            @ModelAttribute @Valid PurchaseOptionUpdateRequestDto requestDto
+    ) {
+        purchaseOptionService.updatePurchaseOption(optionId, requestDto);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "구매 옵션 수정 성공"));
+    }
+
 
 
 }
