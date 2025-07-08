@@ -77,6 +77,7 @@ public class ProjectService {
         // 권한 체크로 -> 로그인 완료되면 구현
         //validProjectUser(project.getUser(), loginUser);
 
+
         // 프로젝트 기본 필드 수정
         project.setTitle(purchaseUpdateRequestDto.getTitle());
         project.setIntroduce(purchaseUpdateRequestDto.getIntroduce());
