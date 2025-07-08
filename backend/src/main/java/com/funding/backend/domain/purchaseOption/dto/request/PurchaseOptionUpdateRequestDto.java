@@ -1,6 +1,7 @@
 package com.funding.backend.domain.purchaseOption.dto.request;
 
 import com.funding.backend.enums.OptionStatus;
+import com.funding.backend.enums.ProvidingMethod;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,10 @@ public class PurchaseOptionUpdateRequestDto {
 
     @NotNull
     private Long price;
+
+    @NotNull
+    private ProvidingMethod providingMethod;// DOWNLOAD, EMAIL 등
+
 
     @NotNull
     private OptionStatus optionStatus;

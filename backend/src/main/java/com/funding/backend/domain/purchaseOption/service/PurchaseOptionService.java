@@ -84,10 +84,12 @@ public class PurchaseOptionService {
     public void updatePurchaseOption(Long purchaseOptionId, PurchaseOptionUpdateRequestDto requestDto) {
         PurchaseOption purchaseOption = findPurchaseOptionById(purchaseOptionId);
 
-        if (requestDto.getFile() != null) {
-            updateFileIfChanged(purchaseOption, requestDto.getFile());
+        ProvidingMethod method = requestDto.getProvidingMethod();
+        if (requestDto.getProvidingMethod() == null) {
+            throw new BusinessLogicException(ExceptionCode.UNSUPPORTED_PROVIDING_METHOD);
         }
 
+        // 공통 필드 업데이트
         Optional.ofNullable(requestDto.getTitle())
                 .ifPresent(purchaseOption::setTitle);
         Optional.ofNullable(requestDto.getContent())
@@ -97,8 +99,14 @@ public class PurchaseOptionService {
         Optional.ofNullable(requestDto.getPrice())
                 .ifPresent(purchaseOption::setPrice);
 
+        // DOWNLOAD일 때만 파일 처리
+        if (method.equals(ProvidingMethod.DOWNLOAD) && requestDto.getFile() != null) {
+            updateFileIfChanged(purchaseOption, requestDto.getFile());
+        }
+
         purchaseOptionRepository.save(purchaseOption);
     }
+
 
 
     public PurchaseOption findPurchaseOptionById(Long purchaseOptionId){
@@ -174,6 +182,8 @@ public class PurchaseOptionService {
                 .build();
         purchaseOptionRepository.save(option);
     }
+
+
 
     private void createEmailOptionWithProject(Purchase purchase, PurchaseOptionRequestDto requestDto) {
         PurchaseOption option = PurchaseOption.builder()
