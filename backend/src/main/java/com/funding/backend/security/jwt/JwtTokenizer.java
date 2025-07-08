@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenizer {
 
-    public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000L * 60 * 30;  // 30분
-    public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000L * 60 * 60 * 24 * 7;  // 7일
+    public static final Long ACCESS_TOKEN_EXPIRE_TIME = 1000L * 60 * 30;  // 30분
+    public static final Long REFRESH_TOKEN_EXPIRE_TIME = 1000L * 60 * 60 * 24 * 7;  // 7일
 
     private Key accessKey;
     private Key refreshKey;
