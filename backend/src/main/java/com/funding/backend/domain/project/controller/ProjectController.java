@@ -41,10 +41,15 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping("/{projectId}")
-    @Operation(summary = "프로젝트 상세 조회", description = "구매용, 후원용에 따라 응답 형식이 달라집니다. ")
-    public ResponseEntity<ProjectResponseDto> getProjectDetail(@PathVariable Long projectId) {
+    @Operation(
+            summary = "프로젝트 상세 조회",
+            description = "구매용, 후원용에 따라 응답 형식이 달라집니다."
+    )
+    public ResponseEntity<ApiResponse<ProjectResponseDto>> getProjectDetail(@PathVariable Long projectId) {
         ProjectResponseDto response = projectService.getProjectDetail(projectId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 상세 조회 성공", response));
     }
 
 
@@ -53,10 +58,13 @@ public class ProjectController {
             summary = "프로젝트 삭제",
             description = "프로젝트를 삭제합니다. 구매형/후원형에 관계없이 공통으로 삭제됩니다."
     )
-    public ResponseEntity<ApiResponse> deleteProject(@PathVariable Long projectId) {
+    public ResponseEntity<ApiResponse<Void>> deleteProject(@PathVariable Long projectId) {
         projectService.deleteProject(projectId);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 삭제 성공"));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 삭제 성공"));
     }
+
 
 
 

@@ -112,14 +112,14 @@ public class ProjectService {
 
     public ProjectResponseDto getProjectDetail(Long projectId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 프로젝트입니다."));
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));
 
         if (project.getProjectType() == ProjectType.PURCHASE) {
             return purchaseService.createPurchaseProjectResponse(project);
 //        } else if (project.getProjectType() == ProjectType.DONATION) {
 //            return createDonationProjectResponse(project);
         } else {
-            throw new IllegalArgumentException("지원하지 않는 프로젝트 타입입니다.");
+            throw new BusinessLogicException(ExceptionCode.INVALID_PROJECT_TYPE);
         }
     }
 
