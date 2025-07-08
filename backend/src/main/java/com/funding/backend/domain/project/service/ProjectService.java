@@ -112,8 +112,7 @@ public class ProjectService {
     }
 
     public ProjectResponseDto getProjectDetail(Long projectId) {
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));
+        Project project = findProjectById(projectId);
 
         if (project.getProjectType() == ProjectType.PURCHASE) {
             return purchaseService.createPurchaseProjectResponse(project);
@@ -130,8 +129,7 @@ public class ProjectService {
         //삭제 하려는 유저가 본인인지 확인하는 로직 필요
         //validProjectUser(project.getUser(), getCurrentUser());
 
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("해당 프로젝트가 존재하지 않습니다."));
+        Project project = findProjectById(projectId);
         projectRepository.delete(project);
     }
 
