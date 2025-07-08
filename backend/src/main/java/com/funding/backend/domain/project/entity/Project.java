@@ -52,9 +52,6 @@ public class Project extends Auditable {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "purchase_category_id")
-    private PurchaseCategory purchaseCategory;
 
     @ManyToOne
     @JoinColumn(name = "management_id")

@@ -76,6 +76,7 @@ public class PurchaseController {
     }
 
 
+
     @GetMapping("/{projectId}")
     @Operation(
             summary = "구매형 프로젝트 상세 조회",
@@ -88,6 +89,8 @@ public class PurchaseController {
         return ResponseEntity.ok(response);
     }
 
+
+    //프로젝트에서 삭제하는거 있긴한데, 혹시 몰라서 만들어둠
     @DeleteMapping("/{projectId}")
     @Operation(
             summary = "구매형 프로젝트 삭제",
@@ -96,7 +99,7 @@ public class PurchaseController {
     public ResponseEntity<?> deletePurchaseProject(
             @PathVariable Long projectId
     ) {
-        projectService.deletePurchaseProject(projectId);
+        purchaseService.deletePurchase(projectId);
         return new ResponseEntity<>(
                 ApiResponse.of(HttpStatus.OK.value(), "구매형 프로젝트 삭제 성공"),
                 HttpStatus.OK

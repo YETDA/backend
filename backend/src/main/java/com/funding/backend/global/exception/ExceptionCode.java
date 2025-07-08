@@ -6,6 +6,8 @@ public enum ExceptionCode {
     //프로젝트 예외 처리
     PROJECT_NOT_FOUND(404,"존재하지 않는 프로젝트 입니다."),
     NOT_PROJECT_CREATOR(403, "해당 프로젝트의 생성자가 아닙니다."),
+    INVALID_PROJECT_TYPE(400, "지원하지 않는 프로젝트 타입입니다."),
+
 
     //공지사항 예외 처리
     NOTICE_NOT_FOUND(404, "존재하지 않는 공지사항 입니다."),
