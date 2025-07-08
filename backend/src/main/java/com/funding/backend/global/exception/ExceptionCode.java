@@ -9,6 +9,9 @@ public enum ExceptionCode {
     INVALID_PROJECT_TYPE(400, "지원하지 않는 프로젝트 타입입니다."),
 
 
+    //공지사항 예외 처리
+    NOTICE_NOT_FOUND(404, "존재하지 않는 공지사항 입니다."),
+
     //구매 예외처리
     PURCHASE_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 입니다. "),
 

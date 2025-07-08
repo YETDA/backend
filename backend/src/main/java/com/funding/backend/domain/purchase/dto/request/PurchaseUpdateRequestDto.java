@@ -35,13 +35,12 @@ public class PurchaseUpdateRequestDto {
     @Size(max = 1000, message = "소개글은 1000자 이내여야 합니다.")
     private String content;
 
-    private String field; // 선택 값이므로 필수 아님
-
     //이미지
     private List<MultipartFile> contentImage = new ArrayList<>();
 
-    @Pattern(regexp = "^(DOWNLOAD|EMAIL)$", message = "전송 방식은 DOWNLOAD 또는 EMAIL이어야 합니다.")
-    private ProvidingMethod providingMethod;// DOWNLOAD, EMAIL 등
+    @NotNull(message = "전송 방식은 DOWNLOAD 또는 EMAIL이어야 합니다.")
+    private ProvidingMethod providingMethod;
+
 
     @NotBlank(message = "Git 주소는 필수입니다.")
     private String gitAddress;
