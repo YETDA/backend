@@ -11,6 +11,7 @@ import com.funding.backend.domain.purchaseOption.repository.PurchaseOptionReposi
 import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
+import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.global.utils.s3.S3FileInfo;
 import com.funding.backend.global.utils.s3.S3Uploader;
 import java.io.IOException;
@@ -30,7 +31,7 @@ public class PurchaseService {
 
     private final PurchaseRepository purchaseRepository;
     private final PurchaseOptionRepository purchaseOptionRepository;
-    private final S3Uploader s3Uploader;
+    private final ImageService imageService;
 
     @Transactional
     public void createPurchase(Project project, PurchaseProjectDetail dto){
@@ -106,15 +107,11 @@ public class PurchaseService {
 
         for (int i = 0; i < purchaseOptionRequestDto.size(); i++) {
             MultipartFile file = files.get(i);
-            try {
-                S3FileInfo fileInfo = s3Uploader.uploadAnyFile(file);
+            S3FileInfo fileInfo = imageService.saveFile(file);
 
-                PurchaseOptionRequestDto option = purchaseOptionRequestDto.get(i);
-                option.setFileUrl(fileInfo.fileUrl());
+            PurchaseOptionRequestDto option = purchaseOptionRequestDto.get(i);
+            option.setFileUrl(fileInfo.fileUrl());
 
-            } catch (IOException e) {
-                throw new RuntimeException("옵션 파일 업로드 실패: " + file.getOriginalFilename(), e);
-            }
         }
     }
 

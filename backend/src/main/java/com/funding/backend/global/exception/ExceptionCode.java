@@ -19,6 +19,8 @@ public enum ExceptionCode {
     //S3 예외 처리
     S3_DELETE_ERROR(404, "이미지를 삭제할 수 없습니다."),
     IMAGE_NOT_FOUND(404,"이미지를 찾을 수 없습니다."),
+    FILE_UPLOAD_FAILED(500, "파일 업로드에 실패하였습니다."),
+
 
 
 

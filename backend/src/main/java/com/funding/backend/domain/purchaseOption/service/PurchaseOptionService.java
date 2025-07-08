@@ -1,17 +1,19 @@
 package com.funding.backend.domain.purchaseOption.service;
 
+import com.funding.backend.domain.project.entity.Project;
+import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.domain.purchase.repository.PurchaseRepository;
-import com.funding.backend.domain.purchaseOption.dto.request.PurchaseOptionRequestDto;
+import com.funding.backend.domain.purchase.service.PurchaseService;
+import com.funding.backend.domain.purchaseOption.dto.request.PurchaseOptionCreateRequestDto;
 import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
 import com.funding.backend.domain.purchaseOption.repository.PurchaseOptionRepository;
-import com.funding.backend.global.exception.BusinessLogicException;
-import com.funding.backend.global.exception.ExceptionCode;
-import java.util.List;
+import com.funding.backend.global.utils.s3.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -20,26 +22,35 @@ import org.springframework.transaction.annotation.Transactional;
 public class PurchaseOptionService {
     private final PurchaseOptionRepository purchaseOptionRepository;
     private final PurchaseRepository purchaseRepository;
+    private final ProjectService projectService;
+    private final PurchaseService purchaseService;
+    private final ImageService imageService;
+
+
 
     @Transactional
-    public void updateOptions(Long purchaseId, List<PurchaseOptionRequestDto> newOptions) {
-        Purchase purchase = purchaseRepository.findById(purchaseId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));
+    public void createPurchaseProject(Long projectId, PurchaseOptionCreateRequestDto requestDto){
+        Purchase purchase = purchaseService.findByProject(projectService.findProjectById(projectId));
+        MultipartFile optionFile = requestDto.getFile();
+        String fileUrl = imageService.
 
-        // 기존 옵션 삭제
-        purchaseOptionRepository.deleteByPurchase(purchase);
+        PurchaseOption purchaseOption = PurchaseOption.builder()
+                .optionStatus(requestDto.getOptionStatus())
+                .price(requestDto.getPrice())
+                .content(requestDto.getContent())
+                .fileSize(optionFile.getSize())
+                .originalFileName(optionFile.getOriginalFilename())
+                .fileType(optionFile.getContentType())
+                .build();
 
-        // 새로운 옵션 저장
-        for (PurchaseOptionRequestDto dto : newOptions) {
-            PurchaseOption option = PurchaseOption.builder()
-                    .purchase(purchase)
-                    .title(dto.getTitle())
-                    .content(dto.getContent())
-                    .price(dto.getPrice())
-                    .optionStatus(dto.getOptionStatus())
-                    .build();
-            purchaseOptionRepository.save(option);
-        }
+
     }
+
+
+
+
+
+
+
 
 }

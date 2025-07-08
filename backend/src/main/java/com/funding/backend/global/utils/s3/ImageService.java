@@ -5,6 +5,8 @@ package com.funding.backend.global.utils.s3;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.domain.projectImage.repository.ProjectImageRepository;
+import com.funding.backend.global.exception.BusinessLogicException;
+import com.funding.backend.global.exception.ExceptionCode;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,8 +90,13 @@ public class ImageService {
         return updated;
     }
 
-
-
+    public S3FileInfo saveFile(MultipartFile multipartFile) {
+        try {
+            return s3Uploader.uploadAnyFile(multipartFile);
+        } catch (IOException e) {
+            throw new BusinessLogicException(ExceptionCode.FILE_UPLOAD_FAILED);
+        }
+    }
 
 
 }
