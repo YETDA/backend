@@ -67,7 +67,6 @@ public class PurchaseService {
             PurchaseCategory category = purchaseCategoryService.findPurchaseCategoryById(dto.getPurchaseCategoryId());
             purchase.setPurchaseCategory(category);
         }
-
         Optional.ofNullable(dto.getGitAddress())
                 .ifPresent(purchase::setGitAddress);
 

@@ -22,7 +22,6 @@ public class PurchaseUpdateRequestDto {
     @NotNull(message = "프로젝트 타입은 필수입니다.")
     private ProjectType projectType;
 
-
     @NotBlank(message = "제목은 필수입니다.")
     @Size(max = 100, message = "제목은 100자 이내여야 합니다.")
     private String title;
@@ -37,10 +36,6 @@ public class PurchaseUpdateRequestDto {
 
     //이미지
     private List<MultipartFile> contentImage = new ArrayList<>();
-
-    @NotNull(message = "전송 방식은 DOWNLOAD 또는 EMAIL이어야 합니다.")
-    private ProvidingMethod providingMethod;
-
 
     @NotBlank(message = "Git 주소는 필수입니다.")
     private String gitAddress;
