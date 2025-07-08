@@ -23,12 +23,12 @@ public class DonationService {
   public void createDonation(Project project, DonationProjectDetail dto){
     Donation donation = Donation.builder()
         .project(project)
-        .priceGoal(dto.getGoalAmount())
+        .priceGoal(dto.getPriceGoal())
         .startDate(dto.getStartDate().atStartOfDay())
         .endDate(dto.getEndDate().atStartOfDay())
         .gitAddress(dto.getGitAddress())
         .deployAddress(dto.getDeployAddress())
         .build();
-    Donation saveDonation = donationRepository.save(donation);
+    donationRepository.save(donation);
   }
 }

@@ -20,7 +20,7 @@ public class DonationProjectDetail {
     private List<Long> subCategoryIds;
 
     @NotNull(message = "목표 금액은 필수입니다.")
-    private Long goalAmount;
+    private Long priceGoal;
 
     @NotNull(message = "시작일은 필수입니다.")
     private LocalDate startDate;

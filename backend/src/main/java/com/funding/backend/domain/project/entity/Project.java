@@ -84,8 +84,8 @@ public class Project extends Auditable {
     @OneToOne(mappedBy = "project", cascade = CascadeType.REMOVE)
     private Purchase purchase;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = false)
-    List<Donation> donationList = new ArrayList<>();
+    @OneToOne(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Donation donation;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = false)
     List<Notice> noticeList = new ArrayList<>();

@@ -1,9 +1,9 @@
 package com.funding.backend.domain.donation.service;
 
+import com.funding.backend.domain.donation.dto.request.DonationCreateRequestDto;
 import com.funding.backend.domain.donationCategory.entity.DonationCategory;
 import com.funding.backend.domain.donationCategory.service.DonationCategoryService;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
-import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
@@ -36,7 +36,7 @@ public class DonationProjectService {
 
 
     @Transactional
-    public void createDonationProject(ProjectCreateRequestDto dto){
+    public void createDonationProject(DonationCreateRequestDto dto){
         List<ProjectImage> projectImage = new ArrayList<>();
         DonationCategory donationCategory = donationCategoryService.findDonationCategoryById(dto.getDonationDetail().getMainCategoryId());
         String coverImage = "";
@@ -56,7 +56,8 @@ public class DonationProjectService {
         Project saveProject = projectRepository.save(project);
 
         imageService.saveImageList(dto.getContentImage(),saveProject);
-        donationService.createDonation(saveProject,dto.getDonationDetail());
+        donationService.createDonation(saveProject, dto.getDonationDetail());
+
     }
 
 }
