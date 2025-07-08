@@ -27,7 +27,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         User user = oAuth2User.getUser();
 
-        // 1. 토큰 발급
+        // 1. 매 로그인 시 AccessToken은 새로 발급
         String accessToken = jwtTokenizer.createAccessToken(
                 user.getId(),
                 user.getEmail(),
@@ -35,19 +35,22 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 user.getRole().getRole()
         );
 
-        String refreshToken = jwtTokenizer.createRefreshToken(
-                user.getId(),
-                user.getEmail(),
-                user.getName(),
-                user.getRole().getRole()
-        );
+        // 2. RefreshToken은 Redis에 있으면 재사용, 없으면 발급 및 저장
+        String refreshToken = refreshTokenService.getRefreshToken(user.getId());
+        if (refreshToken == null) {
+            refreshToken = jwtTokenizer.createRefreshToken(
+                    user.getId(),
+                    user.getEmail(),
+                    user.getName(),
+                    user.getRole().getRole()
+            );
 
-        // 2. RefreshToken Redis에 저장
-        refreshTokenService.saveRefreshToken(
-                user.getId(),
-                refreshToken,
-                JwtTokenizer.REFRESH_TOKEN_EXPIRE_TIME
-        );
+            refreshTokenService.saveRefreshToken(
+                    user.getId(),
+                    refreshToken,
+                    JwtTokenizer.REFRESH_TOKEN_EXPIRE_TIME
+            );
+        }
 
         // 3. JSON 응답
         response.setContentType("application/json");
