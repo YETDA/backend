@@ -1,13 +1,11 @@
 package com.funding.backend.domain.purchaseOption.controller;
 
 import com.funding.backend.domain.purchaseOption.dto.request.PurchaseOptionCreateRequestDto;
-import com.funding.backend.domain.purchaseOption.dto.request.PurchaseOptionRequestDto;
 import com.funding.backend.domain.purchaseOption.service.PurchaseOptionService;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -41,7 +39,7 @@ public class PurchaseOptionController {
             @PathVariable Long projectId,
             @ModelAttribute @Valid PurchaseOptionCreateRequestDto requestDto
     ) {
-        purchaseOptionService.createPurchaseProject(requestDto);
+        purchaseOptionService.createPurchaseProject(projectId,requestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.of(HttpStatus.CREATED.value(), "구매 옵션 생성 성공"));

@@ -9,6 +9,7 @@ import com.funding.backend.domain.purchaseOption.dto.request.PurchaseOptionCreat
 import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
 import com.funding.backend.domain.purchaseOption.repository.PurchaseOptionRepository;
 import com.funding.backend.global.utils.s3.ImageService;
+import com.funding.backend.global.utils.s3.S3FileInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,19 +32,19 @@ public class PurchaseOptionService {
     @Transactional
     public void createPurchaseProject(Long projectId, PurchaseOptionCreateRequestDto requestDto){
         Purchase purchase = purchaseService.findByProject(projectService.findProjectById(projectId));
-        MultipartFile optionFile = requestDto.getFile();
-        String fileUrl = imageService.
+        S3FileInfo fileData = imageService.saveFile(requestDto.getFile());
 
         PurchaseOption purchaseOption = PurchaseOption.builder()
                 .optionStatus(requestDto.getOptionStatus())
                 .price(requestDto.getPrice())
                 .content(requestDto.getContent())
-                .fileSize(optionFile.getSize())
-                .originalFileName(optionFile.getOriginalFilename())
-                .fileType(optionFile.getContentType())
+                .fileSize(fileData.fileSize())
+                .originalFileName(fileData.originalFileName())
+                .fileType(fileData.fileType())
+                .fileUrl(fileData.fileUrl())
+                .purchase(purchase)
                 .build();
-
-
+        purchaseOptionRepository.save(purchaseOption);
     }
 
 
