@@ -22,7 +22,6 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "likes")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
