@@ -1,6 +1,7 @@
 package com.funding.backend.domain.purchaseOption.service;
 
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
+import com.funding.backend.domain.project.dto.response.PurchaseOptionResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
 import com.funding.backend.domain.project.service.ProjectService;
@@ -43,8 +44,9 @@ public class PurchaseOptionService {
     @Transactional
     public void createPurchaseOptionForProject(Long purchaseId, ProjectCreateRequestDto optionRequestDto) {
         Purchase purchase = purchaseRepository.findById(purchaseId)
-                .orElseThrow(()->new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));
-        List<PurchaseOptionRequestDto> purchaseOptionList = optionRequestDto.getPurchaseDetail().getPurchaseOptionList();
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));
+        List<PurchaseOptionRequestDto> purchaseOptionList = optionRequestDto.getPurchaseDetail()
+                .getPurchaseOptionList();
         List<MultipartFile> optionFiles = optionRequestDto.getOptionFiles();
 
         // 먼저 DTO와 파일 매핑
@@ -65,11 +67,7 @@ public class PurchaseOptionService {
 
     @Transactional
     public void createPurchaseOption(Long projectId, PurchaseOptionCreateRequestDto requestDto) {
-
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(()->new BusinessLogicException(ExceptionCode.PROJECT_NOT_FOUND));
-        Purchase purchase = purchaseRepository.findByProject(project)
-                .orElseThrow(()->new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));
+        Purchase purchase = getVerifiedPurchaseByProjectId(projectId);
 
         if (requestDto.getProvidingMethod().equals(ProvidingMethod.DOWNLOAD)) {
             createDownloadOption(purchase, requestDto);
@@ -108,15 +106,14 @@ public class PurchaseOptionService {
     }
 
 
-
-    public PurchaseOption findPurchaseOptionById(Long purchaseOptionId){
+    public PurchaseOption findPurchaseOptionById(Long purchaseOptionId) {
         return purchaseOptionRepository.findById(purchaseOptionId)
-                .orElseThrow(()-> new BusinessLogicException(ExceptionCode.PURCHASE_OPTION_NOT_FOUND));
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PURCHASE_OPTION_NOT_FOUND));
     }
 
     private void createDownloadOption(Purchase purchase, PurchaseOptionCreateRequestDto requestDto) {
         S3FileInfo fileData = imageService.saveFile(requestDto.getFile());
-        // ✅ 파일이 없으면 예외 던지기
+        // 파일이 없으면 예외 던지기
         if (requestDto.getFile() == null || requestDto.getFile().isEmpty()) {
             throw new BusinessLogicException(ExceptionCode.FILE_REQUIRED_FOR_DOWNLOAD_OPTION);
         }
@@ -184,7 +181,6 @@ public class PurchaseOptionService {
     }
 
 
-
     private void createEmailOptionWithProject(Purchase purchase, PurchaseOptionRequestDto requestDto) {
         PurchaseOption option = PurchaseOption.builder()
                 .optionStatus(requestDto.getOptionStatus())
@@ -196,7 +192,6 @@ public class PurchaseOptionService {
                 .build();
         purchaseOptionRepository.save(option);
     }
-
 
 
     private String generateFileHash(String originalFileName, long fileSize, String fileType) {
@@ -216,17 +211,11 @@ public class PurchaseOptionService {
             List<PurchaseOptionRequestDto> purchaseOptionRequestDto,
             List<MultipartFile> files
     ) {
-        if (purchaseOptionRequestDto == null || files == null) return;
+        if (purchaseOptionRequestDto == null || files == null)
+            return;
 
-        // "DOWNLOAD" 상태인 옵션만 필터링
-        long downloadOptionCount = purchaseOptionRequestDto.stream()
-                .filter(option -> ProvidingMethod.DOWNLOAD.equals(option.getProvidingMethod()))
-                .count();
-
-        // 파일 개수와 DOWNLOAD 옵션 개수 비교
-        if (downloadOptionCount != files.size()) {
-            throw new BusinessLogicException(ExceptionCode.PURCHASE_OPTION_FILE_COUNT);
-        }
+        //download 옵션개수, 파일 개수 일치하는지 확인
+        validateDownloadOptionCount(purchaseOptionRequestDto, files);
 
         // 업로드된 파일을 이름으로 매핑
         Map<String, MultipartFile> fileMap = files.stream()
@@ -235,7 +224,6 @@ public class PurchaseOptionService {
                         file -> Normalizer.normalize(file.getOriginalFilename(), Normalizer.Form.NFC),
                         f -> f
                 ));
-
 
         for (PurchaseOptionRequestDto option : purchaseOptionRequestDto) {
             if (!ProvidingMethod.DOWNLOAD.equals(option.getProvidingMethod())) {
@@ -249,7 +237,6 @@ public class PurchaseOptionService {
                 throw new BusinessLogicException(ExceptionCode.PURCHASE_OPTION_FILE_NOT_FOUND);
             }
 
-
             MultipartFile matchedFile = fileMap.get(identifier);
             S3FileInfo fileInfo = imageService.saveFile(matchedFile);
             option.setFileUrl(fileInfo.fileUrl());
@@ -259,7 +246,34 @@ public class PurchaseOptionService {
         }
     }
 
+    private void validateDownloadOptionCount(List<PurchaseOptionRequestDto> dtos, List<MultipartFile> files) {
+        long downloadOptionCount = dtos.stream()
+                .filter(option -> ProvidingMethod.DOWNLOAD.equals(option.getProvidingMethod()))
+                .count();
+        if (downloadOptionCount != files.size()) {
+            throw new BusinessLogicException(ExceptionCode.PURCHASE_OPTION_FILE_COUNT);
+        }
+    }
 
+
+    public List<PurchaseOptionResponseDto> getPurchaseOptionsByProject(Long projectId) {
+        Purchase purchase = getVerifiedPurchaseByProjectId(projectId);
+        List<PurchaseOption> optionList = purchaseOptionRepository.findAllByPurchase(purchase);
+
+        return optionList.stream()
+                .map(PurchaseOptionResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+
+    //순환 참조 이슈로 따로 구현한 메서드
+    private Purchase getVerifiedPurchaseByProjectId(Long projectId) {
+       Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PROJECT_NOT_FOUND));
+
+        return purchaseRepository.findByProject(project)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));
+    }
 
 
 }

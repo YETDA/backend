@@ -1,5 +1,6 @@
 package com.funding.backend.domain.purchaseOption.controller;
 
+import com.funding.backend.domain.project.dto.response.PurchaseOptionResponseDto;
 import com.funding.backend.domain.purchaseOption.dto.request.PurchaseOptionCreateRequestDto;
 import com.funding.backend.domain.purchaseOption.dto.request.PurchaseOptionUpdateRequestDto;
 import com.funding.backend.domain.purchaseOption.service.PurchaseOptionService;
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.beans.PropertyEditorSupport;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,6 +70,21 @@ public class PurchaseOptionController {
                 .status(HttpStatus.OK)
                 .body(ApiResponse.of(HttpStatus.OK.value(), "구매 옵션 수정 성공"));
     }
+
+    @GetMapping("/{projectId}")
+    @Operation(
+            summary = "구매 옵션 리스트 조회",
+            description = "특정 프로젝트에 등록된 모든 구매 옵션(PurchaseOption)을 조회합니다."
+    )
+    public ResponseEntity<ApiResponse<List<PurchaseOptionResponseDto>>> getPurchaseOptionsByProject(
+            @PathVariable Long projectId
+    ) {
+        List<PurchaseOptionResponseDto> options = purchaseOptionService.getPurchaseOptionsByProject(projectId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "구매 옵션 리스트 조회 성공", options));
+    }
+
 
     // PurchaseOptionController 내부
     @InitBinder
