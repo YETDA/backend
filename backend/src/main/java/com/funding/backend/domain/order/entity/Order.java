@@ -1,5 +1,6 @@
 package com.funding.backend.domain.order.entity;
 
+import com.funding.backend.domain.orderOption.entity.OrderOption;
 import com.funding.backend.domain.pricingPlan.entity.PricingPlan;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.user.entity.User;
@@ -7,6 +8,7 @@ import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.auditable.Auditable;
 import com.funding.backend.global.toss.enums.OrderStatus;
 import com.funding.backend.global.toss.enums.PayType;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,7 +19,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -78,5 +83,8 @@ public class Order extends Auditable {
 	@ManyToOne
 	@JoinColumn(name = "project_id")
 	private Project project;
+
+	@OneToMany(mappedBy = "order")
+	private List<OrderOption> orderOptionList = new ArrayList<>();
 
 }

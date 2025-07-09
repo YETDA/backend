@@ -1,9 +1,12 @@
 package com.funding.backend.domain.purchaseOption.entity;
 
+import com.funding.backend.domain.like.entity.Like;
+import com.funding.backend.domain.orderOption.entity.OrderOption;
 import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.enums.OptionStatus;
 import com.funding.backend.enums.ProvidingMethod;
 import com.funding.backend.global.auditable.Auditable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,7 +17,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -67,4 +73,7 @@ public class PurchaseOption extends Auditable {
 
     @Column(name = "file_type")
     private String fileType;
+
+    @OneToMany(mappedBy = "purchaseOption")
+    private List<OrderOption> orderOptionList = new ArrayList<>();
 }
