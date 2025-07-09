@@ -13,6 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface LikeRepository extends JpaRepository<Like,Long> {
-    Optional<Like> findByUserAndProject(User user, Project project);
-    Page<Like> findByUser(User user, Pageable pageable);
+    Optional<Like> findByUserIdAndProjectId(Long userId, Long projectId);
+    Page<Like> findByUserId(Long userId, Pageable pageable);
+    int countByProjectId(Long projectId);
 }
