@@ -1,5 +1,6 @@
 package com.funding.backend.security.oauth;
 
+import com.funding.backend.security.oauth.provider.GithubOAuthUserParser;
 import com.funding.backend.security.oauth.provider.KakaoOAuthUserParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -14,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    //    private final GithubOAuthUserParser githubParser;
+    private final GithubOAuthUserParser githubParser;
     private final KakaoOAuthUserParser kakaoParser;
 
     @Override
@@ -23,7 +24,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String registrationId = request.getClientRegistration().getRegistrationId();
 
         return switch (registrationId) {
-//            case "github" -> githubParser.parse(user);
+            case "github" -> githubParser.parse(user);
             case "kakao" -> kakaoParser.parse(user);
             default -> throw new OAuth2AuthenticationException("Unsupported provider: " + registrationId);
         };

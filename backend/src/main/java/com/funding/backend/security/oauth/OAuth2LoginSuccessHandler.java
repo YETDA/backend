@@ -41,11 +41,13 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         // 최초 회원가입 판단
         boolean isNewUser = user.getUserActive() == null;
 
-        // 프로필 이미지 최초 저장
-        if (user.getImage() != null && user.getImage().contains("k.kakaocdn.net")) {
+        String provider = user.getSsoProvider();  // User 객체에 저장된 SSO provider
+
+        if ("KAKAO".equalsIgnoreCase(provider)
+                && user.getImage() != null
+                && user.getImage().contains("k.kakaocdn.net")) {
             String kakaoImageUrl = user.getImage();
             log.info("📸 카카오 프로필 이미지 URL: {}", kakaoImageUrl);
-
             try {
                 URL url = new URL(kakaoImageUrl);
                 String fileName = "kakao-profile.jpg";

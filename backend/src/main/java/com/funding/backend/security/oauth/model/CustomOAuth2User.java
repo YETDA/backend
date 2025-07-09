@@ -26,8 +26,10 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public String getName() {
-        return user.getName();
+        // GitHub 사용자는 name이 null이고 login이 닉네임인 경우가 많아서 Name을 Id로 교체
+        return user.getId().toString();  // 인증 주체 식별용
     }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
