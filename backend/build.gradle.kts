@@ -40,6 +40,17 @@ dependencies {
 
     //S3 의존성
     implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
+
+    // 인증/인가
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+    // jwt
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    // redis
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
 }
 
 tasks.withType<Test> {
