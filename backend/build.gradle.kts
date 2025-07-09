@@ -40,6 +40,10 @@ dependencies {
 
     //S3 의존성
     implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
+
+
+    //토스 의존성
+    implementation("com.googlecode.json-simple:json-simple:1.1.1")
 }
 
 tasks.withType<Test> {
