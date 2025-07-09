@@ -1,6 +1,5 @@
 package com.funding.backend.security.jwt;
 
-import com.funding.backend.domain.user.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,26 +13,18 @@ import org.springframework.util.StringUtils;
 public class TokenService {
 
     private final JwtTokenizer jwtTokenizer;
-    private final UserRepository userRepository;
+    private final HttpServletRequest request;
+    private final HttpServletResponse response;
 
-    public Long getUserIdFromAccessToken(HttpServletRequest request) {
-        String token = extractToken(request);
-
-        if (token == null) {
-            throw new IllegalArgumentException("Token is missing");  // 토큰이 없으면 예외 처리
-        }
-
-        return jwtTokenizer.getUserIdFromAccessToken(token);
-    }
-
-    public String extractToken(HttpServletRequest request) {
+    // 요청에서 AccessToken을 추출
+    public String getAccessToken() {
+        // 1. Authorization 헤더 확인
         String authHeader = request.getHeader("Authorization");
-
         if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
         }
 
-        // 쿠키에서 accessToken 찾기
+        // 2. 쿠키에서 accessToken 확인
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("accessToken".equals(cookie.getName())) {
@@ -42,10 +33,45 @@ public class TokenService {
             }
         }
 
-        throw new IllegalArgumentException("Access Token 없음");
+        throw new IllegalArgumentException("Access Token이 존재하지 않습니다.");
     }
 
-    public void deleteCookie(String name, HttpServletResponse response) {
+    // 요청에서 RefreshToken을 추출
+    public String getRefreshToken() {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+
+        throw new IllegalArgumentException("Refresh Token이 존재하지 않습니다.");
+    }
+
+    // AccessToken에서 사용자 ID 추출
+    public Long getUserIdFromAccessToken() {
+        String token = getAccessToken();
+
+        if (token == null) {
+            throw new IllegalArgumentException("Access Token이 존재하지 않습니다.");
+        }
+
+        return jwtTokenizer.getUserIdFromAccessToken(token);
+    }
+
+    public String getEmailFromAccessToken() {
+        String token = getAccessToken();
+
+        if (token == null) {
+            throw new IllegalArgumentException("Access Token이 존재하지 않습니다.");
+        }
+
+        return jwtTokenizer.getEmailFromAccessToken(token);
+    }
+
+    // 특정 쿠키 제거
+    public void deleteCookie(String name) {
         ResponseCookie cookie = ResponseCookie.from(name, null)
                 .path("/")
                 .sameSite("Strict")

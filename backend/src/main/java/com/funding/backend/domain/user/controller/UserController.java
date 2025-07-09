@@ -25,7 +25,7 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<UserInfoResponse> getMyInfo(HttpServletRequest request) {
-        Long userId = tokenService.getUserIdFromAccessToken(request);
+        Long userId = tokenService.getUserIdFromAccessToken();
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("사용자 없음"));
@@ -37,13 +37,13 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
         // 1. accessToken에서 userId 추출
-        Long userId = tokenService.getUserIdFromAccessToken(request);
+        Long userId = tokenService.getUserIdFromAccessToken();
 
         // 2. Redis에서 refreshToken 삭제
         refreshTokenService.deleteRefreshToken(userId);
 
         // 3. accessToken 쿠키 삭제
-        tokenService.deleteCookie("accessToken", response);
+        tokenService.deleteCookie("accessToken");
 
         return ResponseEntity.ok().build();
     }

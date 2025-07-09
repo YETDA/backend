@@ -93,11 +93,13 @@ public class JwtTokenizer {
     }
 
     public Long getUserIdFromAccessToken(String token) {
-        return Long.valueOf(parseAccessToken(token).get("userId").toString());
+        Claims claims = parseAccessToken(token);
+        return Long.valueOf(claims.get("userId").toString());
     }
 
     public String getEmailFromAccessToken(String token) {
-        return parseAccessToken(token).getSubject();
+        Claims claims = parseAccessToken(token); // accessKey를 사용하는 기존 메서드 활용
+        return claims.getSubject();
     }
 
     public RoleType getRoleFromAccessToken(String token) {
