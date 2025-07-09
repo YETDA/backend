@@ -1,6 +1,5 @@
-package com.funding.backend.domain.donation.dto.response;
+package com.funding.backend.domain.project.dto.response;
 
-import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +12,7 @@ public class DonationProjectResponseDto implements ProjectResponseDto {
     private String title;
     private String introduce;
     private String content;
-    private String bank;
-    private String account;
     private List<String> contentImageUrls;
+
+
 }

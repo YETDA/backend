@@ -1,8 +1,9 @@
 package com.funding.backend.domain.donation.service;
 
 import com.funding.backend.domain.donation.dto.request.DonationCreateRequestDto;
-import com.funding.backend.domain.donationCategory.entity.DonationCategory;
-import com.funding.backend.domain.donationCategory.service.DonationCategoryService;
+import com.funding.backend.domain.donation.dto.request.DonationUpdateRequestDto;
+import com.funding.backend.domain.mainCategory.entity.MainCategory;
+import com.funding.backend.domain.mainCategory.service.MainCategoryService;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
@@ -11,6 +12,8 @@ import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
+import com.funding.backend.global.exception.BusinessLogicException;
+import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.s3.ImageService;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,17 +35,17 @@ public class DonationProjectService {
     private final DonationService donationService;
     private final ImageService imageService;
     private final PricingService pricingService;
-    private final DonationCategoryService donationCategoryService;
+    private final MainCategoryService mainCategoryService;
 
 
     @Transactional
     public void createDonationProject(DonationCreateRequestDto dto){
         List<ProjectImage> projectImage = new ArrayList<>();
-        DonationCategory donationCategory = donationCategoryService.findDonationCategoryById(dto.getDonationDetail().getMainCategoryId());
+        MainCategory donationCategory = mainCategoryService.findDonationCategoryById(dto.getDonationDetail().getMainCategoryId());
         String coverImage = "";
         Optional<User> user = userRepository.findById(Long.valueOf(2));
         Project project = Project.builder()
-                .donationCategory(donationCategory)
+                .mainCategory(donationCategory)
                 .introduce(dto.getIntroduce())
                 .title(dto.getTitle())
                 .content(dto.getContent())

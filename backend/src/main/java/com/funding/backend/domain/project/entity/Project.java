@@ -1,7 +1,7 @@
 package com.funding.backend.domain.project.entity;
 
 import com.funding.backend.domain.donation.entity.Donation;
-import com.funding.backend.domain.donationCategory.entity.DonationCategory;
+import com.funding.backend.domain.mainCategory.entity.MainCategory;
 import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
 import com.funding.backend.domain.like.entity.Like;
 import com.funding.backend.domain.notice.entity.Notice;
@@ -58,7 +58,7 @@ public class Project extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "donation_main_category_id")
-    private DonationCategory donationCategory;
+    private MainCategory mainCategory;
 
     @ManyToOne
     @JoinColumn(name = "management_id")

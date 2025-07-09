@@ -1,8 +1,10 @@
 package com.funding.backend.domain.donation.entity;
 
-import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
+import com.funding.backend.domain.mainCategory.entity.MainCategory;
 import com.funding.backend.domain.project.entity.Project;
+import com.funding.backend.domain.projectSubCategory.entity.ProjectSubCategory;
 import com.funding.backend.global.auditable.Auditable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,9 +13,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,8 +43,12 @@ public class Donation extends Auditable {
     private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
-    private PurchaseCategory purchaseCategory;
+    @JoinColumn(name = "main_category_id", nullable = false)
+    private MainCategory mainCategory;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_subject_id", nullable = false)
+    private ProjectSubCategory projectSubCategory;
 
     @Column(name = "price_goal")
     private Long priceGoal;
@@ -55,4 +64,7 @@ public class Donation extends Auditable {
 
     @Column(name = "deploy_address", nullable = false)
     private String deployAddress;
+
+    @OneToMany(mappedBy = "donation", cascade = CascadeType.REMOVE, orphanRemoval = false)
+    List<ProjectSubCategory> projectSubCategories = new ArrayList<>();
 }

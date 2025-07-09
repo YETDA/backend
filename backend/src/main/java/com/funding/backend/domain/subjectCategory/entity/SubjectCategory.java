@@ -1,6 +1,6 @@
-package com.funding.backend.domain.donationCategory.entity;
+package com.funding.backend.domain.subjectCategory.entity;
 
-import com.funding.backend.domain.project.entity.Project;
+import com.funding.backend.domain.projectSubCategory.entity.ProjectSubCategory;
 import com.funding.backend.global.auditable.Auditable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -20,14 +20,14 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "donation_categorys")
+@Table(name = "subject_category")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
 @ToString
-public class DonationCategory extends Auditable {
+public class SubjectCategory extends Auditable {
 
 
     @Id
@@ -39,7 +39,6 @@ public class DonationCategory extends Auditable {
     private String name; // 카테고리 이름
 
 
-    @OneToMany(mappedBy = "donationCategory", cascade = CascadeType.REMOVE, orphanRemoval = false)
-    List<Project> projectList = new ArrayList<>();
-
+    @OneToMany(mappedBy = "subjectCategory", cascade = CascadeType.REMOVE, orphanRemoval = false)
+    List<ProjectSubCategory> projectSubCategoryList = new ArrayList<>();
 }
