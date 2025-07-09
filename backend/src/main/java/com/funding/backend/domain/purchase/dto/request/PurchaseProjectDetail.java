@@ -15,8 +15,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PurchaseProjectDetail {
-    @Pattern(regexp = "^(DOWNLOAD|EMAIL)$", message = "전송 방식은 DOWNLOAD 또는 EMAIL이어야 합니다.")
-    private ProvidingMethod providingMethod;// DOWNLOAD, EMAIL 등
 
     @NotBlank(message = "Git 주소는 필수입니다.")
     private String gitAddress;

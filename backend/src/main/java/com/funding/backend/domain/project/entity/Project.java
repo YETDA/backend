@@ -61,9 +61,6 @@ public class Project extends Auditable {
     @Column(name = "status")
     private ProjectStatus projectStatus; // 프로젝트 상태
 
-    @Column(name = "cover_image")
-    private String coverImage;
-
     @Column(name = "title", nullable = false)
     private String title;
 

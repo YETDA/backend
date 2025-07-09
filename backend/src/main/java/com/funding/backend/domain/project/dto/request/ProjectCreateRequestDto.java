@@ -48,6 +48,9 @@ public class ProjectCreateRequestDto {
     //이미지
     private List<MultipartFile> contentImage = new ArrayList<>();
 
+    //옵션 파일
+    private List<MultipartFile> optionFiles = new ArrayList<>();
+
     // 하위 타입 DTO
     private DonationProjectDetail donationDetail;
     private PurchaseProjectDetail purchaseDetail;

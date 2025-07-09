@@ -3,8 +3,7 @@ package com.funding.backend.domain.project.dto.response;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.domain.purchase.entity.Purchase;
-import com.funding.backend.enums.OptionStatus;
-import com.funding.backend.enums.ProvidingMethod;
+import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionResponseDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,7 +17,6 @@ public class PurchaseProjectResponseDto implements ProjectResponseDto {
     private String introduce;
     private String content;
     private String gitAddress;
-    private ProvidingMethod providingMethod;
     private Long purchaseCategoryId;
     private String purchaseCategoryName;
     private String averageDeliveryTime;
@@ -32,7 +30,6 @@ public class PurchaseProjectResponseDto implements ProjectResponseDto {
         this.introduce = project.getIntroduce();
         this.content = project.getContent();
         this.gitAddress = purchase.getGitAddress();
-        this.providingMethod = purchase.getProvidingMethod();
 
         if (purchase.getPurchaseCategory() != null) {
             this.purchaseCategoryId = purchase.getPurchaseCategory().getId();

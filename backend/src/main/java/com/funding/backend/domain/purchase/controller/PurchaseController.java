@@ -1,10 +1,10 @@
 package com.funding.backend.domain.purchase.controller;
 
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
-import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
 import com.funding.backend.domain.purchase.service.PurchaseService;
+import com.funding.backend.enums.ProvidingMethod;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,12 +17,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,16 +44,9 @@ public class PurchaseController {
             @RequestPart(value = "contentImage", required = false) List<MultipartFile> contentImages,
             @RequestPart(value = "optionFiles", required = false) List<MultipartFile> optionFiles
     ) {
-        // 프로젝트 이미지 저장
         requestDto.setContentImage(contentImages);
-
-
-        //프로젝트 구매 옵션 파일 저장 후 url 매핑
-        purchaseService.matchOptionFilesToDto(requestDto.getPurchaseDetail().getPurchaseOptionList(), optionFiles);
-
-
+        requestDto.setOptionFiles(optionFiles);
         projectService.createPurchaseProject(requestDto);
-
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.of(HttpStatus.CREATED.value(), "구매형 프로젝트 생성 성공"));
     }
@@ -77,17 +67,6 @@ public class PurchaseController {
 
 
 
-    @GetMapping("/{projectId}")
-    @Operation(
-            summary = "구매형 프로젝트 상세 조회",
-            description = "구매형 프로젝트(Purchase)의 상세 정보를 조회합니다. 제목, 소개, Git 주소, 제공 방식, 가격제도, 파일 정보 등을 반환합니다."
-    )
-    public ResponseEntity<PurchaseProjectResponseDto> getPurchaseProject(
-            @PathVariable Long projectId
-    ) {
-        PurchaseProjectResponseDto response = projectService.getPurchaseProject(projectId);
-        return ResponseEntity.ok(response);
-    }
 
 
     //프로젝트에서 삭제하는거 있긴한데, 혹시 몰라서 만들어둠
