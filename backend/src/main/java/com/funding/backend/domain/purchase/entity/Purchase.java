@@ -49,9 +49,6 @@ public class Purchase extends Auditable {
     @Column(name = "git_address", nullable = false)
     private String gitAddress;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "providing_method")
-    private ProvidingMethod providingMethod; // 다운로드, 이메일 중 하나
 
     @Column(name = "average_delivery_time")
     private String averageDeliveryTime;

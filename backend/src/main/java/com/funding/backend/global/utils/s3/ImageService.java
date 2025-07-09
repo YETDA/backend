@@ -5,10 +5,17 @@ package com.funding.backend.global.utils.s3;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.domain.projectImage.repository.ProjectImageRepository;
+import com.funding.backend.global.exception.BusinessLogicException;
+import com.funding.backend.global.exception.ExceptionCode;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -59,7 +66,7 @@ public class ImageService {
 
                 savedList.add(projectImageRepository.save(pi));
             } catch (IOException e) {
-                throw new RuntimeException("이미지 업로드 실패", e);
+                throw new BusinessLogicException(ExceptionCode.IMAGE_UPLOAD_FAILED);
             }
         }
         return savedList;
@@ -86,6 +93,46 @@ public class ImageService {
         }
 
         return updated;
+    }
+
+    public S3FileInfo saveFile(MultipartFile multipartFile) {
+        try {
+            return s3Uploader.uploadAnyFile(multipartFile);
+        } catch (IOException e) {
+            throw new BusinessLogicException(ExceptionCode.FILE_UPLOAD_FAILED);
+        }
+    }
+
+
+    public String getETagFromFileUrl(String fileUrl) {
+        return s3Uploader.getETag(fileUrl);
+    }
+
+    public String calculateETag(MultipartFile file) throws IOException {
+        // 일반적으로 MD5 기반
+        try (InputStream is = file.getInputStream()) {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+                md.update(buffer, 0, bytesRead);
+            }
+            byte[] digest = md.digest();
+            return Hex.encodeHexString(digest);
+        } catch (NoSuchAlgorithmException e) {
+            throw new BusinessLogicException(ExceptionCode.ETAG_HASH_FAILED);
+        }
+    }
+
+    public String generateFileHash(String originalFileName, long fileSize, String contentType) {
+        String input = originalFileName + fileSize + contentType;
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(input.getBytes(StandardCharsets.UTF_8));
+            return Hex.encodeHexString(digest);  // Apache Commons Codec
+        } catch (NoSuchAlgorithmException e) {
+            throw new BusinessLogicException(ExceptionCode.MD5_HASH_FAILED);
+        }
     }
 
 
