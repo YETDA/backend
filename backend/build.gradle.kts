@@ -53,6 +53,11 @@ dependencies {
     // redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
+    //toss
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("io.netty:netty-resolver-dns-native-macos:4.1.100.Final:osx-aarch_64")
+
+
 }
 
 tasks.withType<Test> {

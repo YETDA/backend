@@ -16,6 +16,9 @@ public enum ExceptionCode {
     //공지사항 예외 처리
     NOTICE_NOT_FOUND(404, "존재하지 않는 공지사항 입니다."),
 
+    //주문 예외처리
+    ORDER_NOT_FOUND(404, "존재하지 않는 구매 내역 입니다. "),
+
     //구매 예외처리
     PURCHASE_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 입니다. "),
     INVALID_PROVIDING_METHOD(400, "제공 방식이 유효하지 않습니다."),

@@ -18,7 +18,6 @@ import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.toss.enums.OrderStatus;
 import com.funding.backend.security.jwt.TokenService;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

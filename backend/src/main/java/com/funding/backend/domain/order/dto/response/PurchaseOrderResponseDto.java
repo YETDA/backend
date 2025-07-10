@@ -1,10 +1,7 @@
 package com.funding.backend.domain.order.dto.response;
 
 import com.funding.backend.domain.order.entity.Order;
-import com.funding.backend.domain.orderOption.entity.OrderOption;
 import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionDto;
-import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
-import com.funding.backend.global.toss.enums.OrderStatus;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
