@@ -3,6 +3,7 @@ package com.funding.backend.domain.user.entity;
 import com.funding.backend.domain.alarm.entity.Alarm;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.role.entity.Role;
+import com.funding.backend.enums.UserActive;
 import com.funding.backend.global.auditable.Auditable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -45,23 +46,22 @@ public class User extends Auditable { // Auditable 상속
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "email", nullable = false, length = 100)
+    @Column(name = "email", nullable = true, length = 100)
     private String email;
 
-    @Column(name = "account", nullable = false)
+    @Column(name = "account", nullable = true)
     private String account;
 
-    @Column(name = "bank", nullable = false)
+    @Column(name = "bank", nullable = true)
     private String bank;
 
-    @Column(name = "introduce", nullable = false)
+    @Column(name = "introduce", nullable = true)
     private String introduce;
 
-    @Column(name = "portfolio_address", nullable = false)
+    @Column(name = "portfolio_address", nullable = true)
     private String portfolioAddress;
 
-
-    @Column(name = "image", nullable = false)
+    @Column(name = "image", nullable = true)
     private String image;
 
     //oauth에서 제공된 user 식별 아이디
@@ -72,17 +72,17 @@ public class User extends Auditable { // Auditable 상속
     @Column(name = "sso_provider", length = 50)
     private String ssoProvider;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true,  fetch = FetchType.LAZY)
+    //사용자 활성상태(active/stop)
+    @Column(name = "user_active", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserActive userActive = UserActive.ACTIVE;
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     List<Project> projectList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true,  fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     List<Alarm> alarmList = new ArrayList<>();
-
-
-
-
-
-
 
 
 }
