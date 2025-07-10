@@ -63,6 +63,6 @@ public class OrderOption extends Auditable {
 
     // 다운로드 횟수 (기본값 0, null 가능)
     @Column(name = "download_count")
-    private Integer downloadCount;
+    private  Integer downloadCount = 0;
 
 }

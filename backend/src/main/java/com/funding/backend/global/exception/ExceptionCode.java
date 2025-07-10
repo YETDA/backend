@@ -9,6 +9,10 @@ public enum ExceptionCode {
     INVALID_PROJECT_TYPE(400, "지원하지 않는 프로젝트 타입입니다."),
 
 
+    //사용자 예외 처리
+    USER_NOT_FOUND(404, "존재하지 않는 사용자 입니다."),
+
+
     //공지사항 예외 처리
     NOTICE_NOT_FOUND(404, "존재하지 않는 공지사항 입니다."),
 
@@ -27,6 +31,7 @@ public enum ExceptionCode {
     UNSUPPORTED_PROVIDING_METHOD(400, "지원하지 않는 제공 방식입니다."),
     FILE_REQUIRED_FOR_DOWNLOAD_OPTION(400, "DOWNLOAD 방식의 구매 옵션에는 파일이 필수입니다."),
     PURCHASE_OPTION_FILE_NOT_FOUND(400, "해당 옵션에 매칭되는 파일을 찾을 수 없습니다."),
+    UNSUPPORTED_PROJECT_TYPE_ORDER(400,"구매 API는 구매형 프로젝트에만 적용됩니다"),
 
 
 

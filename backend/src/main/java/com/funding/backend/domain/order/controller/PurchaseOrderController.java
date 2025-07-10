@@ -2,6 +2,7 @@ package com.funding.backend.domain.order.controller;
 
 
 import com.funding.backend.domain.order.dto.request.PurchaseOrderRequestDto;
+import com.funding.backend.domain.order.dto.response.PurchaseOrderResponseDto;
 import com.funding.backend.domain.order.service.PurchaseOrderService;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,12 +33,15 @@ public class PurchaseOrderController {
             summary = "구매 주문 생성",
             description = "결제 전에 주문 정보를 생성합니다."
     )
-    public ResponseEntity<ApiResponse<String>> createPurchaseOrder(
+    public ResponseEntity<ApiResponse<PurchaseOrderResponseDto>> createPurchaseOrder(
             @Valid  @RequestBody PurchaseOrderRequestDto request
     ) {
-        String response = purchaseOrderService.createOrder(request);
+        PurchaseOrderResponseDto response = purchaseOrderService.createOrder(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.of(HttpStatus.CREATED.value(), "구매 주문 생성 성공",response));
     }
+
+
+
 }

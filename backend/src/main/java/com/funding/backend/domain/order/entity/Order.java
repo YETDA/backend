@@ -70,7 +70,6 @@ public class Order extends Auditable {
 	@Column(name = "payment_key", unique = true)
 	private String paymentKey;
 
-
 	//주문 상태
 	@Enumerated(EnumType.STRING)
 	@Column(name = "order_status", nullable = false)
