@@ -14,9 +14,8 @@ public class PurchaseOrderRequestDto {
 
     private Long projectId;
     private ProjectType projectType;
-    private Long price;
-    private String customerName;
+    //만약 메일 형식으로 받는다면 필요해서 넣음
     private String customerEmail;
 
-    private List<PurchaseOption> purchaseOptions;
+    private List<Long> purchaseOptions;
 }
