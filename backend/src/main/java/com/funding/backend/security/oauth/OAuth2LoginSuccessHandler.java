@@ -3,6 +3,7 @@ package com.funding.backend.security.oauth;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.enums.UserActive;
+import com.funding.backend.global.utils.s3.ByteArrayMultipartFile;
 import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.security.jwt.JwtTokenizer;
 import com.funding.backend.security.jwt.RefreshTokenService;
@@ -15,10 +16,10 @@ import java.net.URL;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Component
@@ -50,17 +51,20 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             log.info("📸 카카오 프로필 이미지 URL: {}", kakaoImageUrl);
             try {
                 URL url = new URL(kakaoImageUrl);
-                String fileName = "kakao-profile.jpg";
-                MockMultipartFile mockFile = new MockMultipartFile(
-                        fileName,
-                        fileName,
-                        "image/jpeg",
-                        url.openStream()
+                byte[] imageBytes = url.openStream().readAllBytes();
+                String fileName = "kakao-profile/" + user.getId() + ".jpg";
+
+                MultipartFile multipartFile = new ByteArrayMultipartFile(
+                        fileName,          // name
+                        fileName,          // original filename
+                        "image/jpeg",      // content type
+                        imageBytes         // content
                 );
 
-                String uploadedUrl = imageService.saveImage(mockFile);
+                String uploadedUrl = imageService.saveImage(multipartFile);
                 user.setImage(uploadedUrl);
                 userRepository.save(user);
+
             } catch (Exception e) {
                 log.warn("❌ 프로필 이미지 S3 업로드 실패", e);
             }
