@@ -20,6 +20,7 @@ import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
 import com.funding.backend.domain.purchaseOption.service.PurchaseOptionService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
+import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
 import com.funding.backend.enums.ProvidingMethod;
@@ -27,6 +28,7 @@ import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.global.utils.s3.S3FileInfo;
+import com.funding.backend.security.jwt.TokenService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -47,17 +49,17 @@ public class ProjectService {
     private final PricingRepository pricingRepository;
 
     private final PricingService pricingService;
-    private final PurchaseCategoryService purchaseCategoryService;
     private final ImageService imageService;
     private final PurchaseService purchaseService;
     private final UserRepository userRepository;
     private final PurchaseOptionService purchaseOptionService;
-
+    private final TokenService tokenService;
 
     @Transactional
     public void createPurchaseProject(ProjectCreateRequestDto dto){
-
-        Optional<User> user = userRepository.findById(Long.valueOf(1));
+        User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
+                .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
+        validateBankAccountPresence(loginUser);
         Project project = Project.builder()
                 .introduce(dto.getIntroduce())
                 .title(dto.getTitle())
@@ -65,7 +67,7 @@ public class ProjectService {
                 .projectStatus(ProjectStatus.UNDER_REVIEW) //처음 만들때는 심사중으로
                 .pricingPlan(pricingService.findById(dto.getPricingPlanId()))
                 .projectType(ProjectType.PURCHASE)
-                .user(user.get())
+                .user(loginUser)
                 .build();
 
         //여기서도 이미지가 존재하는 경우만 저장되게
@@ -92,10 +94,11 @@ public class ProjectService {
     public void  updatePurchaseProject(Long projectId, PurchaseUpdateRequestDto purchaseUpdateRequestDto) {
         Project project = findProjectById(projectId);
 
+        User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
+                .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
         // 권한 체크로 -> 로그인 완료되면 구현
-        //validProjectUser(project.getUser(), loginUser);
-
+        validProjectUser(project.getUser(), loginUser);
 
         // 프로젝트 기본 필드 수정
         project.setTitle(purchaseUpdateRequestDto.getTitle());
@@ -143,11 +146,23 @@ public class ProjectService {
     @Transactional
     public void deleteProject(Long projectId) {
         //삭제 하려는 유저가 본인인지 확인하는 로직 필요
-        //validProjectUser(project.getUser(), getCurrentUser());
-
+        User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
+                .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
         Project project = findProjectById(projectId);
+        validProjectUser(project.getUser(), loginUser);
         projectRepository.delete(project);
     }
+
+    private void validateBankAccountPresence(User user) {
+        if (user.getAccount() == null && user.getBank() == null) {
+            throw new BusinessLogicException(ExceptionCode.ACCOUNT_NOT_FOUND);
+        }
+
+        if (user.getAccount() == null || user.getBank() == null) {
+            throw new BusinessLogicException(ExceptionCode.BANK_NOT_FOUND);
+        }
+    }
+
 
 
 }
