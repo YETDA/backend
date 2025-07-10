@@ -40,6 +40,10 @@ public enum ExceptionCode {
     ETAG_HASH_FAILED(500, "ETag 해시 계산에 실패하였습니다."),
     MD5_HASH_FAILED(500, "MD5 해시 생성에 실패하였습니다."),
 
+    //QnA 예외 처리
+    QNA_NOT_FOUND(404, "존재하지 않는 QnA입니다."),
+    ANSWER_NOT_FOUND(404, "답변이 존재하지 않습니다."),
+    ANSWER_ALREADY_EXISTS(409, "이미 답변이 존재합니다."),
 
 
     //요금제 예외 처리

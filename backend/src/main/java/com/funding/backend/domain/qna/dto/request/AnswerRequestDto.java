@@ -7,12 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class QnaRequestDto {
+public class AnswerRequestDto {
 
-    private String title;
-    private String content;
-    private Long projectId;
+    private String answer;
     private Long userId;
-    private boolean visibility;
 
 }
