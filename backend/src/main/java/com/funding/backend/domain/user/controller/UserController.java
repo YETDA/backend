@@ -8,6 +8,8 @@ import com.funding.backend.domain.user.email.service.EmailService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.domain.user.service.UserService;
+import com.funding.backend.global.exception.BusinessLogicException;
+import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.security.jwt.RefreshTokenService;
 import com.funding.backend.security.jwt.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,9 +60,12 @@ public class UserController {
 
     @GetMapping("/check-email")
     @Operation(summary = "이메일 중복 확인", description = "사용자의 이메일 정보를 수정시 중복 확인을 합니다.")
-    public ResponseEntity<Boolean> checkEmail(@RequestParam(name = "email") String email) {
+    public ResponseEntity<Void> checkEmail(@RequestParam(name = "email") String email) {
         boolean exists = userService.checkEmailDuplication(email);
-        return ResponseEntity.ok(exists);
+        if (exists) {
+            throw new BusinessLogicException(ExceptionCode.EMAIL_ALREADY_EXISTS);
+        }
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/send-verification")
@@ -108,7 +113,7 @@ public class UserController {
         Long userId = tokenService.getUserIdFromAccessToken();
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
         UserInfoResponse response = UserInfoResponse.from(user);
         return ResponseEntity.ok(response);

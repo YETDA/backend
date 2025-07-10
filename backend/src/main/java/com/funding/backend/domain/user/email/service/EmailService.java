@@ -1,6 +1,8 @@
 package com.funding.backend.domain.user.email.service;
 
 import com.funding.backend.domain.user.email.dto.EmailVerification;
+import com.funding.backend.global.exception.BusinessLogicException;
+import com.funding.backend.global.exception.ExceptionCode;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
@@ -11,10 +13,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class EmailService {
 
     private final JavaMailSender mailSender;
@@ -23,6 +27,7 @@ public class EmailService {
     private static final long EXPIRE_MINUTES = 5;
 
     // 인증코드 메일 전송
+    @Transactional
     public void sendVerificationCode(String email) {
         String code = String.valueOf((int) ((Math.random() * 900000) + 100000)); // 6자리 숫자
         EmailVerification verification = new EmailVerification(email, code, false);
@@ -50,19 +55,25 @@ public class EmailService {
 
             mailSender.send(mimeMessage);
         } catch (MessagingException | UnsupportedEncodingException e) {
-            throw new RuntimeException("이메일 전송 실패", e);
+            throw new BusinessLogicException(ExceptionCode.EMAIL_SEND_FAILED);
         }
     }
 
     // 인증코드 검증
+    @Transactional
     public boolean verifyCode(String email, String inputCode) {
         EmailVerification stored = (EmailVerification) redisTemplate.opsForValue().get("email:" + email);
-        if (stored != null && stored.getCode().equals(inputCode)) {
-            stored.setVerified(true);
-            redisTemplate.opsForValue().set("email:" + email, stored, Duration.ofMinutes(3)); // 인증 완료 상태로 재저장
-            return true;
+        if (stored == null) {
+            throw new BusinessLogicException(ExceptionCode.EMAIL_VERIFICATION_NOT_FOUND);
         }
-        return false;
+
+        if (!stored.getCode().equals(inputCode)) {
+            throw new BusinessLogicException(ExceptionCode.EMAIL_VERIFICATION_FAILED);
+        }
+
+        stored.setVerified(true);
+        redisTemplate.opsForValue().set("email:" + email, stored, Duration.ofMinutes(3));
+        return true;
     }
 
     // 인증 여부 조회

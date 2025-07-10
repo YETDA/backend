@@ -7,6 +7,8 @@ import com.funding.backend.domain.user.dto.response.UserProfileResponse;
 import com.funding.backend.domain.user.email.service.EmailService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
+import com.funding.backend.global.exception.BusinessLogicException;
+import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.s3.S3Uploader;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
@@ -24,7 +27,7 @@ public class UserService {
 
     public UserProfileResponse getMyProfile(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
         return UserProfileResponse.builder()
                 .name(user.getName())
@@ -35,25 +38,30 @@ public class UserService {
                 .build();
     }
 
+    @Transactional
     public void updateUserProfile(Long userId, UserProfileUpdateRequest request, MultipartFile imageFile) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
-        // 이메일 변경이 있는 경우
-        if (!user.getEmail().equals(request.getEmail())) {
-            if (userRepository.existsByEmail(request.getEmail())) {
-                throw new RuntimeException("이미 사용 중인 이메일입니다.");
-            }
-            if (!emailService.isVerified(request.getEmail())) {
-                throw new RuntimeException("이메일 인증이 필요합니다.");
-            }
-
-            user.setEmail(request.getEmail()); // 인증된 경우만 저장
+        // 이름 유효성 검사
+        if (request.getName() == null || request.getName().trim().isEmpty()) {
+            throw new BusinessLogicException(ExceptionCode.NAME_CANNOT_BE_EMPTY);
         }
 
-        // 이미지가 새로 업로드된 경우
+        // 이메일 변경
+        if (!user.getEmail().equals(request.getEmail())) {
+            if (userRepository.existsByEmail(request.getEmail())) {
+                throw new BusinessLogicException(ExceptionCode.EMAIL_ALREADY_EXISTS);
+            }
+            if (!emailService.isVerified(request.getEmail())) {
+                throw new BusinessLogicException(ExceptionCode.EMAIL_NOT_VERIFIED);
+            }
+
+            user.setEmail(request.getEmail());
+        }
+
+        // 이미지 업로드
         if (imageFile != null && !imageFile.isEmpty()) {
-            // 이전 이미지 삭제
             if (user.getImage() != null) {
                 s3Uploader.deleteFile(user.getImage());
             }
@@ -62,7 +70,7 @@ public class UserService {
                 String imageUrl = s3Uploader.uploadFile(imageFile);
                 user.setImage(imageUrl);
             } catch (IOException e) {
-                throw new RuntimeException("이미지 업로드 실패");
+                throw new BusinessLogicException(ExceptionCode.IMAGE_UPLOAD_FAILED);
             }
         }
 
@@ -73,6 +81,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+
     public boolean checkEmailDuplication(String email) {
         return userRepository.existsByEmail(email);
     }
@@ -80,13 +89,12 @@ public class UserService {
     public UserInfoResponse getUserInfo(Long userId) {
         return userRepository.findById(userId)
                 .map(UserInfoResponse::from)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
     }
 
-    @Transactional(readOnly = true)
     public UserAccountInfo getBankInfo(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
         return new UserAccountInfo(user.getBank(), user.getAccount());
     }
@@ -94,8 +102,14 @@ public class UserService {
     @Transactional
     public void updateBankInfo(Long userId, UserAccountInfo request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
+        // 은행명 또는 계좌번호 중 하나라도 null 또는 공란이면 예외 처리
+        if (request.getBank() == null || request.getBank().trim().isEmpty()
+                || request.getAccount() == null || request.getAccount().trim().isEmpty()) {
+            throw new BusinessLogicException(ExceptionCode.BANK_AND_ACCOUNT_REQUIRED);
+        }
+        
         user.setBank(request.getBank());
         user.setAccount(request.getAccount());
     }
@@ -103,7 +117,7 @@ public class UserService {
     @Transactional
     public void deleteBankInfo(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
         user.setBank(null);
         user.setAccount(null);
