@@ -69,8 +69,10 @@ public enum ExceptionCode {
 
     //후원 예외처리
     DONATION_NOT_FOUND(404, "존재하지 않는 후원 프로젝트 입니다. "),
-    //후원 메인 카테고리 예외처리
+    //후원 카테고리 예외처리
     DONATION_CATEGORY_NOT_FOUND(404, "존재하지 않는 후원 프로젝트 카테고리 입니다. "),
+    DONATION_INVALID_INPUT_VALUE(404, "상세 카테고리의 선택 개수가 초과했습니다. "),
+    SUBJECT_CATEGORY_NOT_FOUND(404, "존재하지 않는 후원 상세 카테고리 입니다. "),
 
 
     

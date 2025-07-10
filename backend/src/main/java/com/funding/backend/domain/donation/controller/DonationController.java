@@ -1,6 +1,6 @@
 package com.funding.backend.domain.donation.controller;
 
-import com.funding.backend.domain.donation.dto.request.DonationCreateRequestDto;
+import com.funding.backend.domain.project.dto.request.DonationCreateRequestDto;
 import com.funding.backend.domain.donation.service.DonationService;
 import com.funding.backend.domain.donation.service.DonationProjectService;
 import com.funding.backend.global.utils.ApiResponse;
@@ -36,12 +36,8 @@ public class DonationController {
         @RequestPart("requestDto") @Valid DonationCreateRequestDto requestDto,
         @RequestPart(value = "contentImage", required = false) List<MultipartFile> contentImages
     ) {
-        // 프로젝트 이미지 저장
         requestDto.setContentImage(contentImages);
-
         donationProjectService.createDonationProject(requestDto);
-
-
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.of(HttpStatus.CREATED.value(), "후원형 프로젝트 생성 성공"));
     }

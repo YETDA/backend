@@ -1,5 +1,6 @@
-package com.funding.backend.domain.donation.dto.request;
+package com.funding.backend.domain.project.dto.request;
 
+import com.funding.backend.domain.donation.dto.request.DonationProjectDetail;
 import com.funding.backend.domain.purchase.dto.request.PurchaseProjectDetail;
 import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.validator.annotaion.ValidProjectDetail;
