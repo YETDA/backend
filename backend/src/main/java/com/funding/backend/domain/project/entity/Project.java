@@ -21,6 +21,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,8 +75,8 @@ public class Project extends Auditable {
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = false)
     List<ProjectImage> projectImage = new ArrayList<>();
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = false)
-    List<Purchase> purchaseList = new ArrayList<>();
+    @OneToOne(mappedBy = "project", cascade = CascadeType.REMOVE)
+    private Purchase purchase;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = false)
     List<Notice> noticeList = new ArrayList<>();
