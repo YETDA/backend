@@ -41,9 +41,13 @@ public class DonationProjectResponseDto implements ProjectResponseDto {
             this.mainCategoryId = donation.getMainCategory().getId();
             this.mainCategoryName = donation.getMainCategory().getName();
         }
-
         this.projectSubCategories = projectSubCategories;
 
+        this.priceGoal = donation.getPriceGoal();
+        this.startDate = donation.getStartDate();
+        this.endDate = donation.getEndDate();
+        this.gitAddress = donation.getGitAddress();
+        this.deployAddress = donation.getDeployAddress();
 
     }
 }

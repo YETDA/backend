@@ -1,5 +1,6 @@
 package com.funding.backend.domain.donation.service;
 
+import com.funding.backend.domain.donation.dto.request.DonationUpdateRequestDto;
 import com.funding.backend.domain.donation.entity.Donation;
 import com.funding.backend.domain.project.dto.request.DonationCreateRequestDto;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
@@ -10,6 +11,8 @@ import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
+import com.funding.backend.global.exception.BusinessLogicException;
+import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.s3.ImageService;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +61,38 @@ public class DonationProjectService {
         project.setDonation(savedDonation);
         projectRepository.save(project);
 
+    }
+
+
+    @Transactional
+    public void  updateDonationProject(Long projectId, DonationUpdateRequestDto donationUpdateRequestDto) {
+        Project project = findProjectById(projectId);
+
+        // 권한 체크로 -> 로그인 완료되면 구현
+        //validProjectUser(project.getUser(), loginUser);
+
+        // 프로젝트 기본 필드 수정
+        project.setTitle(donationUpdateRequestDto.getTitle());
+        project.setIntroduce(donationUpdateRequestDto.getIntroduce());
+
+        // 프로젝트 상세 내용 업데이트
+        project.setContent(donationUpdateRequestDto.getContent());
+
+        // 이미지 업데이트
+        List<ProjectImage> updatedImages = imageService.updateImageList
+            (project.getProjectImage(), donationUpdateRequestDto.getContentImage(), project);
+        project.setProjectImage(updatedImages);
+        projectRepository.save(project);
+
+        // Donation 관련 필드 업데이트
+        donationService.updateDonation(project,donationUpdateRequestDto);
+    }
+
+
+    public Project findProjectById(Long id){
+        return projectRepository.findById(id).orElseThrow(
+            () -> new BusinessLogicException(ExceptionCode.PROJECT_NOT_FOUND)
+        );
     }
 
 }
