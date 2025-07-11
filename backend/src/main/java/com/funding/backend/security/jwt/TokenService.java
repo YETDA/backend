@@ -1,5 +1,7 @@
 package com.funding.backend.security.jwt;
 
+import com.funding.backend.global.exception.BusinessLogicException;
+import com.funding.backend.global.exception.ExceptionCode;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,7 +35,7 @@ public class TokenService {
             }
         }
 
-        throw new IllegalArgumentException("Access Token이 존재하지 않습니다.");
+        throw new BusinessLogicException(ExceptionCode.ACCESS_TOKEN_NOT_FOUND);
     }
 
     // 요청에서 RefreshToken을 추출
@@ -46,27 +48,18 @@ public class TokenService {
             }
         }
 
-        throw new IllegalArgumentException("Refresh Token이 존재하지 않습니다.");
+        throw new BusinessLogicException(ExceptionCode.REFRESH_TOKEN_NOT_FOUND);
     }
 
     // AccessToken에서 사용자 ID 추출
     public Long getUserIdFromAccessToken() {
         String token = getAccessToken();
-
-        if (token == null) {
-            throw new IllegalArgumentException("Access Token이 존재하지 않습니다.");
-        }
-
         return jwtTokenizer.getUserIdFromAccessToken(token);
     }
 
+    // AccessToken에서 사용자 Email 추출
     public String getEmailFromAccessToken() {
         String token = getAccessToken();
-
-        if (token == null) {
-            throw new IllegalArgumentException("Access Token이 존재하지 않습니다.");
-        }
-
         return jwtTokenizer.getEmailFromAccessToken(token);
     }
 

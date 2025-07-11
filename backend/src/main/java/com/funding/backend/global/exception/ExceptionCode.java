@@ -4,8 +4,24 @@ import lombok.Getter;
 
 public enum ExceptionCode {
 
+    // 토큰 누락
+    ACCESS_TOKEN_NOT_FOUND(401, "Access Token이 존재하지 않습니다."),
+    REFRESH_TOKEN_NOT_FOUND(401, "Refresh Token이 존재하지 않습니다."),
+    // 토큰 유효성 실패
+    INVALID_ACCESS_TOKEN(401, "Access Token이 유효하지 않습니다."),
+    INVALID_REFRESH_TOKEN(401, "Refresh Token이 유효하지 않습니다."),
+
+    // 사용자정보 예외 처리
+    USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다."),
+    NAME_CANNOT_BE_EMPTY(400, "이름은 공란일 수 없습니다."),
+    EMAIL_ALREADY_EXISTS(409, "이미 사용 중인 이메일입니다."),
+    EMAIL_NOT_VERIFIED(401, "이메일 인증이 필요합니다."),
+    EMAIL_SEND_FAILED(500, "이메일 인증 코드 전송에 실패했습니다."),
+    EMAIL_VERIFICATION_NOT_FOUND(404, "인증 요청이 존재하지 않습니다."),
+    EMAIL_VERIFICATION_FAILED(401, "인증 코드가 일치하지 않습니다."),
+    BANK_AND_ACCOUNT_REQUIRED(400, "은행명과 계좌번호를 모두 입력해야 합니다."),
+
     //팔로우 예외 처리
-    USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다"),
     FOLLOW_NOT_FOUND(404, "팔로우 관계를 찾을 수 없습니다"),
     ALREADY_FOLLOWING(400, "이미 팔로우 중입니다"),
 
