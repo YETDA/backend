@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 @RestController
@@ -70,9 +71,10 @@ public class NoticeController {
     )
     @GetMapping("/project/{projectId}")
     public ResponseEntity<ApiResponse<List<NoticeReseponseDto>>> getNoticesByProjectId(
-            @PathVariable Long projectId) {
+            @PathVariable Long projectId,
+            Pageable pageable) {
 
-        List<NoticeReseponseDto> noticeResponses = noticeService.findNoticesByProjectId(projectId);
+        List<NoticeReseponseDto> noticeResponses = noticeService.findNoticesByProjectId(projectId, pageable);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "공지사항 전체 조회 성공", noticeResponses));
     }
 }

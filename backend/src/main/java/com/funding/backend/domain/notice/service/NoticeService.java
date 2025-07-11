@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 @Service
@@ -95,9 +96,9 @@ public class NoticeService {
      * @param projectId 프로젝트 ID
      * @return 해당 프로젝트의 공지사항 목록
      */
-    public List<NoticeReseponseDto> findNoticesByProjectId(Long projectId) {
+    public List<NoticeReseponseDto> findNoticesByProjectId(Long projectId, Pageable pageable) {
         Project project = projectService.findProjectById(projectId);
-        List<Notice> notices = noticeRepository.findByProjectOrderByCreatedAtDesc(project);
+        List<Notice> notices = noticeRepository.findByProjectOrderByCreatedAtDesc(project, pageable);
         return notices.stream()
                 .map(NoticeReseponseDto::new)
                 .toList();
