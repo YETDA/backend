@@ -87,7 +87,7 @@ public class TokenService {
         Role role = roleRepository.findById(1L).orElseThrow(()->new BusinessLogicException(ExceptionCode.ROLE_NOT_FOUND));
         User user = User.builder()
                 .email("user@email.com")
-                .name("user")
+                .name("user유저")
                 .role(role)
                 .userActive(UserActive.ACTIVE)
                 .build();
@@ -104,7 +104,7 @@ public class TokenService {
         User user = User.builder()
                 .email("admin@email.com")
                 .role(role)
-                .name("admin")
+                .name("admin유저 ")
                 .userActive(UserActive.ACTIVE)
                 .build();
 
