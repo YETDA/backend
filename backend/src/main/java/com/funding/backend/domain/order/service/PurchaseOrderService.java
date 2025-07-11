@@ -79,6 +79,7 @@ public class PurchaseOrderService {
                         request.getCustomerEmail() != null ? request.getCustomerEmail() : user.getEmail()
                 )
                 .project(project)
+                .orderName(project.getTitle())
                 .user(user)
                 .projectType(request.getProjectType())
                 .orderStatus(TossPaymentStatus.READY)
@@ -96,6 +97,7 @@ public class PurchaseOrderService {
                 //.paySuccessYn(order.getOrderStatus() == OrderStatus.COMPLETED ? "Y" : "N")
                 .build();
     }
+
 
 
 

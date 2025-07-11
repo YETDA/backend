@@ -43,6 +43,7 @@ public enum ExceptionCode {
 
     //주문 예외처리
     ORDER_NOT_FOUND(404, "존재하지 않는 구매 내역 입니다. "),
+    PAYMENT_CONFIRM_FAILED(400, "결제 승인 요청에 실패했습니다."),
 
     //구매 예외처리
     PURCHASE_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 입니다. "),

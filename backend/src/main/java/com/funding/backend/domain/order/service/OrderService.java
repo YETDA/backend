@@ -1,12 +1,20 @@
 package com.funding.backend.domain.order.service;
 
 
+import com.funding.backend.domain.order.dto.response.OrderResponseDto;
 import com.funding.backend.domain.order.entity.Order;
 import com.funding.backend.domain.order.repository.OrderRepository;
+import com.funding.backend.domain.user.entity.User;
+import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
+import com.funding.backend.global.toss.enums.TossPaymentStatus;
+import com.funding.backend.security.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class OrderService {
     private final OrderRepository orderRepository;
+    private final UserService userService;
+    private final TokenService tokenService;
 
     public Order findOrderByOrderId(String orderId){
         return orderRepository.findByOrderId(orderId)
@@ -26,4 +36,23 @@ public class OrderService {
     public void saveOrder(Order order){
         orderRepository.save(order);
     }
+
+
+    @Transactional
+    public void deleteOrder(Order order){
+        orderRepository.delete(order);
+    }
+
+    public Page<OrderResponseDto> getUserOrderList(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        User loginUser = userService.findUserById(tokenService.getUserIdFromAccessToken());
+
+        Page<Order> orderPage = orderRepository.findOrdersByUserAndStatus(loginUser, TossPaymentStatus.DONE, pageRequest);
+
+        return orderPage.map(OrderResponseDto::from);
+    }
+
+
+
+
 }

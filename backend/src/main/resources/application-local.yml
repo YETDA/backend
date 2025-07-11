@@ -13,3 +13,4 @@ spring:
 custom:
   site:
     frontUrl: http://${LOCAL_HOST}:${FRONTEND_EXTERNAL_PORT}
+    backUrl: http://${LOCAL_HOST}:${SPRING_INTERNAL_PORT}
