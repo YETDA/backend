@@ -11,11 +11,14 @@ import com.funding.backend.domain.purchaseOption.dto.request.PurchaseOptionCreat
 import com.funding.backend.domain.purchaseOption.dto.request.PurchaseOptionUpdateRequestDto;
 import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
 import com.funding.backend.domain.purchaseOption.repository.PurchaseOptionRepository;
+import com.funding.backend.domain.user.entity.User;
+import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.enums.ProvidingMethod;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.global.utils.s3.S3FileInfo;
+import com.funding.backend.security.jwt.TokenService;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +39,8 @@ public class PurchaseOptionService {
     private final PurchaseRepository purchaseRepository;
     private final ProjectRepository projectRepository;
     private final ImageService imageService;
+    private final TokenService tokenService;
+    private final UserRepository userRepository;
 
 
     @Transactional
@@ -64,8 +69,11 @@ public class PurchaseOptionService {
 
     @Transactional
     public void createPurchaseOption(Long projectId, PurchaseOptionCreateRequestDto requestDto) {
+        User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
+                .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
         Purchase purchase = getVerifiedPurchaseByProjectId(projectId);
-
+        Project project = projectRepository.findById(projectId).orElseThrow(()->new BusinessLogicException(ExceptionCode.PROJECT_NOT_FOUND));
+        validateProjectCreator(project,loginUser);
         if (requestDto.getProvidingMethod().equals(ProvidingMethod.DOWNLOAD)) {
             createDownloadOption(purchase, requestDto);
         } else if (requestDto.getProvidingMethod().equals(ProvidingMethod.EMAIL)) {
@@ -78,7 +86,12 @@ public class PurchaseOptionService {
     @Transactional
     public void updatePurchaseOption(Long purchaseOptionId, PurchaseOptionUpdateRequestDto requestDto) {
         //수정하려는 사람이 해당 프로젝트를 생성한 사람인지 확인하는 로직 필요
+        Purchase purchase = purchaseRepository.findByPurchaseOptionId(purchaseOptionId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));
+        User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
+                .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
+        validateProjectCreator(purchase.getProject(),loginUser);
         PurchaseOption purchaseOption = findPurchaseOptionById(purchaseOptionId);
 
         ProvidingMethod method = requestDto.getProvidingMethod();
@@ -276,9 +289,22 @@ public class PurchaseOptionService {
 
     @Transactional
     public void deletePurchaseOption(Long optionId){
+        Purchase purchase = purchaseRepository.findByPurchaseOptionId(optionId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));
+        User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
+                .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
         PurchaseOption purchaseOption = findPurchaseOptionById(optionId);
+
+        validateProjectCreator(purchase.getProject(),loginUser);
         purchaseOptionRepository.delete(purchaseOption);
     }
+
+    private void validateProjectCreator(Project project, User user) {
+        if (!project.getUser().equals(user)) {
+            throw new BusinessLogicException(ExceptionCode.NOT_PROJECT_CREATOR);
+        }
+    }
+
 
 
 }
