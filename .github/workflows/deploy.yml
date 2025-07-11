@@ -45,7 +45,7 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           port: ${{ secrets.DEPLOY_PORT || 22 }}
           source: backend/build/libs/*.jar
-          target: /home/${{ secrets.DEPLOY_USER }}/yetda/backend/build/libs
+          target: /home/${{ secrets.DEPLOY_USER }}/yetda
 
       - name: Dockerfile 복사
         uses: appleboy/scp-action@v0.1.7
@@ -55,7 +55,7 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           port: ${{ secrets.DEPLOY_PORT || 22 }}
           source: backend/Dockerfile
-          target: /home/${{ secrets.DEPLOY_USER }}/yetda/backend
+          target: /home/${{ secrets.DEPLOY_USER }}/yetda
 
       - name: docker compose 복사
         uses: appleboy/scp-action@v0.1.7
@@ -76,5 +76,4 @@ jobs:
           port: ${{ secrets.DEPLOY_PORT || 22 }}
           script: |
             cd /home/${{ secrets.DEPLOY_USER }}/yetda
-            docker-compose down
             docker-compose up -d --build

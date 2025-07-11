@@ -20,6 +20,16 @@ public enum ExceptionCode {
     EMAIL_VERIFICATION_NOT_FOUND(404, "인증 요청이 존재하지 않습니다."),
     EMAIL_VERIFICATION_FAILED(401, "인증 코드가 일치하지 않습니다."),
     BANK_AND_ACCOUNT_REQUIRED(400, "은행명과 계좌번호를 모두 입력해야 합니다."),
+    ROLE_NOT_FOUND(404, "존재하지 않는 역할입니다."),
+
+    //유저 예외 처리
+    BANK_NOT_FOUND(404, "은행이 존재하지 않습니다."),
+    ACCOUNT_NOT_FOUND(404, "계좌가 존재하지 않습니다."),
+
+    //팔로우 예외 처리
+    FOLLOW_NOT_FOUND(404, "팔로우 관계를 찾을 수 없습니다"),
+    ALREADY_FOLLOWING(400, "이미 팔로우 중입니다"),
+    CANNOT_FOLLOW_SELF(400, "자기 자신을 팔로우할 수 없습니다"),
 
     //프로젝트 예외 처리
     PROJECT_NOT_FOUND(404, "존재하지 않는 프로젝트 입니다."),
@@ -30,14 +40,17 @@ public enum ExceptionCode {
     //공지사항 예외 처리
     NOTICE_NOT_FOUND(404, "존재하지 않는 공지사항 입니다."),
 
+    //주문 예외처리
+    ORDER_NOT_FOUND(404, "존재하지 않는 구매 내역 입니다. "),
+
     //구매 예외처리
     PURCHASE_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 입니다. "),
     INVALID_PROVIDING_METHOD(400, "제공 방식이 유효하지 않습니다."),
 
+    //사용자 예외처리
 
     //구매 카테고리 예외처리
     PURCHASE_CATEGORY_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 카테고리 입니다. "),
-
 
     //구매 옵션 예외처리
     PURCHASE_OPTION_NOT_FOUND(404, "존재하지 않는 구매옵션 입니다."),
@@ -45,7 +58,7 @@ public enum ExceptionCode {
     UNSUPPORTED_PROVIDING_METHOD(400, "지원하지 않는 제공 방식입니다."),
     FILE_REQUIRED_FOR_DOWNLOAD_OPTION(400, "DOWNLOAD 방식의 구매 옵션에는 파일이 필수입니다."),
     PURCHASE_OPTION_FILE_NOT_FOUND(400, "해당 옵션에 매칭되는 파일을 찾을 수 없습니다."),
-
+    UNSUPPORTED_PROJECT_TYPE_ORDER(400,"구매 API는 구매형 프로젝트에만 적용됩니다"),
 
     //S3 예외 처리
     S3_DELETE_ERROR(404, "이미지를 삭제할 수 없습니다."),
