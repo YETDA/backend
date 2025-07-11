@@ -2,13 +2,20 @@ package com.funding.backend.global.toss.controller;
 
 import com.funding.backend.domain.order.entity.Order;
 import com.funding.backend.domain.order.service.OrderService;
+import com.funding.backend.global.exception.BusinessLogicException;
+import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.toss.dto.request.ConfirmPaymentRequestDto;
 import com.funding.backend.global.toss.dto.response.*;
 import com.funding.backend.global.toss.enums.OrderStatus;
 import com.funding.backend.global.toss.enums.TossPaymentStatus;
 import com.funding.backend.global.toss.service.TossService;
 import com.funding.backend.global.utils.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -25,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "토스 결제 API", description = "Toss 결제 승인 요청 및 상태 처리를 담당합니다.")
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/v1/toss")
@@ -42,6 +50,10 @@ public class TossController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @PostMapping("/confirm")
+    @Operation(
+            summary = "토스 결제 승인 요청",
+            description = "프론트엔드에서 전달한 결제 정보를 바탕으로 Toss 서버에 결제 승인을 요청하고, 주문 상태를 갱신합니다."
+    )
     public ResponseEntity<ApiResponse<Void>> confirmPayment(@RequestBody ConfirmPaymentRequestDto confirmPaymentRequestDto) {
         try {
             ResponseEntity<TossPaymentsResponseDto> response = tossService.requestPaymentConfirm(confirmPaymentRequestDto);
@@ -51,8 +63,12 @@ public class TossController {
                 log.info("tossPayments body: {}", tossPaymentsResponse);
 
                 Order order = orderService.findOrderByOrderId(tossPaymentsResponse.getOrderId());
+                if(!order.getPaidAmount().equals(confirmPaymentRequestDto.getAmount())){
+                    throw new BusinessLogicException(ExceptionCode.MISMATCHED_PAYMENT_AMOUNT);
+                }
                 order.setPayType(tossPaymentsResponse.getMethod());
                 order.setOrderStatus(requestOrder.getOrderStatus());
+                order.setPaymentKey(confirmPaymentRequestDto.getPaymentKey());
                 orderService.saveOrder(order); // 영속 상태면 생략 가능
 
                 return ResponseEntity
