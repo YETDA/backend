@@ -1,0 +1,119 @@
+server:
+  port: 8080
+  tomcat:
+    max-http-form-post-size: -1
+    max-swallow-size: -1
+
+spring:
+  output:
+    ansi:
+      enabled: ALWAYS
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE}
+  jackson:
+    time-zone: Asia/Seoul
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+        format_sql: true
+        highlight_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ${OAUTH2_KAKAO_CLIENT_ID}
+            scope: profile_nickname, profile_image, account_email
+            client-name: Kakao
+            authorization-grant-type: authorization_code
+            redirect-uri: "${custom.site.backUrl}/{action}/oauth2/code/{registrationId}"
+          github:
+            client-id: ${OAUTH2_GITHUB_CLIENT_ID}
+            client-secret: ${OAUTH2_GITHUB_CLIENT_SECRET}
+            scope: user:email
+            redirect-uri: "${custom.site.backUrl}/{action}/oauth2/code/{registrationId}"
+            client-name: GitHub
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: id
+  
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      connection-timeout: 30000
+      initialization-fail-timeout: 0  # DB 준비 안 됐으면 재시도
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+logging:
+  level:
+    com.ll.blog: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.orm.jdbc.extract: TRACE
+    org.springframework.transaction.interceptor: TRACE
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+    stack:
+      auto: false
+
+custom:
+  site:
+    frontUrl: http://${LOCAL_HOST}:${LOCAL_FRONTEND_PORT}
+  jwt:
+    secretKey: ${JWT_SECRET_KEY}
+    refreshKey: ${JWT_REFRESH_KEY}
+  accessToken:
+    expirationSeconds: "#{60 * 10}"
+
+jwt:
+  secretKey: 34829304758402934802735894supercalifragilisticexpialidocious
+  refreshKey: 127393911531540290533352supercalifragilisticexpialidocious
+
+url:
+  s3: ${AWS_S3_URL}
