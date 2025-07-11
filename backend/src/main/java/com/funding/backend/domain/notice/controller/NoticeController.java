@@ -6,6 +6,7 @@ import com.funding.backend.domain.notice.dto.response.NoticeReseponseDto;
 import com.funding.backend.domain.notice.service.NoticeService;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,49 +24,44 @@ public class NoticeController {
 
     private final NoticeService noticeService;
 
-    // TODO: 추후 회원 기능 개발 시 주석 해제
     @Operation(
             summary = "공지사항 생성",
-            description = "프로젝트 생성자가 공지사항을 생성합니다."
-//            security = @SecurityRequirement(name = "JWT")
+            description = "프로젝트 생성자가 공지사항을 생성합니다.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping
     public ResponseEntity<ApiResponse<NoticeReseponseDto>> createNotice(
-            /* Long loginUserId, */
             @RequestBody @Valid NoticeCreateRequestDto noticeCreateRequestDto) {
 
-        NoticeReseponseDto noticeResponse = noticeService.createNotice(/* loginUserId, */noticeCreateRequestDto);
+        NoticeReseponseDto noticeResponse = noticeService.createNotice(noticeCreateRequestDto);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.CREATED.value(), "공지사항 생성 성공", noticeResponse));
     }
 
-    // TODO: 추후 회원 기능 개발 시 주석 해제
     @Operation(
             summary = "공지사항 수정",
-            description = "프로젝트 생성자가 공지사항을 수정합니다."
-//            security = @SecurityRequirement(name = "JWT")
+            description = "프로젝트 생성자가 공지사항을 수정합니다.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @PutMapping("/{noticeId}")
     public ResponseEntity<ApiResponse<NoticeReseponseDto>> updateNotice(
-            /* Long loginUserId, */
             @PathVariable Long noticeId,
             @RequestBody @Valid NoticeUpdateRequestDto noticeUpdateRequestDto) {
 
-        NoticeReseponseDto noticeResponse = noticeService.updateNotice(/* loginUserId, */noticeId, noticeUpdateRequestDto);
+        NoticeReseponseDto noticeResponse = noticeService.updateNotice(noticeId, noticeUpdateRequestDto);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "공지사항 수정 성공", noticeResponse));
     }
 
     // TODO: 추후 회원 기능 개발 시 주석 해제
     @Operation(
             summary = "공지사항 삭제",
-            description = "프로젝트 생성자가 공지사항을 삭제합니다."
-//            security = @SecurityRequirement(name = "JWT")
+            description = "프로젝트 생성자가 공지사항을 삭제합니다.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @DeleteMapping("/{noticeId}")
     public ResponseEntity<ApiResponse<Void>> deleteNotice(
-            /* Long loginUserId, */
             @PathVariable Long noticeId) {
 
-        noticeService.deleteNotice(/* loginUserId, */noticeId);
+        noticeService.deleteNotice(noticeId);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "공지사항 삭제 성공"));
     }
 
