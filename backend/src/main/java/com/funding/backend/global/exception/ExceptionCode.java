@@ -3,8 +3,14 @@ package com.funding.backend.global.exception;
 import lombok.Getter;
 
 public enum ExceptionCode {
+
+    //팔로우 예외 처리
+    USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다"),
+    FOLLOW_NOT_FOUND(404, "팔로우 관계를 찾을 수 없습니다"),
+    ALREADY_FOLLOWING(400, "이미 팔로우 중입니다"),
+
     //프로젝트 예외 처리
-    PROJECT_NOT_FOUND(404,"존재하지 않는 프로젝트 입니다."),
+    PROJECT_NOT_FOUND(404, "존재하지 않는 프로젝트 입니다."),
     NOT_PROJECT_CREATOR(403, "해당 프로젝트의 생성자가 아닙니다."),
     INVALID_PROJECT_TYPE(400, "지원하지 않는 프로젝트 타입입니다."),
 
@@ -22,18 +28,16 @@ public enum ExceptionCode {
 
 
     //구매 옵션 예외처리
-    PURCHASE_OPTION_NOT_FOUND(404,"존재하지 않는 구매옵션 입니다."),
-    PURCHASE_OPTION_FILE_COUNT(404,"옵션 개수와 파일 개수가 일치하지 않습니다."),
+    PURCHASE_OPTION_NOT_FOUND(404, "존재하지 않는 구매옵션 입니다."),
+    PURCHASE_OPTION_FILE_COUNT(404, "옵션 개수와 파일 개수가 일치하지 않습니다."),
     UNSUPPORTED_PROVIDING_METHOD(400, "지원하지 않는 제공 방식입니다."),
     FILE_REQUIRED_FOR_DOWNLOAD_OPTION(400, "DOWNLOAD 방식의 구매 옵션에는 파일이 필수입니다."),
     PURCHASE_OPTION_FILE_NOT_FOUND(400, "해당 옵션에 매칭되는 파일을 찾을 수 없습니다."),
 
 
-
-
     //S3 예외 처리
     S3_DELETE_ERROR(404, "이미지를 삭제할 수 없습니다."),
-    IMAGE_NOT_FOUND(404,"이미지를 찾을 수 없습니다."),
+    IMAGE_NOT_FOUND(404, "이미지를 찾을 수 없습니다."),
     IMAGE_UPLOAD_FAILED(500, "이미지 업로드에 실패하였습니다."),
     FILE_UPLOAD_FAILED(500, "파일 업로드에 실패하였습니다."),
     INVALID_S3_URL_FORMAT(400, "잘못된 S3 URL 형식입니다."),
@@ -41,17 +45,14 @@ public enum ExceptionCode {
     MD5_HASH_FAILED(500, "MD5 해시 생성에 실패하였습니다."),
 
 
-
     //요금제 예외 처리
-    PRICING_PLAN_NOT_FOUND(404,"존재하지 않는 요금제 입니다");
-
-    ;
+    PRICING_PLAN_NOT_FOUND(404, "존재하지 않는 요금제 입니다");
 
     @Getter
-    private int status;
+    private final int status;
 
     @Getter
-    private String message;
+    private final String message;
 
     ExceptionCode(int code, String message) {
         this.status = code;
