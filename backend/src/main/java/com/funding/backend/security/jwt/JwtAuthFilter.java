@@ -2,6 +2,8 @@ package com.funding.backend.security.jwt;
 
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
+import com.funding.backend.global.exception.BusinessLogicException;
+import com.funding.backend.global.exception.ExceptionCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -13,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -34,7 +35,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (token != null && jwtTokenizer.validateAccessToken(token)) {
             Long userId = jwtTokenizer.getUserIdFromAccessToken(token);
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없음"));
+                    .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     user, null, List.of(new SimpleGrantedAuthority(user.getRole().getRole().name()))
