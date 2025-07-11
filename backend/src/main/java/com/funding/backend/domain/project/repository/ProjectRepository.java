@@ -23,14 +23,14 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
                 SELECT p.*
                 FROM projects p
                 LEFT JOIN orders o ON p.id = o.project_id
-                WHERE p.project_status = com.funding.backend.enums.ProjectStatus.COMPLETED
+                WHERE p.project_status = 'COMPLETED'
                 GROUP BY p.id
                 ORDER BY COALESCE(SUM(o.paid_amount), 0) DESC
             """,
             countQuery = """
                 SELECT COUNT(DISTINCT p.id)
                 FROM projects p
-                WHERE p.project_status = com.funding.backend.enums.ProjectStatus.COMPLETED
+                WHERE p.project_status = 'COMPLETED'
             """, nativeQuery = true)
     Page<Project> findAllByOrderBySellingAmountDesc(Pageable pageable);
 
@@ -40,7 +40,7 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
                 FROM projects p
                 LEFT JOIN orders o ON p.id = o.project_id
                 WHERE p.project_type = :projectType
-                  AND p.project_status = com.funding.backend.enums.ProjectStatus.COMPLETED
+                  AND p.project_status = 'COMPLETED'
                 GROUP BY p.id
                 ORDER BY COALESCE(SUM(o.paid_amount), 0) DESC
             """,
@@ -48,7 +48,7 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
                 SELECT COUNT(DISTINCT p.id)
                 FROM projects p
                 WHERE p.project_type = :projectType
-                  AND p.project_status = com.funding.backend.enums.ProjectStatus.COMPLETED
+                  AND p.project_status = 'COMPLETED'
             """, nativeQuery = true)
     Page<Project> findByProjectTypeOrderBySellingAmountDesc(@Param("projectType") ProjectType projectType, Pageable pageable);
 
@@ -57,8 +57,8 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
                 FROM projects p
                 JOIN donations d ON p.id = d.project_id
                 LEFT JOIN orders o ON p.id = o.project_id
-                WHERE p.project_status = com.funding.backend.enums.ProjectStatus.COMPLETED
-                AND p.project_type = com.funding.backend.enums.ProjectType.DONATION
+                WHERE p.project_status = 'COMPLETED'
+                AND p.project_type = 'DONATION'
                 GROUP BY p.id, d.price_coal
                 HAVING d.price_coal > 0
                 ORDER BY COALESCE(SUM(o.paid_amount), 0) / d.price_coal DESC
@@ -67,8 +67,8 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
                 SELECT COUNT(DISTINCT p.id)
                 FROM projects p
                 JOIN donations d ON p.id = d.project_id
-                WHERE p.project_status = com.funding.backend.enums.ProjectStatus.COMPLETED
-                AND p.project_type = com.funding.backend.enums.ProjectType.DONATION
+                WHERE p.project_status = 'COMPLETED'
+                AND p.project_type = 'DONATION'
                 AND d.price_coal > 0
                 """,
             nativeQuery = true)
