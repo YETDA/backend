@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Configuration;
         ),
         security = {
                 @SecurityRequirement(name = "bearerAuth"),
-                @SecurityRequirement(name = "kakaoOAuth") // ✅ Kakao OAuth도 추가
+                @SecurityRequirement(name = "kakaoOAuth")
         }
 )
 @SecurityScheme(
