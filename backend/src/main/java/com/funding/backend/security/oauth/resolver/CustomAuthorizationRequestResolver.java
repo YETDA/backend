@@ -3,6 +3,7 @@ package com.funding.backend.security.oauth.resolver;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
@@ -10,6 +11,7 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequ
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRequestResolver {
     private final DefaultOAuth2AuthorizationRequestResolver defaultResolver;
 
@@ -35,7 +37,7 @@ public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRe
         }
 
         String redirectUrl = request.getParameter("redirectUrl");
-        //System.out.println("확인 !!!!!!!!!!! resolver redirectUrl"+redirectUrl);
+        //log.info("확인 !!!!!!!!!!! resolver redirectUrl"+redirectUrl);
 
         Map<String, Object> additionalParameters = new HashMap<>(authorizationRequest.getAdditionalParameters());
         if (redirectUrl != null && !redirectUrl.isEmpty()) {
