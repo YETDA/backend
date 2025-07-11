@@ -12,10 +12,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project,Long> {
 
-    @Query("SELECT p FROM Project p WHERE p.projectType = :projectType AND p.projectStatus = com.funding.backend.enums.ProjectStatus.COMPLETED ORDER BY SIZE(p.likeList) DESC")
+    @Query("SELECT p FROM Project p WHERE p.projectType = :projectType AND p.projectStatus = 'COMPLETED' ORDER BY SIZE(p.likeList) DESC")
     Page<Project> findByProjectTypeOrderByLikesDesc(@Param("projectType") ProjectType projectType, Pageable pageable);
 
-    @Query("SELECT p FROM Project p WHERE p.projectStatus = com.funding.backend.enums.ProjectStatus.COMPLETED ORDER BY SIZE(p.likeList) DESC")
+    @Query("SELECT p FROM Project p WHERE p.projectStatus = 'COMPLETED' ORDER BY SIZE(p.likeList) DESC")
     Page<Project> findAllByOrderByLikesDesc(Pageable pageable);
 
     @Query(
