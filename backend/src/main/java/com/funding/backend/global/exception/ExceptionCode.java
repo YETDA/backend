@@ -24,6 +24,7 @@ public enum ExceptionCode {
     //팔로우 예외 처리
     FOLLOW_NOT_FOUND(404, "팔로우 관계를 찾을 수 없습니다"),
     ALREADY_FOLLOWING(400, "이미 팔로우 중입니다"),
+    CANNOT_FOLLOW_SELF(400, "자기 자신을 팔로우할 수 없습니다"),
 
     //프로젝트 예외 처리
     PROJECT_NOT_FOUND(404, "존재하지 않는 프로젝트 입니다."),
@@ -37,9 +38,6 @@ public enum ExceptionCode {
     //구매 예외처리
     PURCHASE_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 입니다. "),
     INVALID_PROVIDING_METHOD(400, "제공 방식이 유효하지 않습니다."),
-
-    //사용자 예외처리
-    USER_NOT_FOUND(404,"존재하지 않는 유저 입니다."),
 
     //구매 카테고리 예외처리
     PURCHASE_CATEGORY_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 카테고리 입니다. "),

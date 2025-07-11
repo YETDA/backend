@@ -35,7 +35,7 @@ public class Follow extends Auditable {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "follower_id", nullable = false)
-    private User follower;  // 나
+    private User follower;  // 나를 팔로우하는 사람
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

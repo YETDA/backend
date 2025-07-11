@@ -7,10 +7,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class FollowResponseDto {
-
+    private Long userId;
     private String name;
 
     public static FollowResponseDto from(User user) {
-        return new FollowResponseDto(user.getName());
+        return new FollowResponseDto(user.getId(), user.getName());
     }
 }

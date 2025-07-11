@@ -17,13 +17,19 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     Optional<Follow> findByFollowerAndFollowing(User follower, User following);
 
-    // [내가 팔로우한 사람] 이름만
-    @Query("SELECT new com.funding.backend.domain.follow.dto.response.FollowResponseDto(f.following.name) " +
+    // 내가 팔로우한 사람 (팔로잉)
+    @Query("SELECT new com.funding.backend.domain.follow.dto.response.FollowResponseDto(f.following.id, f.following.name) "
+            +
             "FROM Follow f WHERE f.follower.id = :userId")
     List<FollowResponseDto> findFollowingsByUserId(@Param("userId") Long userId);
 
-    // [나를 팔로우하는 사람] 이름만
-    @Query("SELECT new com.funding.backend.domain.follow.dto.response.FollowResponseDto(f.follower.name) " +
+    // 나를 팔로우한 사람 (팔로워)
+    @Query("SELECT new com.funding.backend.domain.follow.dto.response.FollowResponseDto(f.follower.id, f.follower.name) "
+            +
             "FROM Follow f WHERE f.following.id = :userId")
     List<FollowResponseDto> findFollowersByUserId(@Param("userId") Long userId);
+
+    long countByFollowerId(Long followerId);
+
+    long countByFollowingId(Long followingId);
 }

@@ -81,7 +81,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-
     public boolean checkEmailDuplication(String email) {
         return userRepository.existsByEmail(email);
     }
@@ -109,7 +108,7 @@ public class UserService {
                 || request.getAccount() == null || request.getAccount().trim().isEmpty()) {
             throw new BusinessLogicException(ExceptionCode.BANK_AND_ACCOUNT_REQUIRED);
         }
-        
+
         user.setBank(request.getBank());
         user.setAccount(request.getAccount());
     }
@@ -121,5 +120,11 @@ public class UserService {
 
         user.setBank(null);
         user.setAccount(null);
+    }
+
+    // user
+    public User getUserOrThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
     }
 }

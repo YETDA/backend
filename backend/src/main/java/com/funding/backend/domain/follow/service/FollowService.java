@@ -1,10 +1,11 @@
 package com.funding.backend.domain.follow.service;
 
+import com.funding.backend.domain.follow.dto.response.FollowCountResponse;
 import com.funding.backend.domain.follow.dto.response.FollowResponseDto;
 import com.funding.backend.domain.follow.entity.Follow;
 import com.funding.backend.domain.follow.repository.FollowRepository;
 import com.funding.backend.domain.user.entity.User;
-import com.funding.backend.domain.user.repository.UserRepository;
+import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import java.util.List;
@@ -16,14 +17,20 @@ import org.springframework.stereotype.Service;
 public class FollowService {
 
     private final FollowRepository followRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     public void follow(Long followerId, Long followingId) {
-        User follower = findUserOrThrow(followerId);
-        User following = findUserOrThrow(followingId);
+        User follower = userService.getUserOrThrow(followerId);
+        User following = userService.getUserOrThrow(followingId);
 
+        // 중복 팔로우 금지
         if (followRepository.existsByFollowerAndFollowing(follower, following)) {
             throw new BusinessLogicException(ExceptionCode.ALREADY_FOLLOWING);
+        }
+
+        // 자기 자신 팔로우 금지
+        if (followerId.equals(followingId)) {
+            throw new BusinessLogicException(ExceptionCode.CANNOT_FOLLOW_SELF);
         }
 
         Follow follow = Follow.builder()
@@ -35,8 +42,8 @@ public class FollowService {
     }
 
     public void unfollow(Long followerId, Long followingId) {
-        User follower = findUserOrThrow(followerId);
-        User following = findUserOrThrow(followingId);
+        User follower = userService.getUserOrThrow(followerId);
+        User following = userService.getUserOrThrow(followingId);
 
         Follow follow = followRepository.findByFollowerAndFollowing(follower, following)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.FOLLOW_NOT_FOUND));
@@ -49,11 +56,22 @@ public class FollowService {
     }
 
     public List<FollowResponseDto> getFollowers(Long userId) {
-        return followRepository.findFollowingsByUserId(userId);
+        return followRepository.findFollowersByUserId(userId);
     }
 
-    private User findUserOrThrow(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
+    public long countFollowers(Long userId) {
+        return followRepository.countByFollowingId(userId);
     }
+
+    public long countFollowings(Long userId) {
+        return followRepository.countByFollowerId(userId);
+    }
+
+    public FollowCountResponse getFollowCounts(Long userId) {
+        return new FollowCountResponse(
+                countFollowers(userId),
+                countFollowings(userId)
+        );
+    }
+
 }
