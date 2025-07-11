@@ -46,10 +46,6 @@ public class Donation extends Auditable {
     @JoinColumn(name = "main_category_id", nullable = false)
     private MainCategory mainCategory;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_subject_id", nullable = false)
-    private ProjectSubCategory projectSubCategory;
-
     @Column(name = "price_goal")
     private Long priceGoal;
 
@@ -67,4 +63,5 @@ public class Donation extends Auditable {
 
     @OneToMany(mappedBy = "donation", cascade = CascadeType.REMOVE, orphanRemoval = false)
     List<ProjectSubCategory> projectSubCategories = new ArrayList<>();
+
 }

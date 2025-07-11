@@ -18,11 +18,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProjectSubCategoryService {
     private final ProjectSubRepository projectSubRepository;
 
-  public List<ProjectSubCategory> createProjectSubCategories(List<SubjectCategory> subjectCategories) {
-    return subjectCategories.stream()
+
+  @Transactional
+  public List<ProjectSubCategory> createProjectSubCategories(List<SubjectCategory> subjectCategories, Donation donation) {
+    // 만약 ProjectSubCategory가 Donation 또는 Project와 관계가 있다면 관계 세팅 필요
+    // 예: ProjectSubCategory가 Donation에 연관된 엔티티라면 donation.setProjectSubCategories(...) 등도 고려
+
+    List<ProjectSubCategory> subCategories = subjectCategories.stream()
         .map(subjectCategory -> ProjectSubCategory.builder()
             .subjectCategory(subjectCategory)
+            .donation(donation)
             .build())
         .collect(Collectors.toList());
+
+    // 저장 후 반환 (bulk 저장)
+    return projectSubRepository.saveAll(subCategories);
   }
+
 }

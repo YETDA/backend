@@ -4,11 +4,14 @@ import com.funding.backend.domain.donation.dto.request.DonationUpdateRequestDto;
 import com.funding.backend.domain.donation.entity.Donation;
 import com.funding.backend.domain.project.dto.request.DonationCreateRequestDto;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
+import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
+import com.funding.backend.domain.purchase.service.PurchaseService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
+import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.exception.BusinessLogicException;
@@ -31,15 +34,17 @@ public class DonationProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
 
+    private final UserService userService;
     private final ImageService imageService;
     private final PricingService pricingService;
     private final DonationService donationService;
+    private final PurchaseService purchaseService;
 
 
     @Transactional
     public void createDonationProject(DonationCreateRequestDto dto){
 
-        Optional<User> user = userRepository.findById(Long.valueOf(1));
+        User user = userService.getUserOrThrow(Long.valueOf(1));
 
         Project project = Project.builder()
                 .introduce(dto.getIntroduce())
@@ -48,19 +53,18 @@ public class DonationProjectService {
                 .projectStatus(ProjectStatus.UNDER_REVIEW) //처음 만들때는 심사중으로
                 .pricingPlan(pricingService.findById(dto.getPricingPlanId()))
                 .projectType(ProjectType.DONATION)
-                .user(user.get())
+                .user(user)
                 .build();
+        Project saveProject = projectRepository.save(project);
+
+        Donation savedDonation = donationService.createDonation(saveProject, dto.getDonationDetail());
+        project.setDonation(savedDonation);
 
         List<ProjectImage> projectImage = new ArrayList<>();
         if (dto.getContentImage() != null && !dto.getContentImage().isEmpty()) {
             projectImage = imageService.saveImageList(dto.getContentImage(), project);
         }
-
         project.setProjectImage(projectImage);
-        Donation savedDonation = donationService.createDonation(project, dto.getDonationDetail());
-        project.setDonation(savedDonation);
-        projectRepository.save(project);
-
     }
 
 
@@ -87,6 +91,19 @@ public class DonationProjectService {
         // Donation 관련 필드 업데이트
         donationService.updateDonation(project,donationUpdateRequestDto);
     }
+
+    public ProjectResponseDto getProjectDetail(Long projectId) {
+        Project project = findProjectById(projectId);
+
+        if (project.getProjectType() == ProjectType.PURCHASE) {
+            return purchaseService.createPurchaseProjectResponse(project);
+        } else if (project.getProjectType() == ProjectType.DONATION) {
+            return donationService.createDonationProjectResponse(project);
+        } else {
+            throw new BusinessLogicException(ExceptionCode.INVALID_PROJECT_TYPE);
+        }
+    }
+
 
 
     public Project findProjectById(Long id){

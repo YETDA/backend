@@ -3,6 +3,7 @@ package com.funding.backend.domain.project.dto.response;
 import com.funding.backend.domain.donation.entity.Donation;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
+import com.funding.backend.domain.subjectCategory.entity.SubjectCategory;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,14 +21,14 @@ public class DonationProjectResponseDto implements ProjectResponseDto {
 
     private Long mainCategoryId;
     private String mainCategoryName;
-    private List<String> projectSubCategories;
+    private List<SubjectCategory> projectSubCategories;
     private Long priceGoal;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String gitAddress;
     private String deployAddress;
 
-    public DonationProjectResponseDto(Project project, Donation donation, List<String> projectSubCategories){
+    public DonationProjectResponseDto(Project project, Donation donation, List<SubjectCategory> projectSubCategories){
 
         this.projectId = project.getId();
         this.title = project.getTitle();

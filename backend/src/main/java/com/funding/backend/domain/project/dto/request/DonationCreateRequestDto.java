@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 @NoArgsConstructor
-@ValidProjectDetail
 public class DonationCreateRequestDto {
 
   @NotNull(message = "프로젝트 타입은 필수입니다.")
@@ -38,12 +37,10 @@ public class DonationCreateRequestDto {
   @Size(max = 1000, message = "소개글은 1000자 이내여야 합니다.")
   private String content;
 
-  private String field; // 선택 값이므로 필수 아님
 
   //이미지
   private List<MultipartFile> contentImage = new ArrayList<>();
 
   // 하위 타입 DTO
   private DonationProjectDetail donationDetail;
-  private PurchaseProjectDetail purchaseDetail;
 }

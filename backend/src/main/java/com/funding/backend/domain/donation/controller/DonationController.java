@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -34,14 +35,16 @@ public class DonationController {
     private final DonationService donationService;
     private final DonationProjectService donationProjectService;
 
-    @PostMapping(consumes = {"multipart/form"})
     @Operation(summary = "후원형 프로젝트 생성", description = "후원형(Donation) 프로젝트를 생성합니다.")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createDonationProject(
         @RequestPart("requestDto") @Valid DonationCreateRequestDto requestDto,
         @RequestPart(value = "contentImage", required = false) List<MultipartFile> contentImages
     ) {
-        requestDto.setContentImage(contentImages);
+        log.info(requestDto.getContent());
+        log.info(contentImages.get(0).getName());
         donationProjectService.createDonationProject(requestDto);
+        requestDto.setContentImage(contentImages);
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.of(HttpStatus.CREATED.value(), "후원형 프로젝트 생성 성공"));
     }
@@ -50,7 +53,7 @@ public class DonationController {
     @PutMapping(value = "/{projectId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "후원형 프로젝트 수정", description = "기존 후원형(Donation) 프로젝트를 수정합니다.")
     public ResponseEntity<?> updateDonationProject(
-        @PathVariable Long projectId,
+        @PathVariable("projectId") Long projectId,
         @RequestPart("requestDto") @Valid DonationUpdateRequestDto requestDto,
         @RequestPart(value = "contentImages", required = false) List<MultipartFile> contentImages
     ) {
@@ -58,6 +61,20 @@ public class DonationController {
         donationProjectService.updateDonationProject(projectId, requestDto);
 
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "구매형 프로젝트 수정 성공"));
+    }
+
+
+    //프로젝트에서 삭제하는거 있긴 한데, 혹시 몰라서 만들어둠
+    @DeleteMapping("/{projectId}")
+    @Operation(
+        summary = "후원형 프로젝트 삭제",
+        description = "후원형(Donation) 프로젝트를 삭제합니다. 구매형/후원형에 관계없이 공통으로 삭제됩니다."
+    )
+    public ResponseEntity<ApiResponse<Void>> deleteProject(@PathVariable Long projectId) {
+        donationService.deleteDonation(projectId);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 삭제 성공"));
     }
 
 
