@@ -6,6 +6,8 @@ import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.enums.RoleType;
 import com.funding.backend.enums.UserActive;
+import com.funding.backend.global.exception.BusinessLogicException;
+import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.security.oauth.model.CustomOAuth2User;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +34,7 @@ public class GithubOAuthUserParser {
         User user = userRepository.findBySocialIdAndSsoProvider(socialId, provider)
                 .orElseGet(() -> {
                     Role role = roleRepository.findByRole(RoleType.USER)
-                            .orElseThrow(() -> new RuntimeException("USER Role 없음"));
+                            .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ROLE_NOT_FOUND));
 
                     return userRepository.save(User.builder()
                             .socialId(socialId)
