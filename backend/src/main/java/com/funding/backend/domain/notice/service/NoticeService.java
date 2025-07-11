@@ -73,12 +73,12 @@ public class NoticeService {
         return new NoticeReseponseDto(notice);
     }
 
-    @Transactional
     /**
      * 공지사항을 삭제합니다.
      *
      * @param noticeId 공지사항 ID
      */
+    @Transactional
     public void deleteNotice(Long noticeId) {
 
         Notice notice = findNoticeById(noticeId);
