@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/project")
 @Validated
 @AllArgsConstructor
-@Tag(name = "프로젝트 관리 컨트롤러")
+@Tag(name = "구매 주문 API", description = "구매형 프로젝트의 주문/결제 요청을 처리합니다.")
 @Slf4j
 public class ProjectController {
 
