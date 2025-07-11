@@ -91,8 +91,6 @@ public class ProjectService {
     @Transactional
     public void  updatePurchaseProject(Long projectId, PurchaseUpdateRequestDto purchaseUpdateRequestDto) {
         Project project = findProjectById(projectId);
-
-
         // 권한 체크로 -> 로그인 완료되면 구현
         //validProjectUser(project.getUser(), loginUser);
 

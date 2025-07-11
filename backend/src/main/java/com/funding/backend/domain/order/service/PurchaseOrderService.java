@@ -16,6 +16,7 @@ import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.toss.enums.OrderStatus;
+import com.funding.backend.global.toss.enums.TossPaymentStatus;
 import com.funding.backend.security.jwt.TokenService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PurchaseOrderService {
     private final OrderRepository orderRepository;
-
     private final ProjectService projectService;
     private final TokenService tokenService;
     private final UserService userService;
@@ -81,7 +81,7 @@ public class PurchaseOrderService {
                 .project(project)
                 .user(user)
                 .projectType(request.getProjectType())
-                .orderStatus(OrderStatus.PENDING)
+                .orderStatus(TossPaymentStatus.READY)
                 .build();
     }
 

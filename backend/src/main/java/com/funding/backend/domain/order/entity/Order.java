@@ -7,6 +7,7 @@ import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.auditable.Auditable;
 import com.funding.backend.global.toss.enums.OrderStatus;
 import com.funding.backend.global.toss.enums.PayType;
+import com.funding.backend.global.toss.enums.TossPaymentStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -70,7 +71,7 @@ public class Order extends Auditable {
 	//주문 상태
 	@Enumerated(EnumType.STRING)
 	@Column(name = "order_status", nullable = false)
-	private OrderStatus orderStatus;
+	private TossPaymentStatus orderStatus;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")

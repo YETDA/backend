@@ -5,6 +5,7 @@ import com.funding.backend.domain.order.service.OrderService;
 import com.funding.backend.global.toss.dto.request.ConfirmPaymentRequestDto;
 import com.funding.backend.global.toss.dto.response.*;
 import com.funding.backend.global.toss.enums.OrderStatus;
+import com.funding.backend.global.toss.enums.TossPaymentStatus;
 import com.funding.backend.global.toss.service.TossService;
 import com.funding.backend.global.utils.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,14 +52,14 @@ public class TossController {
 
                 Order order = orderService.findOrderByOrderId(tossPaymentsResponse.getOrderId());
                 order.setPayType(tossPaymentsResponse.getMethod());
-                order.setOrderStatus(OrderStatus.DONE);
+                order.setOrderStatus(requestOrder.getOrderStatus());
                 orderService.saveOrder(order); // 영속 상태면 생략 가능
 
                 return ResponseEntity
                         .status(HttpStatus.OK)
                         .body(ApiResponse.of(HttpStatus.OK.value(), "결제 성공", null));
             }
-            requestOrder.setOrderStatus(OrderStatus.FAILED);
+            requestOrder.setOrderStatus(requestOrder.getOrderStatus());
 
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
