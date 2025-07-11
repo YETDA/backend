@@ -53,11 +53,9 @@ public class NoticeService {
         return new NoticeReseponseDto(savedNotice);
     }
 
-    // TODO: 추후 회원 기능 개발 시 주석 해제
     /**
      * 공지사항을 수정합니다.
      *
-     * @param loginUserId 로그인한 사용자 ID (회원 기능 개발 시 주석 해제)
      * @param noticeId 공지사항 ID
      * @param noticeUpdateRequestDto   수정할 공지사항 정보
      * @return 수정된 공지사항 정보

@@ -51,7 +51,6 @@ public class NoticeController {
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "공지사항 수정 성공", noticeResponse));
     }
 
-    // TODO: 추후 회원 기능 개발 시 주석 해제
     @Operation(
             summary = "공지사항 삭제",
             description = "프로젝트 생성자가 공지사항을 삭제합니다.",
