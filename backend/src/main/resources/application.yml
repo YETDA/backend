@@ -117,3 +117,6 @@ jwt:
 
 url:
   s3: ${AWS_S3_URL}
+
+toss:
+  secret-key: ${TOSS_SECRET_KEY}
