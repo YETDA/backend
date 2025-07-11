@@ -9,8 +9,7 @@ spring:
     ansi:
       enabled: ALWAYS
   profiles:
-    active: dev
-    include: secret
+    active: ${SPRING_PROFILES_ACTIVE}
   jackson:
     time-zone: Asia/Seoul
   jpa:
@@ -28,8 +27,6 @@ spring:
     multipart:
       max-file-size: 500MB
       max-request-size: 500MB
-  config:
-    import: classpath:application-secret.yml
   mvc:
     hiddenmethod:
       filter:
@@ -39,14 +36,14 @@ spring:
       client:
         registration:
           kakao:
-            client-id: ON_SECRET
+            client-id: ${OAUTH2_KAKAO_CLIENT_ID}
             scope: profile_nickname, profile_image, account_email
             client-name: Kakao
             authorization-grant-type: authorization_code
             redirect-uri: "${custom.site.backUrl}/{action}/oauth2/code/{registrationId}"
           github:
-            client-id: ON_SECRET
-            client-secret: ON_SECRET
+            client-id: ${OAUTH2_GITHUB_CLIENT_ID}
+            client-secret: ${OAUTH2_GITHUB_CLIENT_SECRET}
             scope: user:email
             redirect-uri: "${custom.site.backUrl}/{action}/oauth2/code/{registrationId}"
             client-name: GitHub
@@ -63,19 +60,17 @@ spring:
             user-name-attribute: id
   
   datasource:
-    url: jdbc:mysql://localhost:3307/yetdaDB
-    username: yetdaUser
-    password: yetdapw
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 10
-      data-source-properties:
-        maxAllowedPacket: 134217728
+      connection-timeout: 30000
+      initialization-fail-timeout: 0  # DB 준비 안 됐으면 재시도
+
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${spring.mail.username}
-    password: ${spring.mail.password}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -94,21 +89,31 @@ logging:
     org.hibernate.orm.jdbc.bind: TRACE
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.transaction.interceptor: TRACE
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+    stack:
+      auto: false
+
 custom:
-  dev:
-    cookieDomain: localhost
-    frontUrl: "http://${custom.dev.cookieDomain}:3000"
-    backUrl: "http://${custom.dev.cookieDomain}:${server.port}"
-  prod:
-    cookieDomain: yetda.site #api.booktri.site
-    frontUrl: "https://www.${custom.prod.cookieDomain}"
-    backUrl: "https://api.${custom.prod.cookieDomain}"
   site:
-    name: "yetda"
-    cookieDomain: "${custom.dev.cookieDomain}"
-    frontUrl: "${custom.dev.frontUrl}"
-    backUrl: "${custom.dev.backUrl}"
+    frontUrl: http://${LOCAL_HOST}:${LOCAL_FRONTEND_PORT}
+  jwt:
+    secretKey: ${JWT_SECRET_KEY}
+    refreshKey: ${JWT_REFRESH_KEY}
+  accessToken:
+    expirationSeconds: "#{60 * 10}"
 
 jwt:
   secretKey: 34829304758402934802735894supercalifragilisticexpialidocious
   refreshKey: 127393911531540290533352supercalifragilisticexpialidocious
+
+url:
+  s3: ${AWS_S3_URL}

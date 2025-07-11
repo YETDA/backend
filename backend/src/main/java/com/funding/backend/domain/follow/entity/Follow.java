@@ -19,7 +19,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name="follows")
+@Table(name = "follows")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -32,17 +32,13 @@ public class Follow extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "follower_id", nullable = false)
-    private User follower;
-
+    private User follower;  // 나를 팔로우하는 사람
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "followed_id", nullable = false)
-    private User following;
-
-    
+    private User following;  // 내가 팔로우하는 사람
 }

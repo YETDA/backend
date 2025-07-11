@@ -1,5 +1,10 @@
 package com.funding.backend.security.jwt;
 
+import com.funding.backend.domain.role.entity.Role;
+import com.funding.backend.domain.role.repository.RoleRepository;
+import com.funding.backend.domain.user.entity.User;
+import com.funding.backend.domain.user.repository.UserRepository;
+import com.funding.backend.enums.UserActive;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import jakarta.servlet.http.Cookie;
@@ -17,6 +22,8 @@ public class TokenService {
     private final JwtTokenizer jwtTokenizer;
     private final HttpServletRequest request;
     private final HttpServletResponse response;
+    private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
 
     // 요청에서 AccessToken을 추출
     public String getAccessToken() {
@@ -71,6 +78,52 @@ public class TokenService {
                 .secure(true)
                 .httpOnly(true)
                 .maxAge(0) // 즉시 만료
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
+    }
+
+    public void createTokenByUserRole() {
+        Role role = roleRepository.findById(1L)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ROLE_NOT_FOUND));
+        User user = User.builder()
+                .email("user@email.com")
+                .name("user유저")
+                .role(role)
+                .userActive(UserActive.ACTIVE)
+                .build();
+
+        userRepository.save(user);
+        String accessToken = jwtTokenizer.createAccessToken(user.getId(), user.getEmail(), user.getName(),
+                user.getRole().getRole());
+
+        setCookie("accessToken", accessToken);
+    }
+
+    public void createTokenByAdminRole() {
+        Role role = roleRepository.findById(2L)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ROLE_NOT_FOUND));
+        User user = User.builder()
+                .email("admin@email.com")
+                .role(role)
+                .name("admin유저 ")
+                .userActive(UserActive.ACTIVE)
+                .build();
+
+        userRepository.save(user);
+        String accessToken = jwtTokenizer.createAccessToken(user.getId(), user.getEmail(), user.getName(),
+                user.getRole().getRole());
+
+        setCookie("accessToken", accessToken);
+    }
+
+    public void setCookie(String name, String value) {
+        ResponseCookie cookie = ResponseCookie.from(name, value)
+                .path("/")
+                .sameSite("Strict")
+                .secure(true)
+                .httpOnly(true)
+                .maxAge(Math.toIntExact(JwtTokenizer.ACCESS_TOKEN_EXPIRE_TIME / 1000))
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
