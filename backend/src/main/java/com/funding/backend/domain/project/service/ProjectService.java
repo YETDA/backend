@@ -6,6 +6,7 @@ import com.funding.backend.domain.pricingPlan.service.PricingService;
 import com.funding.backend.domain.project.dto.request.PopularProjectRequestDto;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.UnderReviewProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.dto.response.PopularProjectResponseDto;
 import com.funding.backend.domain.project.repository.ProjectRepository;
@@ -177,6 +178,10 @@ public class ProjectService {
         }
 
         return projects.map(PopularProjectResponseDto::new);
+    }
+
+    public Page<UnderReviewProjectResponseDto> findAllUnderReviewProjects(Pageable pageable) {
+        return projectRepository.findAllByProjectStatus(ProjectStatus.UNDER_REVIEW, pageable).map(UnderReviewProjectResponseDto::new);
     }
 
     private void validateBankAccountPresence(User user) {

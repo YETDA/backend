@@ -1,6 +1,7 @@
 package com.funding.backend.domain.project.repository;
 
 import com.funding.backend.domain.project.entity.Project;
+import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -73,4 +74,6 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
                 """,
             nativeQuery = true)
     Page<Project> findAllByOrderByAchievementRateDesc(Pageable pageable);
+
+    Page<Project> findAllByProjectStatus(ProjectStatus projectStatus, Pageable pageable);
 }
