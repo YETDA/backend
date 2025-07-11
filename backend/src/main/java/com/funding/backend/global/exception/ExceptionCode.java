@@ -22,11 +22,19 @@ public enum ExceptionCode {
     BANK_AND_ACCOUNT_REQUIRED(400, "은행명과 계좌번호를 모두 입력해야 합니다."),
     ROLE_NOT_FOUND(404, "존재하지 않는 역할입니다."),
 
+    //유저 예외 처리
+    BANK_NOT_FOUND(404, "은행이 존재하지 않습니다."),
+    ACCOUNT_NOT_FOUND(404, "계좌가 존재하지 않습니다."),
+
+    //팔로우 예외 처리
+    FOLLOW_NOT_FOUND(404, "팔로우 관계를 찾을 수 없습니다"),
+    ALREADY_FOLLOWING(400, "이미 팔로우 중입니다"),
+    CANNOT_FOLLOW_SELF(400, "자기 자신을 팔로우할 수 없습니다"),
+
     //프로젝트 예외 처리
     PROJECT_NOT_FOUND(404, "존재하지 않는 프로젝트 입니다."),
     NOT_PROJECT_CREATOR(403, "해당 프로젝트의 생성자가 아닙니다."),
     INVALID_PROJECT_TYPE(400, "지원하지 않는 프로젝트 타입입니다."),
-
 
     //공지사항 예외 처리
     NOTICE_NOT_FOUND(404, "존재하지 않는 공지사항 입니다."),
@@ -35,15 +43,8 @@ public enum ExceptionCode {
     PURCHASE_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 입니다. "),
     INVALID_PROVIDING_METHOD(400, "제공 방식이 유효하지 않습니다."),
 
-
-    //유저 예외 처리
-    BANK_NOT_FOUND(404, "은행이 존재하지 않습니다."),
-    ACCOUNT_NOT_FOUND(404, "계좌가 존재하지 않습니다."),
-
-
     //구매 카테고리 예외처리
     PURCHASE_CATEGORY_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 카테고리 입니다. "),
-
 
     //구매 옵션 예외처리
     PURCHASE_OPTION_NOT_FOUND(404, "존재하지 않는 구매옵션 입니다."),
@@ -51,7 +52,6 @@ public enum ExceptionCode {
     UNSUPPORTED_PROVIDING_METHOD(400, "지원하지 않는 제공 방식입니다."),
     FILE_REQUIRED_FOR_DOWNLOAD_OPTION(400, "DOWNLOAD 방식의 구매 옵션에는 파일이 필수입니다."),
     PURCHASE_OPTION_FILE_NOT_FOUND(400, "해당 옵션에 매칭되는 파일을 찾을 수 없습니다."),
-
 
     //S3 예외 처리
     S3_DELETE_ERROR(404, "이미지를 삭제할 수 없습니다."),
@@ -61,8 +61,7 @@ public enum ExceptionCode {
     INVALID_S3_URL_FORMAT(400, "잘못된 S3 URL 형식입니다."),
     ETAG_HASH_FAILED(500, "ETag 해시 계산에 실패하였습니다."),
     MD5_HASH_FAILED(500, "MD5 해시 생성에 실패하였습니다."),
-
-
+    
     //요금제 예외 처리
     PRICING_PLAN_NOT_FOUND(404, "존재하지 않는 요금제 입니다");
 
