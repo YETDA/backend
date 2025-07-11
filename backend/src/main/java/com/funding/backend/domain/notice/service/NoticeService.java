@@ -13,11 +13,10 @@ import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.security.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.awt.print.Pageable;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -96,12 +95,10 @@ public class NoticeService {
      * @param projectId 프로젝트 ID
      * @return 해당 프로젝트의 공지사항 목록
      */
-    public List<NoticeReseponseDto> findNoticesByProjectId(Long projectId, Pageable pageable) {
+    public Page<NoticeReseponseDto> findNoticesByProjectId(Long projectId, Pageable pageable) {
         Project project = projectService.findProjectById(projectId);
-        List<Notice> notices = noticeRepository.findByProjectOrderByCreatedAtDesc(project, pageable);
-        return notices.stream()
-                .map(NoticeReseponseDto::new)
-                .toList();
+        return noticeRepository.findByProjectOrderByCreatedAtDesc(project, pageable)
+                .map(NoticeReseponseDto::new);
     }
 
     /**
