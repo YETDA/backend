@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("${custom.site.frontUrl}")
+    @Value("${custom.dev.frontUrl}")
     private String frontUrl; // ex: http://localhost:3000 or https://www.yetda.site(?)
 
     @Override
