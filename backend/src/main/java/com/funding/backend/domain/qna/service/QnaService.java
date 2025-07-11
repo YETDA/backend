@@ -168,7 +168,7 @@ public class QnaService {
         Qna qna = findQnaById(qnaId);
 
         if (!qna.getUser().getId().equals(currentUserId)){
-            throw new BusinessLogicException(ExceptionCode.QNA_ACESS_DENIED);
+            throw new BusinessLogicException(ExceptionCode.QNA_ACCESS_DENIED);
         }
 
         qna.setTitle(requestDto.getTitle());
@@ -190,7 +190,7 @@ public class QnaService {
         Qna qna = findQnaById(qnaId);
 
         if(!qna.getUser().getId().equals(currentUserId)){
-            throw new BusinessLogicException(ExceptionCode.QNA_ACESS_DENIED);
+            throw new BusinessLogicException(ExceptionCode.QNA_ACCESS_DENIED);
         }
 
         qnaRepository.delete(qna);

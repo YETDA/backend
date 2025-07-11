@@ -58,7 +58,7 @@ public enum ExceptionCode {
 
     //QnA 예외 처리
     QNA_NOT_FOUND(404, "존재하지 않는 QnA입니다."),
-    QNA_ACESS_DENIED(403, "접근 권한이 없습니다."),
+    QNA_ACCESS_DENIED(403, "접근 권한이 없습니다."),
     ANSWER_NOT_FOUND(404, "답변이 존재하지 않습니다."),
     ANSWER_ALREADY_EXISTS(409, "이미 답변이 존재합니다."),
 
