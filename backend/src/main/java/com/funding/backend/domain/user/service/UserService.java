@@ -122,4 +122,9 @@ public class UserService {
         user.setBank(null);
         user.setAccount(null);
     }
+
+    public User getUserOrThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
+    }
 }

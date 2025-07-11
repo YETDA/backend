@@ -1,7 +1,7 @@
 package com.funding.backend.domain.qna.service;
 
 import com.funding.backend.domain.project.entity.Project;
-import com.funding.backend.domain.project.repository.ProjectRepository;
+import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.qna.dto.request.AnswerRequestDto;
 import com.funding.backend.domain.qna.dto.request.QnaRequestDto;
 import com.funding.backend.domain.qna.dto.response.AnswerResponseDto;
@@ -9,9 +9,10 @@ import com.funding.backend.domain.qna.dto.response.QnaResponseDto;
 import com.funding.backend.domain.qna.entity.Qna;
 import com.funding.backend.domain.qna.repository.QnaRepository;
 import com.funding.backend.domain.user.entity.User;
-import com.funding.backend.domain.user.repository.UserRepository;
+import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
+import com.funding.backend.security.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,15 +24,29 @@ import org.springframework.util.StringUtils;
 @RequiredArgsConstructor
 public class QnaService {
 
-    private final UserRepository userRepository;
-    private final ProjectRepository projectRepository;
+    private final UserService userService;
+    private final ProjectService projectService;
     private final QnaRepository qnaRepository;
+    private final TokenService tokenService;
 
-    /*
-    공개/비공개 여부 체크
-     */
+    // 사용자 ID 조회
 
-    //권한 체크
+    //QnA 조회 메서드
+    private Qna findQnaById(Long qnaId){
+        return  qnaRepository.findById(qnaId)
+                .orElseThrow(()->new BusinessLogicException(ExceptionCode.QNA_NOT_FOUND));
+    }
+
+    //현재 사용자 id 추출
+    private Long getCurrentUserId(){
+        try {
+            return  tokenService.getUserIdFromAccessToken();
+        }catch (BusinessLogicException e){
+                return  null;
+        }
+    }
+
+    //권한 체크(공개/비공개 여부 확인)
     private boolean privateQna(Qna qna, Long currentUserId){
         if (currentUserId == null){
             return false;
@@ -69,9 +84,9 @@ public class QnaService {
 
     //QnA 상세 조회
     @Transactional(readOnly = true)
-    public QnaResponseDto findByQnaId(Long qnaId, Long currentUserId) {
-        Qna qna = qnaRepository.findById(qnaId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.QNA_NOT_FOUND));
+    public QnaResponseDto findByQnaId(Long qnaId) {
+        Qna qna = findQnaById(qnaId);
+        Long currentUserId = getCurrentUserId();
 
         QnaResponseDto dto = QnaResponseDto.from(qna);
 
@@ -80,53 +95,55 @@ public class QnaService {
 
     //전체 QnA 조회
     @Transactional(readOnly = true)
-    public Page<QnaResponseDto> findAllQna(Pageable pageable, Long currentUserId){
+    public Page<QnaResponseDto> findAllQna(Pageable pageable){
         Page<Qna> qnaPage = qnaRepository.findAll(pageable);
+        Long currentUserId = getCurrentUserId();
 
         return  qnaPage.map(qna -> {
             QnaResponseDto dto = QnaResponseDto.from(qna);
-            return processPrivateContent(dto, qna, currentUserId);
+            return processPrivateContent(dto,qna, currentUserId);
         });
+
     }
 
     //프로젝트별 QnA 조회
     @Transactional(readOnly = true)
-    public Page<QnaResponseDto> findQnaByProjectId(Long projectId, Pageable pageable, Long currentUserId){
-        projectRepository.findById(projectId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PROJECT_NOT_FOUND));
+    public Page<QnaResponseDto> findQnaByProjectId(Long projectId, Pageable pageable){
+        projectService.findProjectById(projectId);
+
 
         Page<Qna> qnaPage = qnaRepository.findByProjectId(projectId, pageable);
+        Long currentUserId = getCurrentUserId();
 
-        return  qnaPage.map(qna -> {
-            QnaResponseDto dto = QnaResponseDto.from(qna);
-            return processPrivateContent(dto, qna, currentUserId);
-        });
+        return qnaPage.map(qna -> {QnaResponseDto dto = QnaResponseDto.from(qna);
+            return  processPrivateContent(dto,qna,currentUserId);});
     }
 
 
     //사용자별 QnA 조회
     @Transactional(readOnly = true)
-    public Page<QnaResponseDto> findQnaByUserId(Long userId, Pageable pageable, Long currentUserId){
-        userRepository.findById(userId)
-                .orElseThrow(()-> new RuntimeException("사용자를 찾을 수 없습니다."));
+    public Page<QnaResponseDto> findQnaByUserId(Long userId, Pageable pageable){
+       userService.getUserOrThrow(userId);
 
         Page<Qna> qnaPage = qnaRepository.findByUserId(userId, pageable);
+        Long currentUserId = getCurrentUserId();
 
-        return  qnaPage.map(qna -> {
-            QnaResponseDto dto = QnaResponseDto.from(qna);
-            return processPrivateContent(dto, qna, currentUserId);
-        });
-
+        return qnaPage.map(qna -> {QnaResponseDto dto = QnaResponseDto.from(qna);
+            return  processPrivateContent(dto,qna,currentUserId);});
     }
 
     //QnA 작성
     @Transactional
     public QnaResponseDto createQna(QnaRequestDto requestDto){
-        User user = userRepository.findById(requestDto.getUserId())
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        Long currentUserId = getCurrentUserId();
 
-        Project project = projectRepository.findById(requestDto.getProjectId())
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PROJECT_NOT_FOUND));
+        if(currentUserId == null){
+            throw  new BusinessLogicException(ExceptionCode.ACCESS_TOKEN_NOT_FOUND);
+        }
+
+        User user = userService.getUserOrThrow(currentUserId);
+
+        Project project =projectService.findProjectById(requestDto.getProjectId());
 
         Qna qna = Qna.builder()
                 .title(requestDto.getTitle())
@@ -142,11 +159,16 @@ public class QnaService {
     //QnA 수정
     @Transactional
     public QnaResponseDto updateQna(Long qnaId, QnaRequestDto requestDto){
-        Qna qna = qnaRepository.findById(qnaId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.QNA_NOT_FOUND));
+        Long currentUserId = getCurrentUserId();
 
-        if (!qna.getUser().getId().equals(requestDto.getUserId())){
-            throw new RuntimeException("수정 권한이 없습니다.");
+        if(currentUserId == null){
+            throw  new BusinessLogicException(ExceptionCode.ACCESS_TOKEN_NOT_FOUND);
+        }
+
+        Qna qna = findQnaById(qnaId);
+
+        if (!qna.getUser().getId().equals(currentUserId)){
+            throw new BusinessLogicException(ExceptionCode.QNA_ACESS_DENIED);
         }
 
         qna.setTitle(requestDto.getTitle());
@@ -158,12 +180,17 @@ public class QnaService {
 
     //QnA 삭제
     @Transactional
-    public void deleteQna(Long qnaId, Long userId){
-        Qna qna = qnaRepository.findById(qnaId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.QNA_NOT_FOUND));
+    public void deleteQna(Long qnaId){
+        Long currentUserId = getCurrentUserId();
 
-        if(!qna.getUser().getId().equals(userId)){
-            throw new RuntimeException("삭제 권한이 없습니다.");
+        if(currentUserId == null){
+            throw  new BusinessLogicException(ExceptionCode.ACCESS_TOKEN_NOT_FOUND);
+        }
+
+        Qna qna = findQnaById(qnaId);
+
+        if(!qna.getUser().getId().equals(currentUserId)){
+            throw new BusinessLogicException(ExceptionCode.QNA_ACESS_DENIED);
         }
 
         qnaRepository.delete(qna);
@@ -176,8 +203,7 @@ public class QnaService {
     //답변 작성
     @Transactional
     public AnswerResponseDto createAnswer(Long qnaId, AnswerRequestDto requestDto){
-        Qna qna = qnaRepository.findById(qnaId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.QNA_NOT_FOUND));
+        Qna qna = findQnaById(qnaId);
 
         if(StringUtils.hasText(qna.getAnswer())){
             throw new BusinessLogicException(ExceptionCode.ANSWER_ALREADY_EXISTS);
@@ -191,8 +217,7 @@ public class QnaService {
     //답변 수정
     @Transactional
     public AnswerResponseDto updateAnswer(Long qnaId, AnswerRequestDto requestDto){
-        Qna qna = qnaRepository.findById(qnaId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.QNA_NOT_FOUND));
+        Qna qna = findQnaById(qnaId);
 
         if(!StringUtils.hasText(qna.getAnswer())){
             throw new BusinessLogicException(ExceptionCode.ANSWER_NOT_FOUND);
@@ -206,8 +231,7 @@ public class QnaService {
     //답변 삭제(answer필드 null 처리)
     @Transactional
     public void deleteAnswer(Long qnaId){
-        Qna qna = qnaRepository.findById(qnaId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.QNA_NOT_FOUND));
+        Qna qna = findQnaById(qnaId);
 
         if(!StringUtils.hasText(qna.getAnswer())){
             throw new BusinessLogicException(ExceptionCode.ANSWER_NOT_FOUND);
