@@ -3,40 +3,36 @@ package com.funding.backend.domain.project.service;
 import com.funding.backend.domain.donation.service.DonationService;
 import com.funding.backend.domain.pricingPlan.repository.PricingRepository;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
+import com.funding.backend.domain.project.dto.request.PopularProjectRequestDto;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
-import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
+import com.funding.backend.domain.project.dto.response.PopularProjectResponseDto;
 import com.funding.backend.domain.project.repository.ProjectRepository;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
-import com.funding.backend.domain.purchase.dto.request.PurchaseOptionRequestDto;
-import com.funding.backend.domain.purchase.dto.request.PurchaseProjectDetail;
 import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
 import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.domain.purchase.service.PurchaseService;
-import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
-import com.funding.backend.domain.purchaseCategory.service.PurchaseCategoryService;
-import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
 import com.funding.backend.domain.purchaseOption.service.PurchaseOptionService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
-import com.funding.backend.domain.user.service.UserService;
+import com.funding.backend.enums.PopularProjectSortType;
 import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
-import com.funding.backend.enums.ProvidingMethod;
+import com.funding.backend.enums.ProjectTypeFilter;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.s3.ImageService;
-import com.funding.backend.global.utils.s3.S3FileInfo;
 import com.funding.backend.security.jwt.TokenService;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -152,6 +148,24 @@ public class ProjectService {
         projectRepository.delete(project);
     }
 
+    public Page<PopularProjectResponseDto> getPopularProjects(PopularProjectRequestDto request, Pageable pageable) {
+        Page<Project> projects;
+
+        if (request.getSortType() == PopularProjectSortType.LIKE) {
+            if (request.getProjectType() == ProjectTypeFilter.ALL) {
+                projects = projectRepository.findAllByOrderByLikesDesc(pageable);
+            } else {
+                ProjectType projectType = ProjectType.valueOf(request.getProjectType().name());
+                projects = projectRepository.findByProjectTypeOrderByLikesDesc(projectType, pageable);
+            }
+        } else {
+            // 다른 정렬 타입이 추가될 경우를 대비한 확장 지점
+            throw new IllegalArgumentException("Unsupported sort type: " + request.getSortType());
+        }
+
+        return projects.map(PopularProjectResponseDto::new);
+    }
+
     private void validateBankAccountPresence(User user) {
         if (user.getAccount() == null && user.getBank() == null) {
             throw new BusinessLogicException(ExceptionCode.ACCOUNT_NOT_FOUND);
@@ -161,7 +175,5 @@ public class ProjectService {
             throw new BusinessLogicException(ExceptionCode.BANK_NOT_FOUND);
         }
     }
-
-
 
 }
