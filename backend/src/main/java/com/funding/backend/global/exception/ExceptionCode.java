@@ -38,6 +38,8 @@ public enum ExceptionCode {
     PURCHASE_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 입니다. "),
     INVALID_PROVIDING_METHOD(400, "제공 방식이 유효하지 않습니다."),
 
+    //사용자 예외처리
+    USER_NOT_FOUND(404,"존재하지 않는 유저 입니다."),
 
     //구매 카테고리 예외처리
     PURCHASE_CATEGORY_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 카테고리 입니다. "),
