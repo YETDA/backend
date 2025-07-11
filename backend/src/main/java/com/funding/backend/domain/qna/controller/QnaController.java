@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +28,8 @@ public class QnaController {
     @Operation(summary = "QnA 전체조회", description = "모든 QnA를 조회")
     @GetMapping
     public ResponseEntity<ApiResponse<Page<QnaResponseDto>>> getAllQna(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size){
+            Pageable pageable){
 
-        Pageable pageable = PageRequest.of(page, size);
         Page<QnaResponseDto> response = qnaService.findAllQna(pageable);
 
         return ResponseEntity
@@ -55,11 +52,8 @@ public class QnaController {
     @Operation(summary = "프로젝트별 QnA 조회", description = "특정 프로젝트의 Qna 조회")
     @GetMapping("/project/{projectId}")
     public ResponseEntity<ApiResponse<Page<QnaResponseDto>>> getQnaByProject(
-            @PathVariable Long projectId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size){
+            @PathVariable Long projectId,Pageable pageable){
 
-        Pageable pageable = PageRequest.of(page, size);
         Page<QnaResponseDto> response = qnaService.findQnaByProjectId(projectId, pageable);
 
         return  ResponseEntity
@@ -71,11 +65,8 @@ public class QnaController {
     @Operation(summary = "사용자별 QnA 조회", description = "특정 사용자의 QnA를 조회")
     @GetMapping("/user/{userId}")
     public ResponseEntity<ApiResponse<Page<QnaResponseDto>>> getQnaByUser(
-            @PathVariable Long userId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size){
+            @PathVariable Long userId,Pageable pageable){
 
-        Pageable pageable = PageRequest.of(page, size);
         Page<QnaResponseDto> response = qnaService.findQnaByUserId(userId, pageable);
 
         return ResponseEntity
