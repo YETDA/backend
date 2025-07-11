@@ -30,7 +30,6 @@ public class CustomOAuth2User implements OAuth2User {
         return user.getId().toString();  // 인증 주체 식별용
     }
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList(); // 필요 시 ROLE_USER 등 넣어도 됨
