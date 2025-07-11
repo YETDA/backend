@@ -7,12 +7,16 @@ import com.funding.backend.domain.notice.entity.Notice;
 import com.funding.backend.domain.notice.repository.NoticeRepository;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.service.ProjectService;
+import com.funding.backend.domain.user.entity.User;
+import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
+import com.funding.backend.security.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 @Service
@@ -22,23 +26,22 @@ public class NoticeService {
 
     private final NoticeRepository noticeRepository;
     private final ProjectService projectService;
+    private final UserService userService;
+    private final TokenService tokenService;
 
-    // TODO: 추후 회원 기능 개발 시 주석 해제
     /**
      * 공지사항을 생성합니다.
      *
-     * @param loginUserId 로그인한 사용자 ID (회원 기능 개발 시 주석 해제)
-     * @param projectId 프로젝트 ID
      * @param noticeCreateRequestDto   생성할 공지사항 정보
      * @return 생성된 공지사항 정보
      */
     @Transactional
-    public NoticeReseponseDto createNotice(/* Long loginUserId, */NoticeCreateRequestDto noticeCreateRequestDto) {
+    public NoticeReseponseDto createNotice(NoticeCreateRequestDto noticeCreateRequestDto) {
 
         Project project = projectService.findProjectById(noticeCreateRequestDto.getProjectId());
-//        User loginUser = userService.findUserById(loginUserId);
+        User loginUser = userService.getUserOrThrow(tokenService.getUserIdFromAccessToken());
 
-//        projectService.validProjectUser(project.getUser(), loginUser);
+        projectService.validProjectUser(project.getUser(), loginUser);
 
         Notice notice = Notice.builder()
                 .title(noticeCreateRequestDto.getTitle())
@@ -51,42 +54,39 @@ public class NoticeService {
         return new NoticeReseponseDto(savedNotice);
     }
 
-    // TODO: 추후 회원 기능 개발 시 주석 해제
     /**
      * 공지사항을 수정합니다.
      *
-     * @param loginUserId 로그인한 사용자 ID (회원 기능 개발 시 주석 해제)
      * @param noticeId 공지사항 ID
      * @param noticeUpdateRequestDto   수정할 공지사항 정보
      * @return 수정된 공지사항 정보
      */
     @Transactional
-    public NoticeReseponseDto updateNotice(/* Long loginUserId, */Long noticeId, NoticeUpdateRequestDto noticeUpdateRequestDto) {
+    public NoticeReseponseDto updateNotice(Long noticeId, NoticeUpdateRequestDto noticeUpdateRequestDto) {
 
         Notice notice = findNoticeById(noticeId);
-//        User loginUser = userService.findUserById(loginUserId);
+        User loginUser = userService.getUserOrThrow(tokenService.getUserIdFromAccessToken());
 
-//        projectService.validProjectUser(notice.getProject().getUser(), loginUser);
+        projectService.validProjectUser(notice.getProject().getUser(), loginUser);
 
         notice.update(noticeUpdateRequestDto.getTitle(), noticeUpdateRequestDto.getContent());
 
         return new NoticeReseponseDto(notice);
     }
 
-    // TODO: 추후 회원 기능 개발 시 주석 해제
-    @Transactional
     /**
      * 공지사항을 삭제합니다.
      *
      * @param noticeId 공지사항 ID
      */
-    public void deleteNotice(/* Long loginUserId, */Long noticeId) {
-
-//        User loginUser = userService.findUserById(loginUserId);
-//
-//        projectService.validProjectUser(notice.getProject().getUser(), loginUser);
+    @Transactional
+    public void deleteNotice(Long noticeId) {
 
         Notice notice = findNoticeById(noticeId);
+        User loginUser = userService.getUserOrThrow(tokenService.getUserIdFromAccessToken());
+
+        projectService.validProjectUser(notice.getProject().getUser(), loginUser);
+
         noticeRepository.delete(notice);
     }
 
@@ -96,9 +96,9 @@ public class NoticeService {
      * @param projectId 프로젝트 ID
      * @return 해당 프로젝트의 공지사항 목록
      */
-    public List<NoticeReseponseDto> findNoticesByProjectId(Long projectId) {
+    public List<NoticeReseponseDto> findNoticesByProjectId(Long projectId, Pageable pageable) {
         Project project = projectService.findProjectById(projectId);
-        List<Notice> notices = noticeRepository.findByProjectOrderByCreatedAtDesc(project);
+        List<Notice> notices = noticeRepository.findByProjectOrderByCreatedAtDesc(project, pageable);
         return notices.stream()
                 .map(NoticeReseponseDto::new)
                 .toList();
