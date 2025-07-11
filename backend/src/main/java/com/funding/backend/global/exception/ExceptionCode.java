@@ -20,6 +20,7 @@ public enum ExceptionCode {
     EMAIL_VERIFICATION_NOT_FOUND(404, "인증 요청이 존재하지 않습니다."),
     EMAIL_VERIFICATION_FAILED(401, "인증 코드가 일치하지 않습니다."),
     BANK_AND_ACCOUNT_REQUIRED(400, "은행명과 계좌번호를 모두 입력해야 합니다."),
+    ROLE_NOT_FOUND(404, "존재하지 않는 역할입니다."),
 
     //팔로우 예외 처리
     FOLLOW_NOT_FOUND(404, "팔로우 관계를 찾을 수 없습니다"),
@@ -38,6 +39,10 @@ public enum ExceptionCode {
     //구매 예외처리
     PURCHASE_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 입니다. "),
     INVALID_PROVIDING_METHOD(400, "제공 방식이 유효하지 않습니다."),
+
+    //유저 예외 처리
+    BANK_NOT_FOUND(404, "은행이 존재하지 않습니다."),
+    ACCOUNT_NOT_FOUND(404, "계좌가 존재하지 않습니다."),
 
     //구매 카테고리 예외처리
     PURCHASE_CATEGORY_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 카테고리 입니다. "),
