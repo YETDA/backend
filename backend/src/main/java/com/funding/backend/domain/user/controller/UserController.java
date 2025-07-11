@@ -119,5 +119,22 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/logout")
+    @Operation(summary = "로그아웃", description = "쿠키/토큰 삭제")
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        // 1. accessToken에서 userId 추출
+        Long userId = tokenService.getUserIdFromAccessToken();
+
+        // 2. Redis에서 refreshToken 삭제
+        refreshTokenService.deleteRefreshToken(userId);
+
+        // 3. accessToken 쿠키 삭제
+        tokenService.deleteCookie("accessToken");
+
+        return ResponseEntity.ok().build();
+    }
+
+
+
 
 }
