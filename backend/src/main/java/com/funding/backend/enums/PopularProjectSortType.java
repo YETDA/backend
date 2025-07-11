@@ -1,5 +1,7 @@
 package com.funding.backend.enums;
 
 public enum PopularProjectSortType {
-    LIKE
+    LIKE,
+    ACHIEVEMENT_RATE,
+    SELLING_AMOUNT
 }

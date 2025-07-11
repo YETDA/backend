@@ -33,7 +33,7 @@ public class PopularProjectResponseDto {
     private double achievementRate;
 
     @Schema(description = "구매 프로젝트의 구매 수", example = "200")
-    private int buycount;
+    private int sellingAmount;
 
     @Schema(description = "프로젝트 종료일", example = "2023-12-31T23:59:59")
     private LocalDateTime projectEndDate;
@@ -52,10 +52,10 @@ public class PopularProjectResponseDto {
         this.id = project.getId();
         this.title = project.getTitle();
         this.content = project.getIntroduce();
-        this.thumbnail = project.getProjectImage().isEmpty() ? null : project.getProjectImage().get(0).getImageUrl();
+        this.thumbnail = project.getProjectImage().isEmpty() ? null : project.getProjectImage().getFirst().getImageUrl();
         this.projectType = project.getProjectType();
         this.projectLikeCount = project.getLikeList() != null ? project.getLikeList().size() : 0;
-        this.buycount = project.getOrderList().size();
+        this.sellingAmount = project.getOrderList().size();
         this.hostName = project.getUser().getName();
         this.hostProfileImageUrl = project.getUser().getImage();
 

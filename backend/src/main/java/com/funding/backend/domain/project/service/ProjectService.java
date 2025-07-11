@@ -32,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -158,9 +157,23 @@ public class ProjectService {
                 ProjectType projectType = ProjectType.valueOf(request.getProjectType().name());
                 projects = projectRepository.findByProjectTypeOrderByLikesDesc(projectType, pageable);
             }
-        } else {
+        } else if (request.getSortType() == PopularProjectSortType.SELLING_AMOUNT) {
+            if (request.getProjectType() == ProjectTypeFilter.ALL) {
+                projects = projectRepository.findAllByOrderBySellingAmountDesc(pageable);
+            } else {
+                ProjectType projectType = ProjectType.valueOf(request.getProjectType().name());
+                projects = projectRepository.findByProjectTypeOrderBySellingAmountDesc(projectType, pageable);
+            }
+        } else if (request.getSortType() == PopularProjectSortType.ACHIEVEMENT_RATE) {
+            if (request.getProjectType() == ProjectTypeFilter.DONATION) {
+                projects = projectRepository.findAllByOrderByAchievementRateDesc(pageable);
+            } else {
+                throw new BusinessLogicException(ExceptionCode.INVALID_PROJECT_SEARCH_TYPE);
+            }
+        }
+        else {
             // 다른 정렬 타입이 추가될 경우를 대비한 확장 지점
-            throw new IllegalArgumentException("Unsupported sort type: " + request.getSortType());
+            throw new BusinessLogicException(ExceptionCode.INVALID_PROJECT_SEARCH_TYPE);
         }
 
         return projects.map(PopularProjectResponseDto::new);
