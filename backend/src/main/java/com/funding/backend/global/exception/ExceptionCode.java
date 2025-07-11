@@ -36,6 +36,11 @@ public enum ExceptionCode {
     INVALID_PROVIDING_METHOD(400, "제공 방식이 유효하지 않습니다."),
 
 
+    //유저 예외 처리
+    BANK_NOT_FOUND(404, "은행이 존재하지 않습니다."),
+    ACCOUNT_NOT_FOUND(404, "계좌가 존재하지 않습니다."),
+
+
     //구매 카테고리 예외처리
     PURCHASE_CATEGORY_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 카테고리 입니다. "),
 
