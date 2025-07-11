@@ -42,6 +42,8 @@ dependencies {
     //S3 의존성
     implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
 
+    //토스 의존성
+    implementation("com.googlecode.json-simple:json-simple:1.1.1")
     // 인증/인가
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
@@ -51,6 +53,11 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
     // redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
+    //toss
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("io.netty:netty-resolver-dns-native-macos:4.1.100.Final:osx-aarch_64")
+
 
     //email 인증
     implementation("org.springframework.boot:spring-boot-starter-mail")

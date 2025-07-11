@@ -83,8 +83,9 @@ public class TokenService {
         response.addHeader("Set-Cookie", cookie.toString());
     }
 
-    public void createTokenByUserRole(){
-        Role role = roleRepository.findById(1L).orElseThrow(()->new BusinessLogicException(ExceptionCode.ROLE_NOT_FOUND));
+    public void createTokenByUserRole() {
+        Role role = roleRepository.findById(1L)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ROLE_NOT_FOUND));
         User user = User.builder()
                 .email("user@email.com")
                 .name("user유저")
@@ -93,14 +94,15 @@ public class TokenService {
                 .build();
 
         userRepository.save(user);
-        String accessToken = jwtTokenizer.createAccessToken(user.getId(),user.getEmail(),user.getName(),user.getRole().getRole());
+        String accessToken = jwtTokenizer.createAccessToken(user.getId(), user.getEmail(), user.getName(),
+                user.getRole().getRole());
 
         setCookie("accessToken", accessToken);
-
     }
 
-    public void createTokenByAdminRole(){
-        Role role = roleRepository.findById(2L).orElseThrow(()->new BusinessLogicException(ExceptionCode.ROLE_NOT_FOUND));
+    public void createTokenByAdminRole() {
+        Role role = roleRepository.findById(2L)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ROLE_NOT_FOUND));
         User user = User.builder()
                 .email("admin@email.com")
                 .role(role)
@@ -109,10 +111,10 @@ public class TokenService {
                 .build();
 
         userRepository.save(user);
-        String accessToken = jwtTokenizer.createAccessToken(user.getId(),user.getEmail(),user.getName(),user.getRole().getRole());
+        String accessToken = jwtTokenizer.createAccessToken(user.getId(), user.getEmail(), user.getName(),
+                user.getRole().getRole());
 
         setCookie("accessToken", accessToken);
-
     }
 
     public void setCookie(String name, String value) {
@@ -121,16 +123,9 @@ public class TokenService {
                 .sameSite("Strict")
                 .secure(true)
                 .httpOnly(true)
-                .maxAge(Math.toIntExact(JwtTokenizer.ACCESS_TOKEN_EXPIRE_TIME/1000))
+                .maxAge(Math.toIntExact(JwtTokenizer.ACCESS_TOKEN_EXPIRE_TIME / 1000))
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
     }
-
-
-    public void createTokenByUserADMIN(){
-
-    }
-
-
 }

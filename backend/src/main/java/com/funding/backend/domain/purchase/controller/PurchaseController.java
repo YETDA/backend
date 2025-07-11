@@ -65,10 +65,6 @@ public class PurchaseController {
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "구매형 프로젝트 수정 성공"));
     }
 
-
-
-
-
     //프로젝트에서 삭제하는거 있긴한데, 혹시 몰라서 만들어둠
     @DeleteMapping("/{projectId}")
     @Operation(

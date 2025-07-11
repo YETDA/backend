@@ -10,13 +10,13 @@ import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
+import com.funding.backend.global.utils.ApiResponse;
 import com.funding.backend.security.jwt.RefreshTokenService;
 import com.funding.backend.security.jwt.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,97 +44,92 @@ public class UserController {
 
     @GetMapping("/mypage")
     @Operation(summary = "마이페이지 사용자 정보 조회", description = "사용자의 정보를 조회합니다.")
-    public ResponseEntity<UserProfileResponse> getMyPage() {
+    public ResponseEntity<ApiResponse<UserProfileResponse>> getMyPage() {
         Long userId = tokenService.getUserIdFromAccessToken();
-        return ResponseEntity.ok(userService.getMyProfile(userId));
+        UserProfileResponse response = userService.getMyProfile(userId);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "마이페이지 정보 조회 성공", response));
     }
 
     @PutMapping(value = "/mypage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "마이페이지 사용자 정보 수정", description = "사용자의 정보를 수정합니다.")
-    public ResponseEntity<Void> updateMyPage(@RequestPart("info") UserProfileUpdateRequest request,
-                                             @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+    public ResponseEntity<ApiResponse<Void>> updateMyPage(@RequestPart("info") UserProfileUpdateRequest request,
+                                                          @RequestPart(value = "image", required = false) MultipartFile imageFile) {
         Long userId = tokenService.getUserIdFromAccessToken();
         userService.updateUserProfile(userId, request, imageFile);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "마이페이지 수정 성공"));
     }
 
     @GetMapping("/check-email")
     @Operation(summary = "이메일 중복 확인", description = "사용자의 이메일 정보를 수정시 중복 확인을 합니다.")
-    public ResponseEntity<Void> checkEmail(@RequestParam(name = "email") String email) {
+    public ResponseEntity<ApiResponse<Void>> checkEmail(@RequestParam(name = "email") String email) {
         boolean exists = userService.checkEmailDuplication(email);
         if (exists) {
             throw new BusinessLogicException(ExceptionCode.EMAIL_ALREADY_EXISTS);
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "사용 가능한 이메일입니다."));
     }
 
     @PostMapping("/send-verification")
     @Operation(summary = "이메일 인증 코드 메일 전송", description = "사용자의 이메일 정보를 수정시 이메일 인증 확인을 위해 인증 코드 메일을 전송합니다.")
-    public ResponseEntity<Void> sendVerification(@RequestParam(name = "email") String email) {
+    public ResponseEntity<ApiResponse<Void>> sendVerification(@RequestParam(name = "email") String email) {
         emailService.sendVerificationCode(email);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "인증 코드 전송 성공"));
     }
 
     @PostMapping("/verify-code")
     @Operation(summary = "이메일 인증 코드 검증", description = "사용자의 이메일 정보를 수정시 입력한 이메일 인증 코드를 검증합니다.")
-    public ResponseEntity<Boolean> verifyCode(@RequestParam(name = "email") String email,
-                                              @RequestParam(name = "code") String code) {
+    public ResponseEntity<ApiResponse<Boolean>> verifyCode(@RequestParam(name = "email") String email,
+                                                           @RequestParam(name = "code") String code) {
         boolean result = emailService.verifyCode(email, code);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "이메일 인증 성공", result));
     }
 
     @GetMapping("/mypage/account")
     @Operation(summary = "은행 정보 및 계좌 조회", description = "현재 로그인한 사용자의 은행명과 계좌번호를 조회합니다.")
-    public ResponseEntity<UserAccountInfo> getAccountInfo() {
+    public ResponseEntity<ApiResponse<UserAccountInfo>> getAccountInfo() {
         Long userId = tokenService.getUserIdFromAccessToken();
         UserAccountInfo response = userService.getBankInfo(userId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "계좌 정보 조회 성공", response));
     }
 
     @PutMapping("/mypage/account")
     @Operation(summary = "은행 정보 및 계좌 등록/수정", description = "사용자의 은행명과 계좌번호를 등록하거나 수정합니다.")
-    public ResponseEntity<Void> updateAccountInfo(@RequestBody UserAccountInfo request) {
+    public ResponseEntity<ApiResponse<Void>> updateAccountInfo(@RequestBody UserAccountInfo request) {
         Long userId = tokenService.getUserIdFromAccessToken();
         userService.updateBankInfo(userId, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "계좌 정보 수정 성공"));
     }
 
     @DeleteMapping("/mypage/account")
     @Operation(summary = "은행 정보 및 계좌 삭제", description = "사용자의 은행명과 계좌번호를 삭제합니다.")
-    public ResponseEntity<Void> deleteAccountInfo() {
+    public ResponseEntity<ApiResponse<Void>> deleteAccountInfo() {
         Long userId = tokenService.getUserIdFromAccessToken();
         userService.deleteBankInfo(userId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "계좌 정보 삭제 성공"));
     }
 
     @GetMapping("/me")
     @Operation(summary = "사용자 정보 전체 조회", description = "사용자의 모든 정보를 조회합니다.")
-    public ResponseEntity<UserInfoResponse> getMyInfo(HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<UserInfoResponse>> getMyInfo() {
         Long userId = tokenService.getUserIdFromAccessToken();
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
         UserInfoResponse response = UserInfoResponse.from(user);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "사용자 정보 조회 성공", response));
     }
 
     @PostMapping("/logout")
     @Operation(summary = "로그아웃", description = "쿠키/토큰 삭제")
-    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-        // 1. accessToken에서 userId 추출
+    public ResponseEntity<ApiResponse<Void>> logout() {
         Long userId = tokenService.getUserIdFromAccessToken();
 
-        // 2. Redis에서 refreshToken 삭제
+        // Redis에서 refreshToken 삭제
         refreshTokenService.deleteRefreshToken(userId);
-
-        // 3. accessToken 쿠키 삭제
+        // accessToken 쿠키 삭제
         tokenService.deleteCookie("accessToken");
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "로그아웃 성공"));
     }
-
-
-
-
 }

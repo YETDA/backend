@@ -29,7 +29,8 @@ public class YetdaSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers("/**").permitAll()
-//                        .requestMatchers("/api/v1/user/logout").permitAll()
+                        .requestMatchers("/api/v1/user/logout").permitAll()
+
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo
@@ -39,6 +40,7 @@ public class YetdaSecurityConfig {
                 )
                 .formLogin(form -> form.disable())
                 .httpBasic(httpBasic -> httpBasic.disable());
+
 
         return http.build();
     }

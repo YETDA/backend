@@ -93,7 +93,6 @@ public class ProjectService {
     @Transactional
     public void  updatePurchaseProject(Long projectId, PurchaseUpdateRequestDto purchaseUpdateRequestDto) {
         Project project = findProjectById(projectId);
-
         User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
                 .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
