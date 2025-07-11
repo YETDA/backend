@@ -4,6 +4,7 @@ import com.funding.backend.domain.like.service.LikeService;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,45 +22,37 @@ public class LikeController {
 
     private final LikeService likeService;
 
-    // TODO: 추후 회원 기능 개발 시 주석 해제
     @Operation(
             summary = "좋아요 토글",
-            description = "프로젝트에 대한 좋아요를 추가하거나 취소합니다."
-//            security = @SecurityRequirement(name = "JWT")
+            description = "프로젝트에 대한 좋아요를 추가하거나 취소합니다.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @PostMapping("/project/{projectId}")
     public ResponseEntity<ApiResponse<Boolean>> toggleLike(
-            /* Long loginUserId, */
             @PathVariable Long projectId) {
-        // TODO: User 기능 구현 후 임의 userId 제거 후 loginUserId 사용
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "좋아요 토글 성공", likeService.toggleLike(3L,/* loginUserId, */projectId)));
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "좋아요 토글 성공", likeService.toggleLike(projectId)));
     }
 
-    // TODO: 추후 회원 기능 개발 시 주석 해제
     @Operation(
             summary = "좋아요한 프로젝트 목록 조회",
-            description = "사용자가 좋아요한 프로젝트 목록을 조회합니다."
-//            security = @SecurityRequirement(name = "JWT")
+            description = "사용자가 좋아요한 프로젝트 목록을 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/project")
     public ResponseEntity<ApiResponse<Page<ProjectResponseDto>>> getLikedProjects(
-            /* Long loginUserId, */
             Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "좋아요한 프로젝트 조회 성공", likeService.getLikedProjects(3L, /* loginUserId, */pageable)));
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "좋아요한 프로젝트 조회 성공", likeService.getLikedProjects(pageable)));
     }
 
-    // TODO: 추후 회원 기능 개발 시 주석 해제
     @Operation(
             summary = "좋아요 여부 조회",
-            description = "특정 프로젝트에 대해 사용자가 좋아요를 눌렀는지 여부를 조회합니다."
-//            security = @SecurityRequirement(name = "JWT")
+            description = "특정 프로젝트에 대해 사용자가 좋아요를 눌렀는지 여부를 조회합니다.",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/project/{projectId}/liked")
     public ResponseEntity<ApiResponse<Boolean>> isLikedByUser(
-            /* Long loginUserId, */
             @PathVariable Long projectId) {
-        // TODO: User 기능 구현 후 임의 userId 제거 후 loginUserId 사용
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "좋아요 여부 조회 성공", likeService.isLikedByUser(3L,/* loginUserId, */ projectId)));
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "좋아요 여부 조회 성공", likeService.isLikedByUser(projectId)));
     }
 
     @Operation(
