@@ -45,6 +45,8 @@ public class ProjectCreateRequestDto {
 
     private String field; // 선택 값이므로 필수 아님
 
+    private Long purchaseCategoryId;
+
     //이미지
     private List<MultipartFile> contentImage = new ArrayList<>();
 
