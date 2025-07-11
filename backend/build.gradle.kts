@@ -58,6 +58,8 @@ dependencies {
     implementation("io.netty:netty-resolver-dns-native-macos:4.1.100.Final:osx-aarch_64")
 
 
+    //email 인증
+    implementation("org.springframework.boot:spring-boot-starter-mail")
 }
 
 tasks.withType<Test> {
