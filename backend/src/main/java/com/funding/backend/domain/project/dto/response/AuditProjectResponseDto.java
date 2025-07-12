@@ -9,11 +9,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class ReviewProjectResponseDto {
+public class AuditProjectResponseDto {
     @Schema(description = "프로젝트 ID", example = "1")
     private Long id;
 
-    @Schema(description = "프로젝트 상태", example = "UNDER_REVIEW")
+    @Schema(description = "프로젝트 상태", example = "UNDER_AUDIT")
     private ProjectStatus status;
 
     @Schema(description = "프로젝트 타입 (구매/기부)", example = "PURCHASE")
@@ -35,7 +35,7 @@ public class ReviewProjectResponseDto {
     private List<String> images;
 
     @Schema(description = "프로젝트 목표 금액", example = "5000000")
-    private Long priceCoal;
+    private Long priceGoal;
 
     @Schema(description = "프로젝트 등록일", example = "2023-01-01T00:00:00")
     private LocalDateTime createdDate;
@@ -52,7 +52,7 @@ public class ReviewProjectResponseDto {
     @Schema(description = "제작자 프로필 이미지 URL", example = "https://example.com/profile.jpg")
     private String hostProfileImageUrl;
 
-    public ReviewProjectResponseDto(Project project) {
+    public AuditProjectResponseDto(Project project) {
         this.id = project.getId();
         this.status = project.getProjectStatus();
         this.type = project.getProjectType();
@@ -70,11 +70,11 @@ public class ReviewProjectResponseDto {
         if (project.getProjectType() == ProjectType.PURCHASE && project.getPurchase() != null) {
             this.endDate = null;
             this.category = project.getPurchase().getPurchaseCategory().getName();
-            this.priceCoal = null;
+            this.priceGoal = null;
         } else if (project.getProjectType() == ProjectType.DONATION && project.getDonation() != null) {
             this.endDate = project.getDonation().getEndDate();
-            this.category = project.getDonation().getPurchaseCategory().getName();
-            this.priceCoal = project.getDonation().getPriceCoal();
+            this.category = project.getDonation().getMainCategory().getName();
+            this.priceGoal = project.getDonation().getPriceGoal();
         } else {
             this.endDate = null;
         }

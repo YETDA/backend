@@ -6,10 +6,10 @@ import com.funding.backend.domain.pricingPlan.repository.PricingRepository;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
-import com.funding.backend.domain.project.dto.response.ReviewProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.AuditProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.ProjectSearchResponseDto;
 import com.funding.backend.domain.project.entity.Project;
-import com.funding.backend.domain.project.dto.response.PopularProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
 import com.funding.backend.domain.project.repository.ProjectRepository;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
@@ -64,7 +64,7 @@ public class ProjectService {
                 .introduce(dto.getIntroduce())
                 .title(dto.getTitle())
                 .content(dto.getContent())
-                .projectStatus(ProjectStatus.UNDER_REVIEW) //처음 만들때는 심사중으로
+                .projectStatus(ProjectStatus.UNDER_AUDIT) //처음 만들때는 심사중으로
                 .pricingPlan(pricingService.findById(dto.getPricingPlanId()))
                 .projectType(ProjectType.PURCHASE)
                 .user(loginUser)
@@ -151,7 +151,7 @@ public class ProjectService {
         projectRepository.delete(project);
     }
 
-    public Page<PopularProjectResponseDto> getPopularProjects(ProjectTypeFilter requestProjectType, PopularProjectSortType requestSortType, Pageable pageable) {
+    public Page<ProjectInfoResponseDto> getPopularProjects(ProjectTypeFilter requestProjectType, PopularProjectSortType requestSortType, Pageable pageable) {
         Page<Project> projects;
 
         if (requestSortType == PopularProjectSortType.LIKE) {
@@ -180,19 +180,19 @@ public class ProjectService {
             throw new BusinessLogicException(ExceptionCode.INVALID_PROJECT_SEARCH_TYPE);
         }
 
-        return projects.map(PopularProjectResponseDto::new);
+        return projects.map(ProjectInfoResponseDto::new);
     }
 
-    public Page<ReviewProjectResponseDto> findAllUnderReviewProjects(Pageable pageable) {
-        return projectRepository.findAllByProjectStatusIn(List.of(ProjectStatus.UNDER_REVIEW, ProjectStatus.REJECTED), pageable).map(ReviewProjectResponseDto::new);
+    public Page<AuditProjectResponseDto> findAllUnderAuditProjects(Pageable pageable) {
+        return projectRepository.findAllByProjectStatusIn(List.of(ProjectStatus.UNDER_AUDIT), pageable).map(AuditProjectResponseDto::new);
     }
 
     @Transactional
-    public ReviewProjectResponseDto updateProjectStatus(Long projectId, ProjectStatus status) {
+    public AuditProjectResponseDto updateProjectStatus(Long projectId, ProjectStatus status) {
         Project project = findProjectById(projectId);
         project.setProjectStatus(status);
 
-        return new ReviewProjectResponseDto(project);
+        return new AuditProjectResponseDto(project);
     }
 
 
