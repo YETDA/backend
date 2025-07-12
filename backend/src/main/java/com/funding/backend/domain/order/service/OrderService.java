@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +44,7 @@ public class OrderService {
         orderRepository.delete(order);
     }
 
-    public Page<OrderResponseDto> getUserOrderList(int page, int size) {
+    public Page<OrderResponseDto> getUserOrderListResponse(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
         User loginUser = userService.findUserById(tokenService.getUserIdFromAccessToken());
 
@@ -52,7 +53,9 @@ public class OrderService {
         return orderPage.map(OrderResponseDto::from);
     }
 
+    public Page<Order> getUserOrderList(Pageable pageable) {
+        User loginUser = userService.findUserById(tokenService.getUserIdFromAccessToken());
 
-
-
+        return orderRepository.findOrdersByUserAndStatus(loginUser, TossPaymentStatus.DONE, pageable);
+    }
 }

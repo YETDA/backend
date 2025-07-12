@@ -31,13 +31,13 @@ public class OrderController {
     @GetMapping
     @Operation(
             summary = "사용자 주문(구매 내역) 목록 조회",
-            description = "사용자가 구매한 주문 목록을 페이지네이션 방식으로 조회합니다."
+            description = "사용자가 구매한 주문 목록을 페이지네이션 방식으로 조회합니다.( 기부형, 창작물형 포함) "
     )
     public ResponseEntity<ApiResponse<Page<OrderResponseDto>>> getUserOrderList(
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "10") int size) {
 
-        Page<OrderResponseDto> response = orderService.getUserOrderList(page, size);
+        Page<OrderResponseDto> response = orderService.getUserOrderListResponse(page, size);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.of(HttpStatus.CREATED.value(), "유저 구매 리스트 조회 완료",response));
