@@ -1,8 +1,9 @@
 package com.funding.backend.domain.project.entity;
 
-import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
+import com.funding.backend.domain.donation.entity.Donation;
 import com.funding.backend.domain.like.entity.Like;
 import com.funding.backend.domain.notice.entity.Notice;
+import com.funding.backend.domain.order.entity.Order;
 import com.funding.backend.domain.pricingPlan.entity.PricingPlan;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.domain.purchase.entity.Purchase;
@@ -78,12 +79,16 @@ public class Project extends Auditable {
     @OneToOne(mappedBy = "project", cascade = CascadeType.REMOVE)
     private Purchase purchase;
 
+    @OneToOne(mappedBy = "project", cascade = CascadeType.REMOVE)
+    private Donation donation;
+
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = false)
     List<Notice> noticeList = new ArrayList<>();
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = false)
     List<Like> likeList = new ArrayList<>();
 
-
+    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = false)
+    List<Order> orderList = new ArrayList<>();
 
 }
