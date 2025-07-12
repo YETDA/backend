@@ -6,7 +6,7 @@ import com.funding.backend.domain.pricingPlan.service.PricingService;
 import com.funding.backend.domain.project.dto.request.PopularProjectRequestDto;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
-import com.funding.backend.domain.project.dto.response.UnderReviewProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.ReviewProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.dto.response.PopularProjectResponseDto;
 import com.funding.backend.domain.project.repository.ProjectRepository;
@@ -17,10 +17,8 @@ import com.funding.backend.domain.purchase.service.PurchaseService;
 import com.funding.backend.domain.purchaseOption.service.PurchaseOptionService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
-import com.funding.backend.enums.PopularProjectSortType;
-import com.funding.backend.enums.ProjectStatus;
-import com.funding.backend.enums.ProjectType;
-import com.funding.backend.enums.ProjectTypeFilter;
+import com.funding.backend.domain.user.service.UserService;
+import com.funding.backend.enums.*;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.s3.ImageService;
@@ -50,6 +48,7 @@ public class ProjectService {
     private final UserRepository userRepository;
     private final PurchaseOptionService purchaseOptionService;
     private final TokenService tokenService;
+    private final UserService userService;
 
     @Transactional
     public void createPurchaseProject(ProjectCreateRequestDto dto){
@@ -180,8 +179,24 @@ public class ProjectService {
         return projects.map(PopularProjectResponseDto::new);
     }
 
-    public Page<UnderReviewProjectResponseDto> findAllUnderReviewProjects(Pageable pageable) {
-        return projectRepository.findAllByProjectStatus(ProjectStatus.UNDER_REVIEW, pageable).map(UnderReviewProjectResponseDto::new);
+    public Page<ReviewProjectResponseDto> findAllUnderReviewProjects(Pageable pageable) {
+        return projectRepository.findAllByProjectStatusIn(List.of(ProjectStatus.UNDER_REVIEW, ProjectStatus.REJECTED), pageable).map(ReviewProjectResponseDto::new);
+    }
+
+    @Transactional
+    public ReviewProjectResponseDto approveProject(Long projectId) {
+        Project project = findProjectById(projectId);
+        project.setProjectStatus(ProjectStatus.RECRUITING);
+
+        return new ReviewProjectResponseDto(project);
+    }
+
+    @Transactional
+    public ReviewProjectResponseDto rejectProject(Long projectId) {
+        Project project = findProjectById(projectId);
+        project.setProjectStatus(ProjectStatus.REJECTED);
+
+        return new ReviewProjectResponseDto(project);
     }
 
     private void validateBankAccountPresence(User user) {

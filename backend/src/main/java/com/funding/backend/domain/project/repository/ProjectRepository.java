@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+
 @Repository
 public interface ProjectRepository extends JpaRepository<Project,Long> {
 
@@ -75,5 +77,5 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
             nativeQuery = true)
     Page<Project> findAllByOrderByAchievementRateDesc(Pageable pageable);
 
-    Page<Project> findAllByProjectStatus(ProjectStatus projectStatus, Pageable pageable);
+    Page<Project> findAllByProjectStatusIn(Collection<ProjectStatus> projectStatuses, Pageable pageable);
 }
