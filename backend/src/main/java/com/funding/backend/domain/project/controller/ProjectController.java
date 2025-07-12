@@ -1,17 +1,18 @@
 package com.funding.backend.domain.project.controller;
 
 
-import com.funding.backend.domain.project.dto.request.PopularProjectRequestDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
-import com.funding.backend.domain.project.dto.response.PopularProjectResponseDto;
-import com.funding.backend.domain.project.dto.response.ReviewProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
 import com.funding.backend.domain.project.dto.response.ProjectSearchResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
+import com.funding.backend.enums.PopularProjectSortType;
+import com.funding.backend.enums.ProjectTypeFilter;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -60,26 +61,15 @@ public class ProjectController {
             summary = "인기 프로젝트 조회",
             description = "프로젝트 타입과 정렬 기준에 따라 인기 프로젝트를 조회합니다."
     )
-    public ResponseEntity<ApiResponse<Page<PopularProjectResponseDto>>> getPopularProjects(
-            @ModelAttribute PopularProjectRequestDto request,
-            Pageable pageable
+    public ResponseEntity<ApiResponse<Page<ProjectInfoResponseDto>>> getPopularProjects(
+            @RequestParam ProjectTypeFilter projectType,
+            @RequestParam PopularProjectSortType sortType,
+            @ParameterObject Pageable pageable
     ) {
-        Page<PopularProjectResponseDto> response = projectService.getPopularProjects(request, pageable);
+        Page<ProjectInfoResponseDto> response = projectService.getPopularProjects(projectType, sortType, pageable);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.of(HttpStatus.OK.value(), "인기 프로젝트 조회 성공", response));
-    }
-
-    @GetMapping("under-review")
-    @Operation(
-            summary = "심사 중인 프로젝트 조회",
-            description = "심사 중인 프로젝트를 조회합니다."
-    )
-    public ResponseEntity<ApiResponse<Page<ReviewProjectResponseDto>>> findAllUnderReviewProjects(Pageable pageable) {
-        Page<ReviewProjectResponseDto> response = projectService.findAllUnderReviewProjects(pageable);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.of(HttpStatus.OK.value(), "심사 중인 프로젝트 조회 성공", response));
     }
 
     @Operation(summary = "프로젝트 검색 기능", description = "두 글자 이상 포함된 프로젝트 제목 검색")

@@ -1,15 +1,15 @@
 package com.funding.backend.domain.project.service;
 
+import com.funding.backend.domain.donation.service.DonationProjectService;
 import com.funding.backend.domain.donation.service.DonationService;
 import com.funding.backend.domain.pricingPlan.repository.PricingRepository;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
-import com.funding.backend.domain.project.dto.request.PopularProjectRequestDto;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
-import com.funding.backend.domain.project.dto.response.ReviewProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.AuditProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.ProjectSearchResponseDto;
 import com.funding.backend.domain.project.entity.Project;
-import com.funding.backend.domain.project.dto.response.PopularProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
 import com.funding.backend.domain.project.repository.ProjectRepository;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
@@ -50,6 +50,8 @@ public class ProjectService {
     private final PurchaseService purchaseService;
     private final UserRepository userRepository;
     private final PurchaseOptionService purchaseOptionService;
+    private final DonationProjectService donationProjectService;
+
     private final TokenService tokenService;
     private final UserService userService;
 
@@ -62,7 +64,7 @@ public class ProjectService {
                 .introduce(dto.getIntroduce())
                 .title(dto.getTitle())
                 .content(dto.getContent())
-                .projectStatus(ProjectStatus.UNDER_REVIEW) //처음 만들때는 심사중으로
+                .projectStatus(ProjectStatus.UNDER_AUDIT) //처음 만들때는 심사중으로
                 .pricingPlan(pricingService.findById(dto.getPricingPlanId()))
                 .projectType(ProjectType.PURCHASE)
                 .user(loginUser)
@@ -131,8 +133,8 @@ public class ProjectService {
 
         if (project.getProjectType() == ProjectType.PURCHASE) {
             return purchaseService.createPurchaseProjectResponse(project);
-//        } else if (project.getProjectType() == ProjectType.DONATION) {
-//            return createDonationProjectResponse(project);
+        } else if (project.getProjectType() == ProjectType.DONATION) {
+            return donationService.createDonationProjectResponse(project);
         } else {
             throw new BusinessLogicException(ExceptionCode.INVALID_PROJECT_TYPE);
         }
@@ -149,25 +151,25 @@ public class ProjectService {
         projectRepository.delete(project);
     }
 
-    public Page<PopularProjectResponseDto> getPopularProjects(PopularProjectRequestDto request, Pageable pageable) {
+    public Page<ProjectInfoResponseDto> getPopularProjects(ProjectTypeFilter requestProjectType, PopularProjectSortType requestSortType, Pageable pageable) {
         Page<Project> projects;
 
-        if (request.getSortType() == PopularProjectSortType.LIKE) {
-            if (request.getProjectType() == ProjectTypeFilter.ALL) {
+        if (requestSortType == PopularProjectSortType.LIKE) {
+            if (requestProjectType == ProjectTypeFilter.ALL) {
                 projects = projectRepository.findAllByOrderByLikesDesc(pageable);
             } else {
-                ProjectType projectType = ProjectType.valueOf(request.getProjectType().name());
+                ProjectType projectType = ProjectType.valueOf(requestProjectType.name());
                 projects = projectRepository.findByProjectTypeOrderByLikesDesc(projectType, pageable);
             }
-        } else if (request.getSortType() == PopularProjectSortType.SELLING_AMOUNT) {
-            if (request.getProjectType() == ProjectTypeFilter.ALL) {
+        } else if (requestSortType == PopularProjectSortType.SELLING_AMOUNT) {
+            if (requestProjectType == ProjectTypeFilter.ALL) {
                 projects = projectRepository.findAllByOrderBySellingAmountDesc(pageable);
             } else {
-                ProjectType projectType = ProjectType.valueOf(request.getProjectType().name());
+                ProjectType projectType = ProjectType.valueOf(requestProjectType.name());
                 projects = projectRepository.findByProjectTypeOrderBySellingAmountDesc(projectType, pageable);
             }
-        } else if (request.getSortType() == PopularProjectSortType.ACHIEVEMENT_RATE) {
-            if (request.getProjectType() == ProjectTypeFilter.DONATION) {
+        } else if (requestSortType == PopularProjectSortType.ACHIEVEMENT_RATE) {
+            if (requestProjectType == ProjectTypeFilter.DONATION) {
                 projects = projectRepository.findAllByOrderByAchievementRateDesc(pageable);
             } else {
                 throw new BusinessLogicException(ExceptionCode.INVALID_PROJECT_SEARCH_TYPE);
@@ -178,28 +180,22 @@ public class ProjectService {
             throw new BusinessLogicException(ExceptionCode.INVALID_PROJECT_SEARCH_TYPE);
         }
 
-        return projects.map(PopularProjectResponseDto::new);
+        return projects.map(ProjectInfoResponseDto::new);
     }
 
-    public Page<ReviewProjectResponseDto> findAllUnderReviewProjects(Pageable pageable) {
-        return projectRepository.findAllByProjectStatusIn(List.of(ProjectStatus.UNDER_REVIEW, ProjectStatus.REJECTED), pageable).map(ReviewProjectResponseDto::new);
-    }
-
-    @Transactional
-    public ReviewProjectResponseDto approveProject(Long projectId) {
-        Project project = findProjectById(projectId);
-        project.setProjectStatus(ProjectStatus.RECRUITING);
-
-        return new ReviewProjectResponseDto(project);
+    public Page<AuditProjectResponseDto> findAllUnderAuditProjects(Pageable pageable) {
+        return projectRepository.findAllByProjectStatusIn(List.of(ProjectStatus.UNDER_AUDIT), pageable).map(AuditProjectResponseDto::new);
     }
 
     @Transactional
-    public ReviewProjectResponseDto rejectProject(Long projectId) {
+    public AuditProjectResponseDto updateProjectStatus(Long projectId, ProjectStatus status) {
         Project project = findProjectById(projectId);
-        project.setProjectStatus(ProjectStatus.REJECTED);
+        project.setProjectStatus(status);
 
-        return new ReviewProjectResponseDto(project);
+        return new AuditProjectResponseDto(project);
     }
+
+
 
     private void validateBankAccountPresence(User user) {
         if (user.getAccount() == null && user.getBank() == null) {

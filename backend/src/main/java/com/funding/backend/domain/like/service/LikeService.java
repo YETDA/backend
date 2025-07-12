@@ -2,7 +2,7 @@ package com.funding.backend.domain.like.service;
 
 import com.funding.backend.domain.like.entity.Like;
 import com.funding.backend.domain.like.repository.LikeRepository;
-import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.user.entity.User;
@@ -59,7 +59,7 @@ public class LikeService {
      * @param pageable 페이징 정보
      * @return 좋아요한 프로젝트 목록
      */
-    public Page<ProjectResponseDto> getLikedProjects(Pageable pageable) {
+    public Page<ProjectInfoResponseDto> getLikedProjects(Pageable pageable) {
         Long userId = tokenService.getUserIdFromAccessToken();
         Page<Like> likes = likeRepository.findByUserId(userId, pageable);
 
@@ -68,8 +68,7 @@ public class LikeService {
         }
 
         // TODO: ProjectResponseDto 구현 뒤 빈 배열 return 삭제 후 아래 주석 해제
-        return new PageImpl<>(List.of());
-//        return likes.map(like -> new ProjectResponseDto(like.getProject()));
+        return likes.map(like -> new ProjectInfoResponseDto(like.getProject()));
     }
 
     /**

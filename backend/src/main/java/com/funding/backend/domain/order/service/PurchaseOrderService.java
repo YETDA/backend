@@ -3,13 +3,19 @@ package com.funding.backend.domain.order.service;
 import static com.funding.backend.global.utils.OrderUtils.generateOrderId;
 
 import com.funding.backend.domain.order.dto.request.PurchaseOrderRequestDto;
+import com.funding.backend.domain.order.dto.response.OrderResponseDto;
 import com.funding.backend.domain.order.dto.response.PurchaseOrderResponseDto;
 import com.funding.backend.domain.order.entity.Order;
 import com.funding.backend.domain.order.repository.OrderRepository;
 import com.funding.backend.domain.orderOption.service.OrderOptionService;
+import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.service.ProjectService;
+import com.funding.backend.domain.purchase.entity.Purchase;
+import com.funding.backend.domain.purchase.service.PurchaseService;
 import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionDto;
+import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionResponseDto;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.enums.ProjectType;
@@ -21,6 +27,8 @@ import com.funding.backend.security.jwt.TokenService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,10 +38,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PurchaseOrderService {
     private final OrderRepository orderRepository;
-    private final ProjectService projectService;
-    private final TokenService tokenService;
+
+
     private final UserService userService;
     private final OrderOptionService orderOptionService;
+    private final ProjectService projectService;
+    private final TokenService tokenService;
+    private final OrderService orderService;
+    private final PurchaseService purchaseService;
 
 
     //주문 내역서 생성
@@ -79,6 +91,7 @@ public class PurchaseOrderService {
                         request.getCustomerEmail() != null ? request.getCustomerEmail() : user.getEmail()
                 )
                 .project(project)
+                .orderName(project.getTitle())
                 .user(user)
                 .projectType(request.getProjectType())
                 .orderStatus(TossPaymentStatus.READY)
@@ -96,6 +109,26 @@ public class PurchaseOrderService {
                 //.paySuccessYn(order.getOrderStatus() == OrderStatus.COMPLETED ? "Y" : "N")
                 .build();
     }
+
+
+    public Page<ProjectResponseDto> getPurchaseProjectList(Pageable pageable) {
+        Page<Order> orderPage = orderService.getUserOrderList(pageable);
+
+        Page<ProjectResponseDto> projectDtoPage = orderPage.map(order -> {
+            Project project = projectService.findProjectById(order.getProject().getId());
+            return purchaseService.createPurchaseProjectResponse(project);
+        });
+
+        return projectDtoPage;
+    }
+
+
+
+
+
+
+
+
 
 
 
