@@ -4,6 +4,7 @@ import com.funding.backend.security.jwt.JwtAuthFilter;
 import com.funding.backend.security.oauth.CustomOAuth2UserService;
 import com.funding.backend.security.oauth.OAuth2LoginSuccessHandler;
 import com.funding.backend.security.oauth.resolver.CustomAuthorizationRequestResolver;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -31,7 +35,7 @@ public class YetdaSecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/**").permitAll()
+                        .requestMatchers("/**").permitAll()
                         .requestMatchers("/api/v1/user/logout").permitAll()
 
                 )
@@ -42,14 +46,29 @@ public class YetdaSecurityConfig {
                         .successHandler(oAuth2LoginSuccessHandler)
                         .authorizationEndpoint(
                                 authorizationEndpoint ->
-                                        authorizationEndpoint.authorizationRequestResolver(customAuthorizationRequestResolver)
+                                        authorizationEndpoint.authorizationRequestResolver(
+                                                customAuthorizationRequestResolver)
                         )
                 )
                 .formLogin(form -> form.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .httpBasic(httpBasic -> httpBasic.disable());
 
-
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:3000", "http://3.39.9.55:8081")); // 실제 도메인
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        config.addAllowedHeader("*");
+        config.setAllowCredentials(true); // 💡 쿠키 포함 허용 필수
+        config.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
     @Bean
