@@ -17,6 +17,7 @@ import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.s3.ImageService;
+import com.funding.backend.security.jwt.TokenService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,17 +35,19 @@ public class DonationProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
 
-    private final UserService userService;
     private final ImageService imageService;
     private final PricingService pricingService;
     private final DonationService donationService;
     private final PurchaseService purchaseService;
 
+    private final TokenService tokenService;
+
 
     @Transactional
     public void createDonationProject(DonationCreateRequestDto dto){
 
-        User user = userService.getUserOrThrow(Long.valueOf(1));
+        User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
+            .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
         Project project = Project.builder()
                 .introduce(dto.getIntroduce())
@@ -53,11 +56,11 @@ public class DonationProjectService {
                 .projectStatus(ProjectStatus.UNDER_REVIEW) //처음 만들때는 심사중으로
                 .pricingPlan(pricingService.findById(dto.getPricingPlanId()))
                 .projectType(ProjectType.DONATION)
-                .user(user)
+                .user(loginUser)
                 .build();
         Project saveProject = projectRepository.save(project);
 
-        Donation savedDonation = donationService.createDonation(saveProject, dto.getDonationDetail());
+        Donation savedDonation = donationService.createDonation(saveProject, dto.getDonationProjectDetail());
         project.setDonation(savedDonation);
 
         List<ProjectImage> projectImage = new ArrayList<>();
@@ -72,8 +75,11 @@ public class DonationProjectService {
     public void  updateDonationProject(Long projectId, DonationUpdateRequestDto donationUpdateRequestDto) {
         Project project = findProjectById(projectId);
 
+        User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
+            .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
+
         // 권한 체크로 -> 로그인 완료되면 구현
-        //validProjectUser(project.getUser(), loginUser);
+        validProjectUser(project.getUser(), loginUser);
 
         // 프로젝트 기본 필드 수정
         project.setTitle(donationUpdateRequestDto.getTitle());
@@ -92,6 +98,16 @@ public class DonationProjectService {
         donationService.updateDonation(project,donationUpdateRequestDto);
     }
 
+    @Transactional
+    public void deleteDonationProject(Long projectId) {
+        //삭제 하려는 유저가 본인인지 확인하는 로직 필요
+        User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
+            .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
+        Project project = findProjectById(projectId);
+        validProjectUser(project.getUser(), loginUser);
+        projectRepository.delete(project);
+    }
+
     public ProjectResponseDto getProjectDetail(Long projectId) {
         Project project = findProjectById(projectId);
 
@@ -105,11 +121,16 @@ public class DonationProjectService {
     }
 
 
-
     public Project findProjectById(Long id){
         return projectRepository.findById(id).orElseThrow(
             () -> new BusinessLogicException(ExceptionCode.PROJECT_NOT_FOUND)
         );
+    }
+
+    public void validProjectUser(User projectUser, User loginUser){
+        if (!projectUser.equals(loginUser)) {
+            throw new BusinessLogicException(ExceptionCode.NOT_PROJECT_CREATOR);
+        }
     }
 
 }

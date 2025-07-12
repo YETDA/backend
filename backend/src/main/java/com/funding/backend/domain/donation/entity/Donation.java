@@ -61,7 +61,7 @@ public class Donation extends Auditable {
     @Column(name = "deploy_address", nullable = false)
     private String deployAddress;
 
-    @OneToMany(mappedBy = "donation", cascade = CascadeType.REMOVE, orphanRemoval = false)
+    @OneToMany(mappedBy = "donation", cascade = CascadeType.ALL, orphanRemoval = true)
     List<ProjectSubCategory> projectSubCategories = new ArrayList<>();
 
 }

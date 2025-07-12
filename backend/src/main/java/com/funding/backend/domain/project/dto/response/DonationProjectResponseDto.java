@@ -3,8 +3,9 @@ package com.funding.backend.domain.project.dto.response;
 import com.funding.backend.domain.donation.entity.Donation;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
-import com.funding.backend.domain.subjectCategory.entity.SubjectCategory;
+import com.funding.backend.domain.projectSubCategory.dto.request.ProjectSubRequestDto;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,14 +22,14 @@ public class DonationProjectResponseDto implements ProjectResponseDto {
 
     private Long mainCategoryId;
     private String mainCategoryName;
-    private List<SubjectCategory> projectSubCategories;
+    private List<ProjectSubRequestDto> projectSubCategories;
     private Long priceGoal;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String gitAddress;
     private String deployAddress;
 
-    public DonationProjectResponseDto(Project project, Donation donation, List<SubjectCategory> projectSubCategories){
+    public DonationProjectResponseDto(Project project, Donation donation, List<ProjectSubRequestDto> projectSubCategories){
 
         this.projectId = project.getId();
         this.title = project.getTitle();
@@ -42,8 +43,12 @@ public class DonationProjectResponseDto implements ProjectResponseDto {
             this.mainCategoryId = donation.getMainCategory().getId();
             this.mainCategoryName = donation.getMainCategory().getName();
         }
-        this.projectSubCategories = projectSubCategories;
-
+        this.projectSubCategories = donation.getProjectSubCategories().stream()
+            .map(psc -> new ProjectSubRequestDto(
+                psc.getSubjectCategory().getId(),
+                psc.getSubjectCategory().getName()
+            ))
+            .collect(Collectors.toList());
         this.priceGoal = donation.getPriceGoal();
         this.startDate = donation.getStartDate();
         this.endDate = donation.getEndDate();

@@ -55,11 +55,6 @@ public class Project extends Auditable {
     @JoinColumn(name = "user_id")
     private User user;
 
-
-    @ManyToOne
-    @JoinColumn(name = "donation_main_category_id")
-    private MainCategory mainCategory;
-
     @ManyToOne
     @JoinColumn(name = "management_id")
     private PricingPlan pricingPlan;
@@ -84,7 +79,7 @@ public class Project extends Auditable {
     @OneToOne(mappedBy = "project", cascade = CascadeType.REMOVE)
     private Purchase purchase;
 
-    @OneToOne(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "project", cascade = CascadeType.REMOVE)
     private Donation donation;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = false)

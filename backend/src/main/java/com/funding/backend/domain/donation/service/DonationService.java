@@ -9,14 +9,17 @@ import com.funding.backend.domain.mainCategory.service.MainCategoryService;
 import com.funding.backend.domain.project.dto.response.DonationProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
+import com.funding.backend.domain.projectSubCategory.dto.request.ProjectSubRequestDto;
 import com.funding.backend.domain.projectSubCategory.entity.ProjectSubCategory;
 import com.funding.backend.domain.projectSubCategory.service.ProjectSubCategoryService;
 import com.funding.backend.domain.subjectCategory.entity.SubjectCategory;
 import com.funding.backend.domain.subjectCategory.service.SubjectCategoryService;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,27 +39,35 @@ public class DonationService {
   private final ProjectSubCategoryService projectSubCategoryService;
 
   @Transactional
-  public Donation createDonation(Project project, DonationProjectDetail dto){
+  public Donation createDonation(Project project, DonationProjectDetail dto) {
+
     MainCategory mainCategory = mainCategoryService.findDonationCategoryById(dto.getMainCategoryId());
-    List<ProjectSubCategory> projectSubCategories = List.of();
+
     List<Long> subCategoryIds = dto.getSubCategoryIds();
+    List<SubjectCategory> subjectCategories = new ArrayList<>();
+
+    if (subCategoryIds != null && !subCategoryIds.isEmpty()) {
+      subjectCategories = subjectCategoryService.findCategoriesByIds(subCategoryIds);
+    }
 
     Donation donation = Donation.builder()
         .project(project)
         .mainCategory(mainCategory)
-        .projectSubCategories(projectSubCategories)
         .priceGoal(dto.getPriceGoal())
         .startDate(dto.getStartDate().atStartOfDay())
         .endDate(dto.getEndDate().atStartOfDay())
         .gitAddress(dto.getGitAddress())
         .deployAddress(dto.getDeployAddress())
         .build();
-    Donation saveDonation = donationRepository.save(donation);
-    if (subCategoryIds != null && !subCategoryIds.isEmpty()) {
-      List<SubjectCategory> subjectCategories = subjectCategoryService.findCategoriesByIds(subCategoryIds);
-      projectSubCategoryService.createProjectSubCategories(subjectCategories,saveDonation);
+
+    Donation savedDonation = donationRepository.save(donation);
+
+    if (!subjectCategories.isEmpty()) {
+      List<ProjectSubCategory> projectSubCategories = projectSubCategoryService.createProjectSubCategories(subjectCategories, savedDonation);
+      savedDonation.setProjectSubCategories(projectSubCategories);
     }
-    return saveDonation;
+
+    return savedDonation;
   }
 
   @Transactional
@@ -82,6 +93,7 @@ public class DonationService {
         .orElseThrow(()->new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));
 
     donationRepository.delete(donation);
+    projectRepository.delete(project);
   }
 
   public Donation findByProject(Project project){
@@ -93,11 +105,15 @@ public class DonationService {
   public DonationProjectResponseDto createDonationProjectResponse(Project project) {
     Donation detail = findByProject(project);
 
-    List<SubjectCategory> subCategoriesDto = detail.getProjectSubCategories().stream()
-      .map(ProjectSubCategory::getSubjectCategory).toList();
+    List<ProjectSubRequestDto> projectSubDtos = detail.getProjectSubCategories().stream()
+        .map(psc -> new ProjectSubRequestDto(
+            psc.getSubjectCategory().getId(),
+            psc.getSubjectCategory().getName()
+        ))
+        .collect(Collectors.toList());
 
     return new DonationProjectResponseDto(
-        project, detail, subCategoriesDto
+        project, detail, projectSubDtos
     );
   }
 

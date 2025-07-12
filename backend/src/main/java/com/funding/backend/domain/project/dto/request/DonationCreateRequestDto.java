@@ -1,9 +1,7 @@
 package com.funding.backend.domain.project.dto.request;
 
 import com.funding.backend.domain.donation.dto.request.DonationProjectDetail;
-import com.funding.backend.domain.purchase.dto.request.PurchaseProjectDetail;
 import com.funding.backend.enums.ProjectType;
-import com.funding.backend.global.validator.annotaion.ValidProjectDetail;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -42,5 +40,5 @@ public class DonationCreateRequestDto {
   private List<MultipartFile> contentImage = new ArrayList<>();
 
   // 하위 타입 DTO
-  private DonationProjectDetail donationDetail;
+  private DonationProjectDetail donationProjectDetail;
 }
