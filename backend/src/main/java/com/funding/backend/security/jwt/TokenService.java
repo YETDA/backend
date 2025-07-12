@@ -65,8 +65,8 @@ public class TokenService {
     public void deleteCookie(String name) {
         ResponseCookie cookie = ResponseCookie.from(name, null)
                 .path("/")
-                .sameSite("Strict")
-                .secure(true)
+                .sameSite("None")
+                .secure(false) // 로컬 HTTP 개발 시 false. HTTPS 프로덕션에선 true
                 .httpOnly(true)
                 .maxAge(0) // 즉시 만료
                 .build();
@@ -95,8 +95,8 @@ public class TokenService {
     public void setCookie(String name, String value) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
-                .sameSite("Strict")
-                .secure(true)
+                .sameSite("None")
+                .secure(false) // 로컬 HTTP 개발 시 false. HTTPS 프로덕션에선 true
                 .httpOnly(true)
                 .maxAge(Math.toIntExact(JwtTokenizer.ACCESS_TOKEN_EXPIRE_TIME / 1000))
                 .build();
