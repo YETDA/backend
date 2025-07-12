@@ -21,6 +21,7 @@ public enum ExceptionCode {
     EMAIL_VERIFICATION_FAILED(401, "인증 코드가 일치하지 않습니다."),
     BANK_AND_ACCOUNT_REQUIRED(400, "은행명과 계좌번호를 모두 입력해야 합니다."),
     ROLE_NOT_FOUND(404, "존재하지 않는 역할입니다."),
+    ADMIN_ROLE_REQUIRED(403, "관리자 권한이 필요합니다."),
 
     //유저 예외 처리
     BANK_NOT_FOUND(404, "은행이 존재하지 않습니다."),
