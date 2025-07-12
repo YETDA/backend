@@ -3,7 +3,6 @@ package com.funding.backend.domain.project.service;
 import com.funding.backend.domain.donation.service.DonationService;
 import com.funding.backend.domain.pricingPlan.repository.PricingRepository;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
-import com.funding.backend.domain.project.dto.request.PopularProjectRequestDto;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.ReviewProjectResponseDto;
@@ -149,25 +148,25 @@ public class ProjectService {
         projectRepository.delete(project);
     }
 
-    public Page<PopularProjectResponseDto> getPopularProjects(PopularProjectRequestDto request, Pageable pageable) {
+    public Page<PopularProjectResponseDto> getPopularProjects(ProjectTypeFilter requestProjectType, PopularProjectSortType requestSortType, Pageable pageable) {
         Page<Project> projects;
 
-        if (request.getSortType() == PopularProjectSortType.LIKE) {
-            if (request.getProjectType() == ProjectTypeFilter.ALL) {
+        if (requestSortType == PopularProjectSortType.LIKE) {
+            if (requestProjectType == ProjectTypeFilter.ALL) {
                 projects = projectRepository.findAllByOrderByLikesDesc(pageable);
             } else {
-                ProjectType projectType = ProjectType.valueOf(request.getProjectType().name());
+                ProjectType projectType = ProjectType.valueOf(requestProjectType.name());
                 projects = projectRepository.findByProjectTypeOrderByLikesDesc(projectType, pageable);
             }
-        } else if (request.getSortType() == PopularProjectSortType.SELLING_AMOUNT) {
-            if (request.getProjectType() == ProjectTypeFilter.ALL) {
+        } else if (requestSortType == PopularProjectSortType.SELLING_AMOUNT) {
+            if (requestProjectType == ProjectTypeFilter.ALL) {
                 projects = projectRepository.findAllByOrderBySellingAmountDesc(pageable);
             } else {
-                ProjectType projectType = ProjectType.valueOf(request.getProjectType().name());
+                ProjectType projectType = ProjectType.valueOf(requestProjectType.name());
                 projects = projectRepository.findByProjectTypeOrderBySellingAmountDesc(projectType, pageable);
             }
-        } else if (request.getSortType() == PopularProjectSortType.ACHIEVEMENT_RATE) {
-            if (request.getProjectType() == ProjectTypeFilter.DONATION) {
+        } else if (requestSortType == PopularProjectSortType.ACHIEVEMENT_RATE) {
+            if (requestProjectType == ProjectTypeFilter.DONATION) {
                 projects = projectRepository.findAllByOrderByAchievementRateDesc(pageable);
             } else {
                 throw new BusinessLogicException(ExceptionCode.INVALID_PROJECT_SEARCH_TYPE);
@@ -186,20 +185,14 @@ public class ProjectService {
     }
 
     @Transactional
-    public ReviewProjectResponseDto approveProject(Long projectId) {
+    public ReviewProjectResponseDto updateProjectStatus(Long projectId, ProjectStatus status) {
         Project project = findProjectById(projectId);
-        project.setProjectStatus(ProjectStatus.RECRUITING);
+        project.setProjectStatus(status);
 
         return new ReviewProjectResponseDto(project);
     }
 
-    @Transactional
-    public ReviewProjectResponseDto rejectProject(Long projectId) {
-        Project project = findProjectById(projectId);
-        project.setProjectStatus(ProjectStatus.REJECTED);
 
-        return new ReviewProjectResponseDto(project);
-    }
 
     private void validateBankAccountPresence(User user) {
         if (user.getAccount() == null && user.getBank() == null) {

@@ -1,12 +1,13 @@
 package com.funding.backend.domain.project.controller;
 
 
-import com.funding.backend.domain.project.dto.request.PopularProjectRequestDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.PopularProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.ReviewProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.ProjectSearchResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
+import com.funding.backend.enums.PopularProjectSortType;
+import com.funding.backend.enums.ProjectTypeFilter;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -61,10 +62,11 @@ public class ProjectController {
             description = "프로젝트 타입과 정렬 기준에 따라 인기 프로젝트를 조회합니다."
     )
     public ResponseEntity<ApiResponse<Page<PopularProjectResponseDto>>> getPopularProjects(
-            @ModelAttribute PopularProjectRequestDto request,
+            @RequestParam ProjectTypeFilter projectType,
+            @RequestParam PopularProjectSortType sortType,
             Pageable pageable
     ) {
-        Page<PopularProjectResponseDto> response = projectService.getPopularProjects(request, pageable);
+        Page<PopularProjectResponseDto> response = projectService.getPopularProjects(projectType, sortType, pageable);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.of(HttpStatus.OK.value(), "인기 프로젝트 조회 성공", response));
