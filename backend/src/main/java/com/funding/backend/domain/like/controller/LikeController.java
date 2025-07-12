@@ -1,7 +1,7 @@
 package com.funding.backend.domain.like.controller;
 
 import com.funding.backend.domain.like.service.LikeService;
-import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -40,7 +40,7 @@ public class LikeController {
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @GetMapping("/project")
-    public ResponseEntity<ApiResponse<Page<ProjectResponseDto>>> getLikedProjects(
+    public ResponseEntity<ApiResponse<Page<ProjectInfoResponseDto>>> getLikedProjects(
             @ParameterObject Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "좋아요한 프로젝트 조회 성공", likeService.getLikedProjects(pageable)));
     }
