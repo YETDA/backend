@@ -4,6 +4,7 @@ import com.funding.backend.domain.role.entity.Role;
 import com.funding.backend.domain.role.repository.RoleRepository;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
+import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.enums.UserActive;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
@@ -24,6 +25,7 @@ public class TokenService {
     private final HttpServletResponse response;
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     // 요청에서 AccessToken을 추출
     public String getAccessToken() {
@@ -84,16 +86,7 @@ public class TokenService {
     }
 
     public void createTokenByUserRole() {
-        Role role = roleRepository.findById(4L)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ROLE_NOT_FOUND));
-        User user = User.builder()
-                .email("user@email.com")
-                .name("user유저")
-                .role(role)
-                .userActive(UserActive.ACTIVE)
-                .build();
-
-        userRepository.save(user);
+        User user = userService.findUserById(4L);
         String accessToken = jwtTokenizer.createAccessToken(user.getId(), user.getEmail(), user.getName(),
                 user.getRole().getRole());
 
@@ -101,14 +94,7 @@ public class TokenService {
     }
 
     public void createTokenByAdminRole() {
-        Role role = roleRepository.findById(5L)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ROLE_NOT_FOUND));
-        User user = User.builder()
-                .email("admin@email.com")
-                .role(role)
-                .name("admin유저 ")
-                .userActive(UserActive.ACTIVE)
-                .build();
+        User user = userService.findUserById(4L);
 
         userRepository.save(user);
         String accessToken = jwtTokenizer.createAccessToken(user.getId(), user.getEmail(), user.getName(),
