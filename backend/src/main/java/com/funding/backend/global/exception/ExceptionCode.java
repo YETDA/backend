@@ -37,6 +37,8 @@ public enum ExceptionCode {
     NOT_PROJECT_CREATOR(403, "해당 프로젝트의 생성자가 아닙니다."),
     INVALID_PROJECT_TYPE(400, "지원하지 않는 프로젝트 타입입니다."),
 
+    //검색 예외 처리
+    INVALID_SEARCH_KEYWORD(400, "2글자 이상 입력하세요."),
 
     //공지사항 예외 처리
     NOTICE_NOT_FOUND(404, "존재하지 않는 공지사항 입니다."),
@@ -52,6 +54,8 @@ public enum ExceptionCode {
 
 
     //사용자 예외처리
+
+    //구매 카테고리 예외처리
     PURCHASE_CATEGORY_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 카테고리 입니다. "),
 
     //구매 옵션 예외처리
@@ -70,7 +74,13 @@ public enum ExceptionCode {
     INVALID_S3_URL_FORMAT(400, "잘못된 S3 URL 형식입니다."),
     ETAG_HASH_FAILED(500, "ETag 해시 계산에 실패하였습니다."),
     MD5_HASH_FAILED(500, "MD5 해시 생성에 실패하였습니다."),
-    
+
+    //QnA 예외 처리
+    QNA_NOT_FOUND(404, "존재하지 않는 QnA입니다."),
+    QNA_ACCESS_DENIED(403, "접근 권한이 없습니다."),
+    ANSWER_NOT_FOUND(404, "답변이 존재하지 않습니다."),
+    ANSWER_ALREADY_EXISTS(409, "이미 답변이 존재합니다."),
+
     //요금제 예외 처리
     PRICING_PLAN_NOT_FOUND(404, "존재하지 않는 요금제 입니다");
 

@@ -3,6 +3,7 @@ package com.funding.backend.global.config;
 import com.funding.backend.security.jwt.JwtAuthFilter;
 import com.funding.backend.security.oauth.CustomOAuth2UserService;
 import com.funding.backend.security.oauth.OAuth2LoginSuccessHandler;
+import com.funding.backend.security.oauth.resolver.CustomAuthorizationRequestResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,8 @@ public class YetdaSecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomAuthorizationRequestResolver customAuthorizationRequestResolver;
+
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,6 +40,10 @@ public class YetdaSecurityConfig {
                                 .userService(customOAuth2UserService)
                         )
                         .successHandler(oAuth2LoginSuccessHandler)
+                        .authorizationEndpoint(
+                                authorizationEndpoint ->
+                                        authorizationEndpoint.authorizationRequestResolver(customAuthorizationRequestResolver)
+                        )
                 )
                 .formLogin(form -> form.disable())
                 .httpBasic(httpBasic -> httpBasic.disable());
