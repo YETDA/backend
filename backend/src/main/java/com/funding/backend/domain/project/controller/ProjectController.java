@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -64,7 +65,7 @@ public class ProjectController {
     public ResponseEntity<ApiResponse<Page<PopularProjectResponseDto>>> getPopularProjects(
             @RequestParam ProjectTypeFilter projectType,
             @RequestParam PopularProjectSortType sortType,
-            Pageable pageable
+            @ParameterObject Pageable pageable
     ) {
         Page<PopularProjectResponseDto> response = projectService.getPopularProjects(projectType, sortType, pageable);
         return ResponseEntity

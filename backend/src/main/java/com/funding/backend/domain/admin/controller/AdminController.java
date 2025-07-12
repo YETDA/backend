@@ -5,6 +5,7 @@ import com.funding.backend.domain.project.dto.response.ReviewProjectResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +41,7 @@ public class AdminController {
             summary = "심사 중인 프로젝트 조회",
             description = "모든 심사가 필요한 프로젝트를 조회합니다. (UNDER_REVIEW, REJECTED)"
     )
-    public Page<ReviewProjectResponseDto> getAllUnderReviewProjects(Pageable pageable) {
+    public Page<ReviewProjectResponseDto> getAllUnderReviewProjects(@ParameterObject Pageable pageable) {
         return adminService.getAllUnderReviewProjects(pageable);
     }
 }
