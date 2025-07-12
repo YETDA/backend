@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +41,7 @@ public class LikeController {
     )
     @GetMapping("/project")
     public ResponseEntity<ApiResponse<Page<ProjectResponseDto>>> getLikedProjects(
-            Pageable pageable) {
+            @ParameterObject Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "좋아요한 프로젝트 조회 성공", likeService.getLikedProjects(pageable)));
     }
 
