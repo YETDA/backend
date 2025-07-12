@@ -1,11 +1,9 @@
 package com.funding.backend.security.jwt;
 
-import com.funding.backend.domain.role.entity.Role;
 import com.funding.backend.domain.role.repository.RoleRepository;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.domain.user.service.UserService;
-import com.funding.backend.enums.UserActive;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import jakarta.servlet.http.Cookie;
@@ -15,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -29,15 +26,8 @@ public class TokenService {
     private final UserRepository userRepository;
     private final UserService userService;
 
-    // 요청에서 AccessToken을 추출
+    // 쿠키에서 AccessToken을 추출
     public String getAccessToken() {
-        // 1. Authorization 헤더 확인
-        String authHeader = request.getHeader("Authorization");
-        if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7);
-        }
-
-        // 2. 쿠키에서 accessToken 확인
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("accessToken".equals(cookie.getName())) {
@@ -45,8 +35,13 @@ public class TokenService {
                 }
             }
         }
-
         throw new BusinessLogicException(ExceptionCode.ACCESS_TOKEN_NOT_FOUND);
+    }
+
+    // 쿠키에서 토큰을 꺼내 디코딩
+    public Long getUserIdFromAccessToken() {
+        String token = getAccessToken();
+        return jwtTokenizer.getUserIdFromAccessToken(token);
     }
 
     // 요청에서 RefreshToken을 추출
@@ -60,12 +55,6 @@ public class TokenService {
         }
 
         throw new BusinessLogicException(ExceptionCode.REFRESH_TOKEN_NOT_FOUND);
-    }
-
-    // AccessToken에서 사용자 ID 추출
-    public Long getUserIdFromAccessToken() {
-        String token = getAccessToken();
-        return jwtTokenizer.getUserIdFromAccessToken(token);
     }
 
     // AccessToken에서 사용자 Email 추출
