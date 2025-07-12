@@ -9,4 +9,3 @@ spring:
       host: ${LOCAL_HOST}
       port: ${REDIS_EXTERNAL_PORT}
       password:
-
