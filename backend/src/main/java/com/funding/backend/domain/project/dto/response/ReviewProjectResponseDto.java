@@ -16,6 +16,12 @@ public class ReviewProjectResponseDto {
     @Schema(description = "프로젝트 상태", example = "UNDER_REVIEW")
     private ProjectStatus status;
 
+    @Schema(description = "프로젝트 타입 (구매/기부)", example = "PURCHASE")
+    private ProjectType type;
+
+    @Schema(description = "프로젝트 카테고리", example = "템플릿")
+    private String category;
+
     @Schema(description = "프로젝트 제목", example = "개발자 노션 포트폴리오")
     private String title;
 
@@ -28,8 +34,11 @@ public class ReviewProjectResponseDto {
     @Schema(description = "프로젝트 이미지 URL", example = "[ https://example.com/thumbnail.jpg, https://example.com/image2.jpg ]")
     private List<String> images;
 
-    @Schema(description = "프로젝트 타입 (구매/기부)", example = "PURCHASE")
-    private ProjectType type;
+    @Schema(description = "프로젝트 목표 금액", example = "5000000")
+    private Long priceCoal;
+
+    @Schema(description = "프로젝트 등록일", example = "2023-01-01T00:00:00")
+    private LocalDateTime createdDate;
 
     @Schema(description = "프로젝트 종료일", example = "2023-12-31T23:59:59")
     private LocalDateTime endDate;
@@ -45,19 +54,27 @@ public class ReviewProjectResponseDto {
 
     public ReviewProjectResponseDto(Project project) {
         this.id = project.getId();
+        this.status = project.getProjectStatus();
+        this.type = project.getProjectType();
         this.title = project.getTitle();
         this.introduce = project.getIntroduce();
+        this.content = project.getContent();
         this.images = project.getProjectImage().stream()
                 .map(ProjectImage::getImageUrl)
                 .toList();
-        this.type = project.getProjectType();
+        this.createdDate = project.getCreatedAt();
+        this.hostId = project.getUser().getId();
         this.hostName = project.getUser().getName();
         this.hostProfileImageUrl = project.getUser().getImage();
 
         if (project.getProjectType() == ProjectType.PURCHASE && project.getPurchase() != null) {
             this.endDate = null;
+            this.category = project.getPurchase().getPurchaseCategory().getName();
+            this.priceCoal = null;
         } else if (project.getProjectType() == ProjectType.DONATION && project.getDonation() != null) {
             this.endDate = project.getDonation().getEndDate();
+            this.category = project.getDonation().getPurchaseCategory().getName();
+            this.priceCoal = project.getDonation().getPriceCoal();
         } else {
             this.endDate = null;
         }
