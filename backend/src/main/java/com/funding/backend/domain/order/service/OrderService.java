@@ -44,11 +44,10 @@ public class OrderService {
         orderRepository.delete(order);
     }
 
-    public Page<OrderResponseDto> getUserOrderListResponse(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+    public Page<OrderResponseDto> getUserOrderListResponse(Pageable pageable) {
         User loginUser = userService.findUserById(tokenService.getUserIdFromAccessToken());
 
-        Page<Order> orderPage = orderRepository.findOrdersByUserAndStatus(loginUser, TossPaymentStatus.DONE, pageRequest);
+        Page<Order> orderPage = orderRepository.findOrdersByUserAndStatus(loginUser, TossPaymentStatus.DONE, pageable);
 
         return orderPage.map(OrderResponseDto::from);
     }
