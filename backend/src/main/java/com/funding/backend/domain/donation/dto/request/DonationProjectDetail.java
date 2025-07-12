@@ -1,5 +1,6 @@
-package com.funding.backend.domain.project.dto.request;
+package com.funding.backend.domain.donation.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
@@ -19,11 +20,16 @@ public class DonationProjectDetail {
     private List<Long> subCategoryIds;
 
     @NotNull(message = "목표 금액은 필수입니다.")
-    private Long goalAmount;
+    private Long priceGoal;
 
     @NotNull(message = "시작일은 필수입니다.")
     private LocalDate startDate;
 
     @NotNull(message = "종료일은 필수입니다.")
     private LocalDate endDate;
+
+    @NotBlank(message = "배포 주소는 필수입니다.")
+    private String deployAddress;
+
+    private String gitAddress;
 }

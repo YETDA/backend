@@ -1,5 +1,6 @@
 package com.funding.backend.domain.project.service;
 
+import com.funding.backend.domain.donation.service.DonationProjectService;
 import com.funding.backend.domain.donation.service.DonationService;
 import com.funding.backend.domain.pricingPlan.repository.PricingRepository;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
@@ -49,6 +50,8 @@ public class ProjectService {
     private final PurchaseService purchaseService;
     private final UserRepository userRepository;
     private final PurchaseOptionService purchaseOptionService;
+    private final DonationProjectService donationProjectService;
+
     private final TokenService tokenService;
     private final UserService userService;
 
@@ -130,8 +133,8 @@ public class ProjectService {
 
         if (project.getProjectType() == ProjectType.PURCHASE) {
             return purchaseService.createPurchaseProjectResponse(project);
-//        } else if (project.getProjectType() == ProjectType.DONATION) {
-//            return createDonationProjectResponse(project);
+        } else if (project.getProjectType() == ProjectType.DONATION) {
+            return donationService.createDonationProjectResponse(project);
         } else {
             throw new BusinessLogicException(ExceptionCode.INVALID_PROJECT_TYPE);
         }
