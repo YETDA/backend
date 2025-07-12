@@ -38,6 +38,9 @@ public class PopularProjectResponseDto {
     @Schema(description = "프로젝트 종료일", example = "2023-12-31T23:59:59")
     private LocalDateTime projectEndDate;
 
+    @Schema(description = "제작자 ID", example = "145")
+    private Long hostId;
+
     @Schema(description = "제작자 이름", example = "홍길동")
     private String hostName;
 
@@ -56,6 +59,7 @@ public class PopularProjectResponseDto {
         this.projectType = project.getProjectType();
         this.projectLikeCount = project.getLikeList() != null ? project.getLikeList().size() : 0;
         this.sellingAmount = project.getOrderList().size();
+        this.hostId = project.getUser().getId();
         this.hostName = project.getUser().getName();
         this.hostProfileImageUrl = project.getUser().getImage();
 

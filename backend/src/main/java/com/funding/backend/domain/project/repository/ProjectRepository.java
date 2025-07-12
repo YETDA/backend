@@ -78,4 +78,8 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
     Page<Project> findAllByOrderByAchievementRateDesc(Pageable pageable);
 
     Page<Project> findAllByProjectStatusIn(Collection<ProjectStatus> projectStatuses, Pageable pageable);
+      
+    //부분 일치 검색
+    Page<Project> findByTitleContaining(String title, Pageable pageable);
+
 }
