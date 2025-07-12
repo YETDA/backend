@@ -84,7 +84,7 @@ public class TokenService {
     }
 
     public void createTokenByUserRole() {
-        Role role = roleRepository.findById(1L)
+        Role role = roleRepository.findById(4L)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ROLE_NOT_FOUND));
         User user = User.builder()
                 .email("user@email.com")
@@ -101,7 +101,7 @@ public class TokenService {
     }
 
     public void createTokenByAdminRole() {
-        Role role = roleRepository.findById(2L)
+        Role role = roleRepository.findById(5L)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ROLE_NOT_FOUND));
         User user = User.builder()
                 .email("admin@email.com")
