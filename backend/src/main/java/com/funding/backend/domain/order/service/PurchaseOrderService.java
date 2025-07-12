@@ -4,9 +4,11 @@ import static com.funding.backend.global.utils.OrderUtils.generateOrderId;
 
 import com.funding.backend.domain.order.dto.request.PurchaseOrderRequestDto;
 import com.funding.backend.domain.order.dto.response.OrderResponseDto;
+import com.funding.backend.domain.order.dto.response.PurchaseFileResponseDto;
 import com.funding.backend.domain.order.dto.response.PurchaseOrderResponseDto;
 import com.funding.backend.domain.order.entity.Order;
 import com.funding.backend.domain.order.repository.OrderRepository;
+import com.funding.backend.domain.orderOption.entity.OrderOption;
 import com.funding.backend.domain.orderOption.service.OrderOptionService;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
@@ -16,6 +18,8 @@ import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.domain.purchase.service.PurchaseService;
 import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionDto;
 import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionResponseDto;
+import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
+import com.funding.backend.domain.purchaseOption.service.PurchaseOptionService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.enums.ProjectType;
@@ -46,6 +50,7 @@ public class PurchaseOrderService {
     private final TokenService tokenService;
     private final OrderService orderService;
     private final PurchaseService purchaseService;
+    private final PurchaseOptionService purchaseOptionService;
 
 
     //주문 내역서 생성
@@ -120,6 +125,32 @@ public class PurchaseOrderService {
         });
 
         return projectDtoPage;
+    }
+
+
+    //orderOption을 id로 받아서 조회
+    //이 메서드가 호출되면 orderOption의 최소 다운로드 횟수를 확인
+    public PurchaseFileResponseDto getUserPurchasedFile(Long orderOptionId){
+        OrderOption orderOption = orderOptionService.findOrderOptionById(orderOptionId);
+        validPurchaseUser(userService.findUserById(tokenService.getUserIdFromAccessToken()),orderOption);
+
+        if(orderOption.getDownloadCount()>3){
+            throw new BusinessLogicException(ExceptionCode.DOWNLOAD_LIMIT_EXCEEDED);
+        }
+        //다운로드 횟수 증가시키고 다시 db에 저장
+        orderOption.setDownloadCount(orderOption.getDownloadCount()+1);
+        orderOptionService.saveOrderOption(orderOption);
+
+        PurchaseOption purchaseOption = purchaseOptionService.findPurchaseOptionById(orderOption.getPurchaseOption().getId());
+
+        return new PurchaseFileResponseDto(purchaseOption,orderOption);
+
+    }
+
+    public void validPurchaseUser(User user, OrderOption orderOption){
+        if(!user.equals(orderOption.getOrder().getUser())){
+            throw new BusinessLogicException(ExceptionCode.NOT_PURCHASED_OPTION_OWNER);
+        }
     }
 
 

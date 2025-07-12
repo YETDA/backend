@@ -48,6 +48,7 @@ public enum ExceptionCode {
 
     //주문 예외처리
     ORDER_NOT_FOUND(404, "존재하지 않는 구매 내역 입니다. "),
+    ORDER_OPTION_NOT_FOUND(404, "존재하지 않는 구매 옵션 입니다. "),
     PAYMENT_CONFIRM_FAILED(400, "결제 승인 요청에 실패했습니다."),
 
     //구매 예외처리
@@ -68,6 +69,11 @@ public enum ExceptionCode {
     FILE_REQUIRED_FOR_DOWNLOAD_OPTION(400, "DOWNLOAD 방식의 구매 옵션에는 파일이 필수입니다."),
     PURCHASE_OPTION_FILE_NOT_FOUND(400, "해당 옵션에 매칭되는 파일을 찾을 수 없습니다."),
     UNSUPPORTED_PROJECT_TYPE_ORDER(400,"구매 API는 구매형 프로젝트에만 적용됩니다"),
+    DOWNLOAD_LIMIT_EXCEEDED(403, "다운로드 횟수를 초과했습니다."),
+    NOT_PURCHASED_OPTION_OWNER(403, "해당 구매옵션을 구매한 사용자가 아닙니다."),
+
+
+
 
     //S3 예외 처리
     S3_DELETE_ERROR(404, "이미지를 삭제할 수 없습니다."),
