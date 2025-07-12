@@ -12,12 +12,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TokenService {
 
     private final JwtTokenizer jwtTokenizer;
@@ -85,16 +87,21 @@ public class TokenService {
         response.addHeader("Set-Cookie", cookie.toString());
     }
 
+
+    //임시 토큰 용
     public void createTokenByUserRole() {
-        User user = userService.findUserById(4L);
+        User user = userService.findUserById(1L);
+        log.info(user.getName());
+
         String accessToken = jwtTokenizer.createAccessToken(user.getId(), user.getEmail(), user.getName(),
                 user.getRole().getRole());
 
         setCookie("accessToken", accessToken);
     }
 
+    //임시 토큰용
     public void createTokenByAdminRole() {
-        User user = userService.findUserById(4L);
+        User user = userService.findUserById(2L);
 
         userRepository.save(user);
         String accessToken = jwtTokenizer.createAccessToken(user.getId(), user.getEmail(), user.getName(),
