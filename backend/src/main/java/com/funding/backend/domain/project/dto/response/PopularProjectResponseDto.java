@@ -68,8 +68,8 @@ public class PopularProjectResponseDto {
             this.achievementRate = 0;
         } else if (project.getProjectType() == ProjectType.DONATION && project.getDonation() != null) {
             this.projectEndDate = project.getDonation().getEndDate();
-            this.achievementRate = totalAmount > 0 && project.getDonation().getPriceCoal() > 0
-                    ? (double) totalAmount / project.getDonation().getPriceCoal() * 100
+            this.achievementRate = totalAmount > 0 && project.getDonation().getPriceGoal() > 0
+                    ? (double) totalAmount / project.getDonation().getPriceGoal() * 100
                     : 0;
         } else {
             this.projectEndDate = null;

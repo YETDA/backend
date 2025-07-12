@@ -35,7 +35,7 @@ public class ReviewProjectResponseDto {
     private List<String> images;
 
     @Schema(description = "프로젝트 목표 금액", example = "5000000")
-    private Long priceCoal;
+    private Long priceGoal;
 
     @Schema(description = "프로젝트 등록일", example = "2023-01-01T00:00:00")
     private LocalDateTime createdDate;
@@ -70,11 +70,11 @@ public class ReviewProjectResponseDto {
         if (project.getProjectType() == ProjectType.PURCHASE && project.getPurchase() != null) {
             this.endDate = null;
             this.category = project.getPurchase().getPurchaseCategory().getName();
-            this.priceCoal = null;
+            this.priceGoal = null;
         } else if (project.getProjectType() == ProjectType.DONATION && project.getDonation() != null) {
             this.endDate = project.getDonation().getEndDate();
-            this.category = project.getDonation().getPurchaseCategory().getName();
-            this.priceCoal = project.getDonation().getPriceCoal();
+            this.category = project.getDonation().getMainCategory().getName();
+            this.priceGoal = project.getDonation().getPriceGoal();
         } else {
             this.endDate = null;
         }
