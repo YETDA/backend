@@ -64,6 +64,9 @@ public class Order extends Auditable {
 	@Column(nullable = false)
 	private String customerName;
 
+	@Column(nullable = false)
+	private String orderName;
+
 	//Toss 결제 승인 시 받은 고유 키
 	@Column(name = "payment_key", unique = true)
 	private String paymentKey;

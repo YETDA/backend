@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -71,7 +72,7 @@ public class NoticeController {
     @GetMapping("/project/{projectId}")
     public ResponseEntity<ApiResponse<Page<NoticeReseponseDto>>> getNoticesByProjectId(
             @PathVariable Long projectId,
-            Pageable pageable) {
+            @ParameterObject Pageable pageable) {
 
         Page<NoticeReseponseDto> noticeResponses = noticeService.findNoticesByProjectId(projectId, pageable);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "공지사항 전체 조회 성공", noticeResponses));

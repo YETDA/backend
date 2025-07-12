@@ -54,6 +54,8 @@ public class TossPaymentsResponseDto {
     private String version;
     private Object metadata;
 
+    @Getter
+    @NoArgsConstructor
     public static class Card {
         private String issuerCode;
         private String acquirerCode;
@@ -69,16 +71,22 @@ public class TossPaymentsResponseDto {
         private long amount;
     }
 
+    @Getter
+    @NoArgsConstructor
     public static class EasyPay {
         private String provider;
         private long amount;
         private long discountAmount;
     }
 
+    @Getter
+    @NoArgsConstructor
     public static class Receipt {
         private String url;
     }
 
+    @Getter
+    @NoArgsConstructor
     public static class Checkout {
         private String url;
     }
