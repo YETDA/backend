@@ -9,7 +9,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-public class PopularProjectResponseDto {
+public class ProjectInfoResponseDto {
 
     @Schema(description = "프로젝트 ID", example = "1")
     private Long id;
@@ -47,7 +47,7 @@ public class PopularProjectResponseDto {
     @Schema(description = "제작자 프로필 이미지 URL", example = "https://example.com/profile.jpg")
     private String hostProfileImageUrl;
 
-    public PopularProjectResponseDto(Project project) {
+    public ProjectInfoResponseDto(Project project) {
         long totalAmount = project.getOrderList().stream()
                 .mapToLong(Order::getPaidAmount)
                 .sum();
@@ -68,8 +68,8 @@ public class PopularProjectResponseDto {
             this.achievementRate = 0;
         } else if (project.getProjectType() == ProjectType.DONATION && project.getDonation() != null) {
             this.projectEndDate = project.getDonation().getEndDate();
-            this.achievementRate = totalAmount > 0 && project.getDonation().getPriceCoal() > 0
-                    ? (double) totalAmount / project.getDonation().getPriceCoal() * 100
+            this.achievementRate = totalAmount > 0 && project.getDonation().getPriceGoal() > 0
+                    ? (double) totalAmount / project.getDonation().getPriceGoal() * 100
                     : 0;
         } else {
             this.projectEndDate = null;

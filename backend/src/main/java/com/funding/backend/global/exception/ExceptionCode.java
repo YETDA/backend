@@ -37,7 +37,7 @@ public enum ExceptionCode {
     NOT_PROJECT_CREATOR(403, "해당 프로젝트의 생성자가 아닙니다."),
     INVALID_PROJECT_TYPE(400, "지원하지 않는 프로젝트 타입입니다."),
     INVALID_PROJECT_SEARCH_TYPE(400, "지원하지 않는 프로젝트 검색 타입입니다."),
-    PROJECT_CANNOT_BE_REVIEWED(400, "프로젝트가 심사될 수 없는 상태입니다."),
+    PROJECT_CANNOT_BE_AUDITED(400, "프로젝트가 심사될 수 없는 상태입니다."),
 
     //검색 예외 처리
     INVALID_SEARCH_KEYWORD(400, "2글자 이상 입력하세요."),
@@ -47,10 +47,13 @@ public enum ExceptionCode {
 
     //주문 예외처리
     ORDER_NOT_FOUND(404, "존재하지 않는 구매 내역 입니다. "),
+    PAYMENT_CONFIRM_FAILED(400, "결제 승인 요청에 실패했습니다."),
 
     //구매 예외처리
     PURCHASE_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 입니다. "),
     INVALID_PROVIDING_METHOD(400, "제공 방식이 유효하지 않습니다."),
+    MISMATCHED_PAYMENT_AMOUNT(400, "결제 금액이 맞지 않습니다."),
+
 
     //사용자 예외처리
 
@@ -74,6 +77,13 @@ public enum ExceptionCode {
     ETAG_HASH_FAILED(500, "ETag 해시 계산에 실패하였습니다."),
     MD5_HASH_FAILED(500, "MD5 해시 생성에 실패하였습니다."),
 
+    //후원 예외처리
+    DONATION_NOT_FOUND(404, "존재하지 않는 후원 프로젝트 입니다. "),
+    //후원 카테고리 예외처리
+    DONATION_CATEGORY_NOT_FOUND(404, "존재하지 않는 후원 프로젝트 카테고리 입니다. "),
+    DONATION_INVALID_INPUT_VALUE(404, "상세 카테고리의 선택 개수가 초과했습니다. "),
+    SUBJECT_CATEGORY_NOT_FOUND(404, "존재하지 않는 후원 상세 카테고리 입니다. "),
+  
     //QnA 예외 처리
     QNA_NOT_FOUND(404, "존재하지 않는 QnA입니다."),
     QNA_ACCESS_DENIED(403, "접근 권한이 없습니다."),

@@ -115,15 +115,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             );
         }
 
-        // 3. JSON 응답
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(
-                String.format(
-                        "{\"accessToken\": \"%s\", \"refreshToken\": \"%s\"}",
-                        accessToken,
-                        refreshToken
-                )
-        );
+        response.sendRedirect("http://localhost:3000/");
     }
 }
