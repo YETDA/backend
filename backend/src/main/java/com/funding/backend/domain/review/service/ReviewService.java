@@ -31,20 +31,14 @@ public class ReviewService {
                 .orElseThrow(()->new BusinessLogicException(ExceptionCode.REVIEW_NOT_FOUND));
     }
 
-//    private Long getCurrentUserId(){
-//        try {
-//            return  tokenService.getUserIdFromAccessToken();
-//        }catch (BusinessLogicException e){
-//           throw new BusinessLogicException(ExceptionCode.ACCESS_TOKEN_NOT_FOUND);
-//        }
-//    }
-
-    //테스트용
-    // 하드코딩으로 임시 수정
-// ReviewService에서 사용자 ID를 2번으로 변경
-    private Long getCurrentUserId() {
-        return 2L;  // 박판매자 ID로 변경
+    private Long getCurrentUserId(){
+        try {
+            return  tokenService.getUserIdFromAccessToken();
+        }catch (BusinessLogicException e){
+           throw new BusinessLogicException(ExceptionCode.ACCESS_TOKEN_NOT_FOUND);
+        }
     }
+
 
 
     //구매자 검증 메서드
