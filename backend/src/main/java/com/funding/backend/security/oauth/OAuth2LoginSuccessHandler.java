@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.URL;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -30,6 +31,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final RefreshTokenService refreshTokenService;
     private final ImageService imageService;
     private final UserRepository userRepository;
+
+    @Value("${custom.dev.frontUrl}")
+    private String frontRedirectUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -115,6 +119,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             );
         }
 
-        response.sendRedirect("http://localhost:3000/");
+        response.sendRedirect(frontRedirectUrl);
     }
 }
