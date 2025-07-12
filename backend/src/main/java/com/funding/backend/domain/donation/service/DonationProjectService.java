@@ -11,7 +11,6 @@ import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.domain.purchase.service.PurchaseService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
-import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.exception.BusinessLogicException;
@@ -20,7 +19,7 @@ import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.security.jwt.TokenService;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -53,7 +52,7 @@ public class DonationProjectService {
                 .introduce(dto.getIntroduce())
                 .title(dto.getTitle())
                 .content(dto.getContent())
-                .projectStatus(ProjectStatus.UNDER_REVIEW) //처음 만들때는 심사중으로
+                .projectStatus(ProjectStatus.UNDER_AUDIT) //처음 만들때는 심사중으로
                 .pricingPlan(pricingService.findById(dto.getPricingPlanId()))
                 .projectType(ProjectType.DONATION)
                 .user(loginUser)
