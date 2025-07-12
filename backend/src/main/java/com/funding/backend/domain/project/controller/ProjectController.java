@@ -5,6 +5,7 @@ import com.funding.backend.domain.project.dto.request.PopularProjectRequestDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.PopularProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.ReviewProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.ProjectSearchResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -80,6 +81,18 @@ public class ProjectController {
                 .status(HttpStatus.OK)
                 .body(ApiResponse.of(HttpStatus.OK.value(), "심사 중인 프로젝트 조회 성공", response));
     }
+
+    @Operation(summary = "프로젝트 검색 기능", description = "두 글자 이상 포함된 프로젝트 제목 검색")
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<Page<ProjectSearchResponseDto>>> searchProject(
+            @RequestParam String keyword, Pageable pageable) {
+
+        Page<ProjectSearchResponseDto> response = projectService.searchProjectsByTitle(keyword.trim(), pageable);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 검색 성공", response));
+    }
+
 
 
 }
