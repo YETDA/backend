@@ -1,6 +1,6 @@
 package com.funding.backend.domain.admin.service;
 
-import com.funding.backend.domain.project.dto.response.ReviewProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.AuditProjectResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.enums.ProjectStatus;
@@ -33,27 +33,27 @@ public class AdminService {
         return true;
     }
 
-    public Page<ReviewProjectResponseDto> getAllUnderReviewProjects(Pageable pageable) {
+    public Page<AuditProjectResponseDto> getAllUnderAuditProjects(Pageable pageable) {
         validAdmin();
 
-        return projectService.findAllUnderReviewProjects(pageable);
+        return projectService.findAllUnderAuditProjects(pageable);
     }
 
-    public ReviewProjectResponseDto approveProject(Long projectId) {
+    public AuditProjectResponseDto approveProject(Long projectId) {
         validAdmin();
 
-        if (projectService.findProjectById(projectId).getProjectStatus() != ProjectStatus.UNDER_REVIEW) {
-            throw new BusinessLogicException(ExceptionCode.PROJECT_CANNOT_BE_REVIEWED);
+        if (projectService.findProjectById(projectId).getProjectStatus() != ProjectStatus.UNDER_AUDIT) {
+            throw new BusinessLogicException(ExceptionCode.PROJECT_CANNOT_BE_AUDITED);
         }
 
         return projectService.updateProjectStatus(projectId, ProjectStatus.RECRUITING);
     }
 
-    public ReviewProjectResponseDto rejectProject(Long projectId) {
+    public AuditProjectResponseDto rejectProject(Long projectId) {
         validAdmin();
 
-        if (projectService.findProjectById(projectId).getProjectStatus() != ProjectStatus.UNDER_REVIEW) {
-            throw new BusinessLogicException(ExceptionCode.PROJECT_CANNOT_BE_REVIEWED);
+        if (projectService.findProjectById(projectId).getProjectStatus() != ProjectStatus.UNDER_AUDIT) {
+            throw new BusinessLogicException(ExceptionCode.PROJECT_CANNOT_BE_AUDITED);
         }
 
         return projectService.updateProjectStatus(projectId, ProjectStatus.REJECTED);

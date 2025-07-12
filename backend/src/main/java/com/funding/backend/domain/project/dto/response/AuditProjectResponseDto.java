@@ -9,11 +9,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class ReviewProjectResponseDto {
+public class AuditProjectResponseDto {
     @Schema(description = "프로젝트 ID", example = "1")
     private Long id;
 
-    @Schema(description = "프로젝트 상태", example = "UNDER_REVIEW")
+    @Schema(description = "프로젝트 상태", example = "UNDER_AUDIT")
     private ProjectStatus status;
 
     @Schema(description = "프로젝트 타입 (구매/기부)", example = "PURCHASE")
@@ -52,7 +52,7 @@ public class ReviewProjectResponseDto {
     @Schema(description = "제작자 프로필 이미지 URL", example = "https://example.com/profile.jpg")
     private String hostProfileImageUrl;
 
-    public ReviewProjectResponseDto(Project project) {
+    public AuditProjectResponseDto(Project project) {
         this.id = project.getId();
         this.status = project.getProjectStatus();
         this.type = project.getProjectType();

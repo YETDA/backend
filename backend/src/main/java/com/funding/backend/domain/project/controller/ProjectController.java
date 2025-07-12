@@ -3,7 +3,7 @@ package com.funding.backend.domain.project.controller;
 
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.PopularProjectResponseDto;
-import com.funding.backend.domain.project.dto.response.ReviewProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.AuditProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.ProjectSearchResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.enums.PopularProjectSortType;
@@ -71,18 +71,6 @@ public class ProjectController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.of(HttpStatus.OK.value(), "인기 프로젝트 조회 성공", response));
-    }
-
-    @GetMapping("under-review")
-    @Operation(
-            summary = "심사 중인 프로젝트 조회",
-            description = "심사 중인 프로젝트를 조회합니다."
-    )
-    public ResponseEntity<ApiResponse<Page<ReviewProjectResponseDto>>> findAllUnderReviewProjects(Pageable pageable) {
-        Page<ReviewProjectResponseDto> response = projectService.findAllUnderReviewProjects(pageable);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.of(HttpStatus.OK.value(), "심사 중인 프로젝트 조회 성공", response));
     }
 
     @Operation(summary = "프로젝트 검색 기능", description = "두 글자 이상 포함된 프로젝트 제목 검색")

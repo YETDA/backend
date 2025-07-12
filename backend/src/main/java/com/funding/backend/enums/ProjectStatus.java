@@ -1,7 +1,7 @@
 package com.funding.backend.enums;
 
 public enum ProjectStatus {
-    UNDER_REVIEW("심사중"),
+    UNDER_AUDIT("심사중"),
     REJECTED("거절됨"),
     RECRUITING("모집중"),
     COMPLETED("완료");
