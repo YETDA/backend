@@ -5,38 +5,31 @@ import com.funding.backend.domain.pricingPlan.repository.PricingRepository;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
-import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.ProjectSearchResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
-import com.funding.backend.domain.purchase.dto.request.PurchaseOptionRequestDto;
-import com.funding.backend.domain.purchase.dto.request.PurchaseProjectDetail;
 import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
 import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.domain.purchase.service.PurchaseService;
-import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
-import com.funding.backend.domain.purchaseCategory.service.PurchaseCategoryService;
-import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
 import com.funding.backend.domain.purchaseOption.service.PurchaseOptionService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
-import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
-import com.funding.backend.enums.ProvidingMethod;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.s3.ImageService;
-import com.funding.backend.global.utils.s3.S3FileInfo;
 import com.funding.backend.security.jwt.TokenService;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -56,9 +49,9 @@ public class ProjectService {
     private final TokenService tokenService;
 
     @Transactional
-    public void createPurchaseProject(ProjectCreateRequestDto dto){
+    public void createPurchaseProject(ProjectCreateRequestDto dto) {
         User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
-                .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
         validateBankAccountPresence(loginUser);
         Project project = Project.builder()
                 .introduce(dto.getIntroduce())
@@ -81,20 +74,20 @@ public class ProjectService {
 
 
         //구매 프로젝트 정보 저장
-        Purchase createPurchase = purchaseService.createPurchase(saveProject,dto.getPurchaseDetail());
+        Purchase createPurchase = purchaseService.createPurchase(saveProject, dto.getPurchaseDetail());
         // 옵션 저장
         if (dto.getPurchaseDetail().getPurchaseOptionList() != null && !dto.getPurchaseDetail().getPurchaseOptionList().isEmpty()) {
-            purchaseOptionService.createPurchaseOptionForProject(createPurchase.getId(),dto);
+            purchaseOptionService.createPurchaseOptionForProject(createPurchase.getId(), dto);
         }
 
     }
 
 
     @Transactional
-    public void  updatePurchaseProject(Long projectId, PurchaseUpdateRequestDto purchaseUpdateRequestDto) {
+    public void updatePurchaseProject(Long projectId, PurchaseUpdateRequestDto purchaseUpdateRequestDto) {
         Project project = findProjectById(projectId);
         User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
-                .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
         // 권한 체크로 -> 로그인 완료되면 구현
         validProjectUser(project.getUser(), loginUser);
@@ -112,18 +105,17 @@ public class ProjectService {
         project.setProjectImage(updatedImages);
         projectRepository.save(project);
         // Purchase 관련 필드 업데이트
-        purchaseService.updatePurchase(project,purchaseUpdateRequestDto);
+        purchaseService.updatePurchase(project, purchaseUpdateRequestDto);
     }
 
 
-
-    public Project findProjectById(Long id){
+    public Project findProjectById(Long id) {
         return projectRepository.findById(id).orElseThrow(
                 () -> new BusinessLogicException(ExceptionCode.PROJECT_NOT_FOUND)
         );
     }
 
-    public void validProjectUser(User projectUser, User loginUser){
+    public void validProjectUser(User projectUser, User loginUser) {
         if (!projectUser.equals(loginUser)) {
             throw new BusinessLogicException(ExceptionCode.NOT_PROJECT_CREATOR);
         }
@@ -146,7 +138,7 @@ public class ProjectService {
     public void deleteProject(Long projectId) {
         //삭제 하려는 유저가 본인인지 확인하는 로직 필요
         User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
-                .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
         Project project = findProjectById(projectId);
         validProjectUser(project.getUser(), loginUser);
         projectRepository.delete(project);
@@ -162,6 +154,31 @@ public class ProjectService {
         }
     }
 
-
-
+    //검색 기능
+    @Transactional(readOnly = true)
+    public Page<ProjectSearchResponseDto> searchProjectsByTitle(String keyword, Pageable pageable) {
+        if (keyword == null || keyword.trim().isEmpty() || keyword.trim().length() < 2) {
+            throw new BusinessLogicException(ExceptionCode.INVALID_SEARCH_KEYWORD);
+        }
+        return projectRepository.findByTitleContaining(keyword.trim(), pageable)
+                .map(project -> {
+                    ProjectSearchResponseDto dto = new ProjectSearchResponseDto();
+                    dto.setId(project.getId());
+                    dto.setTitle(project.getTitle());
+                    dto.setIntroduce(project.getIntroduce());
+                    dto.setProjectType(project.getProjectType());
+                    dto.setProjectStatus(project.getProjectStatus());
+                    if (project.getProjectImage() != null && !project.getProjectImage().isEmpty()) {
+                        dto.setThumbnailUrl(project.getProjectImage().get(0).getImageUrl());
+                    }
+                    dto.setOwnerName(project.getUser() != null ? project.getUser().getName() : null);
+                    if (project.getProjectType() == ProjectType.PURCHASE && project.getPurchase() != null) {
+                        dto.setCategoryName(project.getPurchase().getPurchaseCategory() != null
+                                ? project.getPurchase().getPurchaseCategory().getName() : null);
+                    }
+                    // 추후 else if로 도네이션 추가
+                    return dto;
+                });
+    }
 }
+
