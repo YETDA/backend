@@ -2,7 +2,7 @@ package com.funding.backend.global.config;
 
 import com.funding.backend.security.jwt.JwtAuthFilter;
 import com.funding.backend.security.oauth.CustomOAuth2UserService;
-import com.funding.backend.security.oauth.OAuth2LoginSuccessHandler;
+import com.funding.backend.security.oauth.handler.OAuth2LoginSuccessHandler;
 import com.funding.backend.security.oauth.resolver.CustomAuthorizationRequestResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
