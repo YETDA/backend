@@ -27,6 +27,7 @@ public class PermitUrl {
     };
 
     public static final String[] POST_URLS = {
+            "/api/v1/token/**"
     };
 
     public static final String[] PUT_URLS = {
