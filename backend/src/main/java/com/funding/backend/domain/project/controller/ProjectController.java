@@ -43,7 +43,6 @@ public class ProjectController {
                 .body(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 상세 조회 성공", response));
     }
 
-
     @DeleteMapping("/{projectId}")
     @Operation(
             summary = "프로젝트 삭제",
