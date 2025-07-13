@@ -86,6 +86,7 @@ public class TokenService {
                 user.getRole().getRole());
 
         setCookie("accessToken", accessToken);
+        response.addHeader("Authorization", "Bearer " + accessToken);
     }
 
     //임시 토큰용
@@ -97,6 +98,7 @@ public class TokenService {
                 user.getRole().getRole());
 
         setCookie("accessToken", accessToken);
+        response.addHeader("Authorization", "Bearer " + accessToken);
     }
 
     public void setCookie(String name, String value) {
