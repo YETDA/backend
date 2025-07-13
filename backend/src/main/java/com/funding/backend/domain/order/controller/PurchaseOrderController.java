@@ -2,6 +2,7 @@ package com.funding.backend.domain.order.controller;
 
 
 import com.funding.backend.domain.order.dto.request.PurchaseOrderRequestDto;
+import com.funding.backend.domain.order.dto.response.PurchaseFileResponseDto;
 import com.funding.backend.domain.order.dto.response.PurchaseOrderResponseDto;
 import com.funding.backend.domain.order.service.PurchaseOrderService;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,6 +66,22 @@ public class PurchaseOrderController {
                 .status(HttpStatus.OK)
                 .body(ApiResponse.of(HttpStatus.OK.value(), "결제 프로젝트 리스트 조회 완료",response));
     }
+
+    @GetMapping("/{purchaseOptionId}")
+    @Operation(
+            summary = "결제된 창작물 파일 다운로드를 위한 조회",
+            description = "현재 로그인한 사용자가 결제한 창작물(파일)을 조회합니다. ( 다운로드 가능하게 Url 제공) "
+    )
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    public ResponseEntity<ApiResponse<PurchaseFileResponseDto>> getPurchasedProjectFiles(
+            @PathVariable("purchaseOptionId") Long purchaseOptionId
+    ) {
+        PurchaseFileResponseDto response = purchaseOrderService.getUserPurchasedFile(purchaseOptionId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "결제된 창작물 파일 다운로드를 위한 조회 완료",response));
+    }
+
 
 
 

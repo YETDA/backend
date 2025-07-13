@@ -7,6 +7,8 @@ import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
 import com.funding.backend.domain.purchaseOption.repository.PurchaseOptionRepository;
 import com.funding.backend.domain.purchaseOption.service.PurchaseOptionService;
 import com.funding.backend.enums.ProvidingMethod;
+import com.funding.backend.global.exception.BusinessLogicException;
+import com.funding.backend.global.exception.ExceptionCode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +75,17 @@ public class OrderOptionService {
                 )
                 .order(order)
                 .build();
+    }
+
+    public OrderOption findOrderOptionById(Long orderOptionId){
+        return orderOptionRepository.findById(orderOptionId)
+                .orElseThrow(()-> new BusinessLogicException(ExceptionCode.ORDER_OPTION_NOT_FOUND));
+    }
+
+
+    @Transactional
+    public void saveOrderOption(OrderOption orderOption){
+        orderOptionRepository.save(orderOption);
     }
 
 
