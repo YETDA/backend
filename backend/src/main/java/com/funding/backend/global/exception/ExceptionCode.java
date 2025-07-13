@@ -90,6 +90,11 @@ public enum ExceptionCode {
     ANSWER_NOT_FOUND(404, "답변이 존재하지 않습니다."),
     ANSWER_ALREADY_EXISTS(409, "이미 답변이 존재합니다."),
 
+    //후기 예외 처리
+    REVIEW_NOT_FOUND(404, "존재하지 않는 후기입니다."),
+    REVIEW_ACCESS_DENIED(403, "접근 권한이 없습니다."),
+    REVIEW_ALREADY_EXISTS(409, "이미 후기가 존재합니다."),
+
     //요금제 예외 처리
     PRICING_PLAN_NOT_FOUND(404, "존재하지 않는 요금제 입니다");
 

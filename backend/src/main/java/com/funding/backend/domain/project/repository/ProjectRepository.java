@@ -10,7 +10,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.Modifying;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project,Long> {
@@ -66,9 +68,17 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
     """)
     Page<Project> findAllByOrderByAchievementRateDesc(Pageable pageable);
 
-    Page<Project> findAllByProjectStatusIn(Collection<ProjectStatus> projectStatuses, Pageable pageable);
+    @Query("SELECT p FROM Project p WHERE p.projectType = :projectType AND p.projectStatus IN :statuses")
+    Page<Project> findByTypeAndStatuses(
+            @Param("projectType") ProjectType projectType,
+            @Param("statuses") List<ProjectStatus> statuses,
+            Pageable pageable
+    );
 
     //부분 일치 검색
     Page<Project> findByTitleContaining(String title, Pageable pageable);
 
+    @Modifying
+    @Query("UPDATE Project p SET p.projectStatus = :newStatus WHERE p.projectStatus = :oldStatus")
+    void updateProjectStatusByStatus(@Param("oldStatus") ProjectStatus oldStatus, @Param("newStatus") ProjectStatus newStatus);
 }
