@@ -47,7 +47,7 @@ jobs:
           source: backend/build/libs/*.jar
           target: /home/${{ secrets.DEPLOY_USER }}/yetda
 
-      - name: Dockerfile 복사
+      - name: Backend Dockerfile 복사
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.DEPLOY_HOST }}
@@ -55,6 +55,26 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           port: ${{ secrets.DEPLOY_PORT || 22 }}
           source: backend/Dockerfile
+          target: /home/${{ secrets.DEPLOY_USER }}/yetda
+
+      - name: Nginx 설정 파일 복사
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          source: nginx/nginx.conf
+          target: /home/${{ secrets.DEPLOY_USER }}/yetda
+
+      - name: Nginx Dockerfile 복사
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          source: nginx/Dockerfile
           target: /home/${{ secrets.DEPLOY_USER }}/yetda
 
       - name: docker compose 복사
