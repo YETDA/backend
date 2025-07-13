@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -132,4 +133,12 @@ public class UserController {
 
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "로그아웃 성공"));
     }
+
+    @GetMapping("/profile/{userId}")
+    @Operation(summary = "사용자의 프로필 조회 ", description = "사용자의 프로필을 조회할 수 있습니다. ")
+    public ResponseEntity<ApiResponse<UserProfileResponse>> getUserProfile(@PathVariable Long userId) {
+        UserProfileResponse response = userService.getUserProfile(userId);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "사용자 프로필 조회", response));
+    }
+
 }

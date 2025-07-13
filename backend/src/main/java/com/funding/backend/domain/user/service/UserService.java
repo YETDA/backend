@@ -38,6 +38,19 @@ public class UserService {
                 .build();
     }
 
+    public UserProfileResponse getUserProfile(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
+
+        return UserProfileResponse.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .introduce(user.getIntroduce())
+                .portfolioAddress(user.getPortfolioAddress())
+                .image(user.getImage())
+                .build();
+    }
+
     @Transactional
     public void updateUserProfile(Long userId, UserProfileUpdateRequest request, MultipartFile imageFile) {
         User user = userRepository.findById(userId)

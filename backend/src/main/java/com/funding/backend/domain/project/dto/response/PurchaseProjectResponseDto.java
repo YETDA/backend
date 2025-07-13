@@ -21,6 +21,7 @@ public class PurchaseProjectResponseDto implements ProjectResponseDto {
     private String purchaseCategoryName;
     private String averageDeliveryTime;
     private List<String> contentImageUrls;
+    private Long userId;
     private List<PurchaseOptionResponseDto> purchaseOptions;
 
 
@@ -41,10 +42,8 @@ public class PurchaseProjectResponseDto implements ProjectResponseDto {
                 .map(ProjectImage::getImageUrl)
                 .toList(); // 또는 collect(Collectors.toList()) in Java 8
         this.purchaseOptions = purchaseOptions;
+        this.userId = project.getUser().getId();
     }
-
-
-
 
 
 }
