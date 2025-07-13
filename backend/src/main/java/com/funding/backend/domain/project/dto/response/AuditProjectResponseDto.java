@@ -5,10 +5,12 @@ import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Getter
 public class AuditProjectResponseDto {
     @Schema(description = "프로젝트 ID", example = "1")
     private Long id;
