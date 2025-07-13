@@ -103,6 +103,13 @@ public class PurchaseService {
 
 
 
+    //구매자 검증을 위한 조회 메서드(후기)
+    public Purchase findByIdWithProjectAndUser(Long purchaseId) {
+        return purchaseRepository.findByIdWithProjectAndUser(purchaseId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));
+    }
+
+
 
 
 }

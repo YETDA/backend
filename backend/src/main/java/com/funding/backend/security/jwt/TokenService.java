@@ -10,11 +10,13 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TokenService {
 
     private final JwtTokenizer jwtTokenizer;
@@ -65,8 +67,8 @@ public class TokenService {
     public void deleteCookie(String name) {
         ResponseCookie cookie = ResponseCookie.from(name, null)
                 .path("/")
-                .sameSite("Strict")
-                .secure(true)
+                .sameSite("None")
+                .secure(true) // 로컬 HTTP 개발 시 false. HTTPS 프로덕션에선 true
                 .httpOnly(true)
                 .maxAge(0) // 즉시 만료
                 .build();
@@ -74,29 +76,36 @@ public class TokenService {
         response.addHeader("Set-Cookie", cookie.toString());
     }
 
+
+    //임시 토큰 용
     public void createTokenByUserRole() {
-        User user = userService.findUserById(4L);
+        User user = userService.findUserById(1L);
+        log.info(user.getName());
+
         String accessToken = jwtTokenizer.createAccessToken(user.getId(), user.getEmail(), user.getName(),
                 user.getRole().getRole());
 
         setCookie("accessToken", accessToken);
+        response.addHeader("Authorization", "Bearer " + accessToken);
     }
 
+    //임시 토큰용
     public void createTokenByAdminRole() {
-        User user = userService.findUserById(4L);
+        User user = userService.findUserById(2L);
 
         userRepository.save(user);
         String accessToken = jwtTokenizer.createAccessToken(user.getId(), user.getEmail(), user.getName(),
                 user.getRole().getRole());
 
         setCookie("accessToken", accessToken);
+        response.addHeader("Authorization", "Bearer " + accessToken);
     }
 
     public void setCookie(String name, String value) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .path("/")
-                .sameSite("Strict")
-                .secure(true)
+                .sameSite("None")
+                .secure(true) // 로컬 HTTP 개발 시 false. HTTPS 프로덕션에선 true
                 .httpOnly(true)
                 .maxAge(Math.toIntExact(JwtTokenizer.ACCESS_TOKEN_EXPIRE_TIME / 1000))
                 .build();

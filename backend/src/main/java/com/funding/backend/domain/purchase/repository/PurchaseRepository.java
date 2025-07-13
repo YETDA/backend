@@ -16,4 +16,7 @@ public interface PurchaseRepository extends JpaRepository<Purchase,Long> {
     @Query("SELECT p FROM Purchase p JOIN p.purchaseOptionList po WHERE po.id = :purchaseOptionId")
     Optional<Purchase> findByPurchaseOptionId(@Param("purchaseOptionId") Long purchaseOptionId);
 
+    @Query("SELECT p FROM Purchase p JOIN FETCH p.project pr JOIN FETCH pr.user u WHERE p.id = :purchaseId")
+    Optional<Purchase> findByIdWithProjectAndUser(@Param("purchaseId") Long purchaseId);
+
 }

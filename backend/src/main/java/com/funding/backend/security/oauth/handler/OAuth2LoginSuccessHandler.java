@@ -1,4 +1,4 @@
-package com.funding.backend.security.oauth;
+package com.funding.backend.security.oauth.handler;
 
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
@@ -95,12 +95,15 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         // 쿠키 생성
         ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)
-                .secure(true) // HTTPS 배포 환경이라면 true
+                .secure(true) // 로컬 HTTP 개발 시 false. HTTPS 프로덕션에선 true
                 .path("/")
-                .sameSite("Strict")
+                .sameSite("None")
                 .maxAge(JwtTokenizer.ACCESS_TOKEN_EXPIRE_TIME / 1000) // 초 단위
                 .build();
         response.addHeader("Set-Cookie", accessTokenCookie.toString());
+
+        response.addHeader("Authorization", "Bearer " + accessToken);
+
 
         // 2. RefreshToken은 Redis에 있으면 재사용, 없으면 발급 및 저장
         String refreshToken = refreshTokenService.getRefreshToken(user.getId());
@@ -119,6 +122,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             );
         }
 
-        response.sendRedirect(frontRedirectUrl);
+        String redirectUrl = request.getParameter("state");
+
+        response.sendRedirect(redirectUrl);
     }
 }
