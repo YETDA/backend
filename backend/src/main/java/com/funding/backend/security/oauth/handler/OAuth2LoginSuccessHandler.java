@@ -102,6 +102,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 .build();
         response.addHeader("Set-Cookie", accessTokenCookie.toString());
 
+        response.addHeader("Authorization", "Bearer " + accessToken);
+
+
         // 2. RefreshToken은 Redis에 있으면 재사용, 없으면 발급 및 저장
         String refreshToken = refreshTokenService.getRefreshToken(user.getId());
         if (refreshToken == null) {
