@@ -18,6 +18,9 @@ public class PermitUrl {
             "/api/v1/project/**",
             "/api/v1/project/search",
 
+            // 구매 옵션
+            "/api/v1/purchaseOption/**",
+
             // 공지사항
             "/api/v1/notice/project/**",
 
@@ -29,24 +32,37 @@ public class PermitUrl {
 
             // 리뷰
             "/api/v1/reviews/project/**"
+
+            ,//구매 옵션
+            "/api/v1/purchaseOption/**"
     };
 
     public static final String[] POST_URLS = {
             "/api/v1/token/**"
+            ,"/api/v1/project/purchase/**"
+
+
     };
 
     public static final String[] PUT_URLS = {
-
+            //구매형 프로젝트
+            "/api/v1/project/purchase/**"
     };
 
     public static final String[] DELETE_URLS = {
-
+            //구매형 프로젝트
+            "/api/v1/project/purchase/**"
     };
 
     public static final String[] PATCH_URLS = {
             // 다른 PATCH 엔드포인트가 있으면 여기에 추가
             "/api/v1/admin/users/*/status",
     };
+
+    public static final String[] OPTIONS_URLS = {
+            "/**"
+    };
+
 
 
 
