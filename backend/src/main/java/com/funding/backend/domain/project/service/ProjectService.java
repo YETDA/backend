@@ -183,8 +183,8 @@ public class ProjectService {
         return projects.map(ProjectInfoResponseDto::new);
     }
 
-    public Page<AuditProjectResponseDto> findAllUnderAuditProjects(Pageable pageable) {
-        return projectRepository.findAllByProjectStatusIn(List.of(ProjectStatus.UNDER_AUDIT), pageable).map(AuditProjectResponseDto::new);
+    public Page<AuditProjectResponseDto> findProjectsByTypeAndStatus(ProjectType type, List<ProjectStatus> statuses, Pageable pageable) {
+        return projectRepository.findByTypeAndStatuses(type, statuses, pageable).map(AuditProjectResponseDto::new);
     }
 
     @Transactional
@@ -195,7 +195,10 @@ public class ProjectService {
         return new AuditProjectResponseDto(project);
     }
 
-
+    @Transactional
+    public void updateAllProjectStatus(ProjectStatus oldStatus, ProjectStatus newStatus) {
+        projectRepository.updateProjectStatusByStatus(oldStatus, newStatus);
+    }
 
     private void validateBankAccountPresence(User user) {
         if (user.getAccount() == null && user.getBank() == null) {
