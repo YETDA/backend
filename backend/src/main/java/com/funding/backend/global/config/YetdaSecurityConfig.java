@@ -49,6 +49,8 @@ public class YetdaSecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, PermitUrl.DELETE_URLS).permitAll()
                         // 모든 요청 허용 (ALL_URLS)
                         .requestMatchers(PermitUrl.ALL_URLS).permitAll()
+
+                        .requestMatchers(HttpMethod.OPTIONS, PermitUrl.OPTIONS_URLS).permitAll()
                         // 나머지 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
