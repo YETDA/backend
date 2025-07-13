@@ -12,9 +12,13 @@ import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.domain.purchase.repository.PurchaseRepository;
 import com.funding.backend.domain.purchaseOption.repository.PurchaseOptionRepository;
 import com.funding.backend.domain.purchaseOption.service.PurchaseOptionService;
+import com.funding.backend.domain.user.entity.User;
+import com.funding.backend.domain.user.service.UserService;
+import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.s3.ImageService;
+import com.funding.backend.security.jwt.TokenService;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +38,8 @@ public class PurchaseService {
     private final ProjectRepository projectRepository;
     private final PurchaseCategoryService purchaseCategoryService;
     private final PurchaseOptionService purchaseOptionService;
+    private final UserService userService;
+    private final TokenService tokenService;
 
     @Transactional
     public Purchase createPurchase(Project project, PurchaseProjectDetail dto){
@@ -91,6 +97,13 @@ public class PurchaseService {
 
 
     public PurchaseProjectResponseDto createPurchaseProjectResponse(Project project) {
+
+        if(project.getProjectStatus().equals(ProjectStatus.UNDER_AUDIT)){
+            User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
+            if(!project.getUser().equals(user)){
+                throw new BusinessLogicException(ExceptionCode.PROJECT_VIEW_FORBIDDEN_DURING_AUDIT);
+            }
+        }
         Purchase detail = findByProject(project);
 
         List<PurchaseOptionResponseDto> optionDtos = detail.getPurchaseOptionList().stream()
