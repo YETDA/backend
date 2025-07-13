@@ -13,6 +13,7 @@ import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
 import com.funding.backend.domain.project.repository.ProjectRepository;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
+import com.funding.backend.domain.purchase.dto.response.PurchaseResponseDto;
 import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.domain.purchase.service.PurchaseService;
 import com.funding.backend.domain.purchaseOption.service.PurchaseOptionService;
@@ -56,7 +57,7 @@ public class ProjectService {
     private final UserService userService;
 
     @Transactional
-    public void createPurchaseProject(ProjectCreateRequestDto dto) {
+    public PurchaseResponseDto createPurchaseProject(ProjectCreateRequestDto dto) {
         User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
         validateBankAccountPresence(loginUser);
@@ -87,6 +88,7 @@ public class ProjectService {
             purchaseOptionService.createPurchaseOptionForProject(createPurchase.getId(), dto);
         }
 
+        return new PurchaseResponseDto(saveProject.getId());
     }
 
 
