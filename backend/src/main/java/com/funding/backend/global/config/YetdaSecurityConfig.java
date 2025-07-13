@@ -1,5 +1,7 @@
 package com.funding.backend.global.config;
 
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import com.funding.backend.security.jwt.JwtAuthFilter;
 import com.funding.backend.security.oauth.CustomOAuth2UserService;
 import com.funding.backend.security.oauth.handler.OAuth2LoginSuccessHandler;
@@ -34,14 +36,20 @@ public class YetdaSecurityConfig {
         http
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-
-                                "/oauth2/**",
-                                "/api/v1/user/logout"
-                        ).permitAll()
+                .authorizeHttpRequests( auth -> auth
+                        // GET 요청 허용
+                        .requestMatchers(HttpMethod.GET, PermitUrl.GET_URLS).permitAll()
+                        // POST 요청 허용
+                        .requestMatchers(HttpMethod.POST, PermitUrl.POST_URLS).permitAll()
+                        // PUT 요청 허용
+                        .requestMatchers(HttpMethod.PUT, PermitUrl.PUT_URLS).permitAll()
+                        // PATCH 요청 허용
+                        .requestMatchers(HttpMethod.PATCH, PermitUrl.PATCH_URLS).permitAll()
+                        // DELETE 요청 허용
+                        .requestMatchers(HttpMethod.DELETE, PermitUrl.DELETE_URLS).permitAll()
+                        // 모든 요청 허용 (ALL_URLS)
+                        .requestMatchers(PermitUrl.ALL_URLS).permitAll()
+                        // 나머지 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
