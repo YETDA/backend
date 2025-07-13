@@ -6,24 +6,29 @@ public class PermitUrl {
     public static final String[] ALL_URLS = {
 
     };
-    public static final String[] GET_URLS = {
-            "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
-            "/oauth2/**", "/api/v1/user/logout",
-            //프로젝트 검색
-            "/api/v1/project/**",
-            //공지사항
-            "/api/v1/notice/project/**",
-            //좋아요
-            "/api/v1/like/project/**/count",
 
-            //후원
+    public static final String[] GET_URLS = {
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/oauth2/**",
+            "/api/v1/user/logout",
+
+            // 프로젝트 관련
+            "/api/v1/project/**",
+            "/api/v1/project/search",
+
+            // 공지사항
+            "/api/v1/notice/project/**",
+
+            // 좋아요
+            "/api/v1/like/project/*/count",
+
+            // 후원형
             "/api/v1/project/donation/**",
 
-            //리뷰
-            "/api/v1/reviews/project/**",
-
-            //조회
-            "api/vi/project/search"
+            // 리뷰
+            "/api/v1/reviews/project/**"
     };
 
     public static final String[] POST_URLS = {

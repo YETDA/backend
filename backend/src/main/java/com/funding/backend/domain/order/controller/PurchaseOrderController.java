@@ -69,8 +69,8 @@ public class PurchaseOrderController {
 
     @GetMapping("/{purchaseOptionId}")
     @Operation(
-            summary = "결제된 창작물 파일 조회",
-            description = "현재 로그인한 사용자가 결제한 창작물(파일)을 조회합니다."
+            summary = "결제된 창작물 파일 다운로드를 위한 조회",
+            description = "현재 로그인한 사용자가 결제한 창작물(파일)을 조회합니다. ( 다운로드 가능하게 Url 제공) "
     )
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public ResponseEntity<ApiResponse<PurchaseFileResponseDto>> getPurchasedProjectFiles(
@@ -79,7 +79,7 @@ public class PurchaseOrderController {
         PurchaseFileResponseDto response = purchaseOrderService.getUserPurchasedFile(purchaseOptionId);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.of(HttpStatus.OK.value(), "결제 프로젝트 리스트 조회 완료",response));
+                .body(ApiResponse.of(HttpStatus.OK.value(), "결제된 창작물 파일 다운로드를 위한 조회 완료",response));
     }
 
 
