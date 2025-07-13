@@ -238,5 +238,18 @@ public class ProjectService {
                     return dto;
                 });
     }
+
+    /**
+     * 특정 사용자의 프로젝트 중 RECRUITING 또는 COMPLETED 상태인 프로젝트 조회
+     */
+    public Page<Project> getProjectsByUserAndStatus(Long userId, List<ProjectStatus> statuses, Pageable pageable) {
+        return projectRepository.findByUserIdAndProjectStatusIn(userId, statuses, pageable);
+    }
+
+    public long getCountOfProjectsByUserAndStatus(Long userId, List<ProjectStatus> statuses) {
+        return projectRepository.countByUserIdAndProjectStatusIn(userId, statuses);
+    }
+
+
 }
 

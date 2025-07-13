@@ -81,4 +81,10 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
     @Modifying
     @Query("UPDATE Project p SET p.projectStatus = :newStatus WHERE p.projectStatus = :oldStatus")
     void updateProjectStatusByStatus(@Param("oldStatus") ProjectStatus oldStatus, @Param("newStatus") ProjectStatus newStatus);
+
+    // 사용자가 가진 프로젝트 리스트 중 RECRUITING 또는 COMPLETED 상태인 프로젝트 조회
+    Page<Project> findByUserIdAndProjectStatusIn(Long userId, List<ProjectStatus> statuses, Pageable pageable);
+
+    // 사용자가 가진 프로젝트 중 RECRUITING 또는 COMPLETED 상태인 프로젝트의 전체 갯수 조회
+    long countByUserIdAndProjectStatusIn(Long userId, List<ProjectStatus> statuses);
 }

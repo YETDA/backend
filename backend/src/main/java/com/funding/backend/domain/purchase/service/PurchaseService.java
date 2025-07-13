@@ -1,5 +1,6 @@
 package com.funding.backend.domain.purchase.service;
 
+import com.funding.backend.domain.follow.service.FollowService;
 import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionResponseDto;
 import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
 import com.funding.backend.domain.project.repository.ProjectRepository;
@@ -19,6 +20,7 @@ import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.security.jwt.TokenService;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +42,7 @@ public class PurchaseService {
     private final PurchaseOptionService purchaseOptionService;
     private final UserService userService;
     private final TokenService tokenService;
+    private final FollowService followService;
 
     @Transactional
     public Purchase createPurchase(Project project, PurchaseProjectDetail dto){
@@ -108,10 +111,14 @@ public class PurchaseService {
 
         List<PurchaseOptionResponseDto> optionDtos = detail.getPurchaseOptionList().stream()
                 .map(PurchaseOptionResponseDto::new).toList();
+        User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
+        Long projectCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(), Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
+        Long followerCount = followService.countFollowers(user.getId());
 
         return new PurchaseProjectResponseDto(
-                project, detail, optionDtos
+                project, detail, optionDtos , projectCount, followerCount
         );
+
     }
 
 
