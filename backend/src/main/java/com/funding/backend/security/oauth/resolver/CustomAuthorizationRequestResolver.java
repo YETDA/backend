@@ -36,14 +36,10 @@ public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRe
             return null;
         }
 
-        String redirectUrl = request.getParameter("redirectUrl");
-        //log.info("확인 !!!!!!!!!!! resolver redirectUrl"+redirectUrl);
+        String redirectUrl = request.getParameter("state");
+        log.info("확인 !!!!!!!!!!! resolver redirectUrl"+redirectUrl);
 
         //swagger 테스트를 위해 직접 지정
-        if (redirectUrl == null || redirectUrl.isBlank()) {
-            redirectUrl = "http://localhost:3000";
-        }
-
         Map<String, Object> additionalParameters = new HashMap<>(authorizationRequest.getAdditionalParameters());
         if (redirectUrl != null && !redirectUrl.isEmpty()) {
             additionalParameters.put("state", redirectUrl);

@@ -1,4 +1,4 @@
-package com.funding.backend.security.oauth;
+package com.funding.backend.security.oauth.handler;
 
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
@@ -119,6 +119,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             );
         }
 
-        response.sendRedirect(frontRedirectUrl);
+        String redirectUrl = request.getParameter("state");
+
+        response.sendRedirect(redirectUrl);
     }
 }
