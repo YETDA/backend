@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Modifying;
+
 @Repository
 public interface ProjectRepository extends JpaRepository<Project,Long> {
 
@@ -76,4 +78,7 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
     //부분 일치 검색
     Page<Project> findByTitleContaining(String title, Pageable pageable);
 
+    @Modifying
+    @Query("UPDATE Project p SET p.projectStatus = :newStatus WHERE p.projectStatus = :oldStatus")
+    void updateProjectStatusByStatus(@Param("oldStatus") ProjectStatus oldStatus, @Param("newStatus") ProjectStatus newStatus);
 }

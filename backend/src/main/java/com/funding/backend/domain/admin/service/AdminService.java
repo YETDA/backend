@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -36,10 +38,10 @@ public class AdminService {
         return true;
     }
 
-    public Page<AuditProjectResponseDto> getAllUnderAuditProjects(ProjectType type, List<ProjectStatus> statuses, Pageable pageable) {
+    public Page<AuditProjectResponseDto> getAllProjectsByTypsAndStatus(ProjectType type, List<ProjectStatus> statuses, Pageable pageable) {
         validAdmin();
 
-        return projectService.findAllUnderAuditProjects(type, statuses, pageable);
+        return projectService.findProjectsByTypeAndStatus(type, statuses, pageable);
     }
 
     public AuditProjectResponseDto approveProject(Long projectId) {
@@ -60,5 +62,17 @@ public class AdminService {
         }
 
         return projectService.updateProjectStatus(projectId, ProjectStatus.REJECTED);
+    }
+
+    @Transactional
+    public void approveAllProjects() {
+        validAdmin();
+        projectService.updateAllProjectStatus(ProjectStatus.UNDER_AUDIT, ProjectStatus.RECRUITING);
+    }
+
+    @Transactional
+    public void rejectAllProjects() {
+        validAdmin();
+        projectService.updateAllProjectStatus(ProjectStatus.UNDER_AUDIT, ProjectStatus.REJECTED);
     }
 }
