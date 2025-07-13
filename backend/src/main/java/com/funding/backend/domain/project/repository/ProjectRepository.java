@@ -15,70 +15,59 @@ import java.util.Collection;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project,Long> {
 
-    @Query("SELECT p FROM Project p WHERE p.projectType = :projectType AND p.projectStatus = 'COMPLETED' ORDER BY SIZE(p.likeList) DESC")
+    @Query("""
+    SELECT p
+    FROM Project p
+    WHERE p.projectType = :projectType
+        AND p.projectStatus = com.funding.backend.enums.ProjectStatus.RECRUITING
+    ORDER BY SIZE(p.likeList) DESC
+    """)
     Page<Project> findByProjectTypeOrderByLikesDesc(@Param("projectType") ProjectType projectType, Pageable pageable);
 
-    @Query("SELECT p FROM Project p WHERE p.projectStatus = 'COMPLETED' ORDER BY SIZE(p.likeList) DESC")
+    @Query("""
+    SELECT p
+    FROM Project p
+    WHERE p.projectStatus = com.funding.backend.enums.ProjectStatus.RECRUITING
+    ORDER BY SIZE(p.likeList) DESC
+    """)
     Page<Project> findAllByOrderByLikesDesc(Pageable pageable);
 
-    @Query(
-            value = """
-                SELECT p.*
-                FROM projects p
-                LEFT JOIN orders o ON p.id = o.project_id
-                WHERE p.project_status = 'RECRUITING'
-                GROUP BY p.id
-                ORDER BY COALESCE(SUM(o.paid_amount), 0) DESC
-            """,
-            countQuery = """
-                SELECT COUNT(DISTINCT p.id)
-                FROM projects p
-                WHERE p.project_status = 'RECRUITING'
-            """, nativeQuery = true)
+    @Query("""
+    SELECT p
+    FROM Project p
+        LEFT JOIN p.orderList o
+    WHERE p.projectStatus = com.funding.backend.enums.ProjectStatus.RECRUITING
+    GROUP BY p.id
+    ORDER BY COUNT(o) DESC
+    """)
     Page<Project> findAllByOrderBySellingAmountDesc(Pageable pageable);
 
-    @Query(
-            value = """
-                SELECT p.*
-                FROM projects p
-                LEFT JOIN orders o ON p.id = o.project_id
-                WHERE p.project_type = :projectType
-                  AND p.project_status = 'RECRUITING'
-                GROUP BY p.id
-                ORDER BY COALESCE(SUM(o.paid_amount), 0) DESC
-            """,
-            countQuery = """
-                SELECT COUNT(DISTINCT p.id)
-                FROM projects p
-                WHERE p.project_type = :projectType
-                  AND p.project_status = 'RECRUITING'
-            """, nativeQuery = true)
+    @Query("""
+    SELECT p
+    FROM Project p
+    LEFT JOIN p.orderList o
+    WHERE p.projectType = :projectType
+        AND p.projectStatus = com.funding.backend.enums.ProjectStatus.RECRUITING
+    GROUP BY p.id
+    ORDER BY COUNT(o) DESC
+    """)
     Page<Project> findByProjectTypeOrderBySellingAmountDesc(@Param("projectType") ProjectType projectType, Pageable pageable);
 
-    @Query(value = """
-                SELECT p.*
-                FROM projects p
-                JOIN donations d ON p.id = d.project_id
-                LEFT JOIN orders o ON p.id = o.project_id
-                WHERE p.project_status = 'RECRUITING'
-                AND p.project_type = 'DONATION'
-                GROUP BY p.id, d.price_coal
-                HAVING d.price_coal > 0
-                ORDER BY COALESCE(SUM(o.paid_amount), 0) / d.price_coal DESC
-                """,
-            countQuery = """
-                SELECT COUNT(DISTINCT p.id)
-                FROM projects p
-                JOIN donations d ON p.id = d.project_id
-                WHERE p.project_status = 'RECRUITING'
-                AND p.project_type = 'DONATION'
-                AND d.price_coal > 0
-                """,
-            nativeQuery = true)
+    @Query("""
+    SELECT p
+    FROM Project p
+    JOIN p.donation d
+    LEFT JOIN p.orderList o
+    WHERE p.projectStatus = com.funding.backend.enums.ProjectStatus.RECRUITING
+        AND p.projectType = com.funding.backend.enums.ProjectType.DONATION
+        AND d.priceGoal > 0
+    GROUP BY p, d.priceGoal
+    ORDER BY COALESCE(SUM(o.paidAmount), 0) / d.priceGoal DESC
+    """)
     Page<Project> findAllByOrderByAchievementRateDesc(Pageable pageable);
 
     Page<Project> findAllByProjectStatusIn(Collection<ProjectStatus> projectStatuses, Pageable pageable);
-      
+
     //부분 일치 검색
     Page<Project> findByTitleContaining(String title, Pageable pageable);
 
