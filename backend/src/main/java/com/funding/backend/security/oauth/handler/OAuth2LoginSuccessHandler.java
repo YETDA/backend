@@ -1,4 +1,4 @@
-package com.funding.backend.security.oauth;
+package com.funding.backend.security.oauth.handler;
 
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
@@ -97,7 +97,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 .httpOnly(true)
                 .secure(false) // 로컬 HTTP 개발 시 false. HTTPS 프로덕션에선 true
                 .path("/")
-                .sameSite("Lax")
+                .sameSite("Strict")
                 .maxAge(JwtTokenizer.ACCESS_TOKEN_EXPIRE_TIME / 1000) // 초 단위
                 .build();
         response.addHeader("Set-Cookie", accessTokenCookie.toString());
@@ -119,6 +119,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             );
         }
 
-        response.sendRedirect(frontRedirectUrl);
+        String redirectUrl = request.getParameter("state");
+
+        response.sendRedirect(redirectUrl);
     }
 }
