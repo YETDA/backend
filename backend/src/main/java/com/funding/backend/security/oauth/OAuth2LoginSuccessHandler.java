@@ -94,7 +94,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         // 쿠키 생성
         ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
-                .httpOnly(true)
                 .secure(false) // 로컬 HTTP 개발 시 false. HTTPS 프로덕션에선 true
                 .path("/")
                 .sameSite("Strict")
