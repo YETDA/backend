@@ -3,7 +3,9 @@ package com.funding.backend.domain.purchase.controller;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
+import com.funding.backend.domain.purchase.dto.response.PurchaseResponseDto;
 import com.funding.backend.domain.purchase.service.PurchaseService;
+import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionResponseDto;
 import com.funding.backend.enums.ProvidingMethod;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,16 +41,16 @@ public class PurchaseController {
 
     @PostMapping(consumes = {"multipart/form-data"})
     @Operation(summary = "구매형 프로젝트 생성", description = "구매형 프로젝트 생성")
-    public ResponseEntity<?> createPurchaseProject(
+    public ResponseEntity<ApiResponse<PurchaseResponseDto>> createPurchaseProject(
             @RequestPart("requestDto") @Valid ProjectCreateRequestDto requestDto,
             @RequestPart(value = "contentImage", required = false) List<MultipartFile> contentImages,
             @RequestPart(value = "optionFiles", required = false) List<MultipartFile> optionFiles
     ) {
         requestDto.setContentImage(contentImages);
         requestDto.setOptionFiles(optionFiles);
-        projectService.createPurchaseProject(requestDto);
+        PurchaseResponseDto response  = projectService.createPurchaseProject(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.of(HttpStatus.CREATED.value(), "구매형 프로젝트 생성 성공"));
+                .body(ApiResponse.of(HttpStatus.CREATED.value(),"구매형 프로젝트 생성 성공",response));
     }
 
 

@@ -38,6 +38,7 @@ public enum ExceptionCode {
     INVALID_PROJECT_TYPE(400, "지원하지 않는 프로젝트 타입입니다."),
     INVALID_PROJECT_SEARCH_TYPE(400, "지원하지 않는 프로젝트 검색 타입입니다."),
     PROJECT_CANNOT_BE_AUDITED(400, "프로젝트가 심사될 수 없는 상태입니다."),
+    PROJECT_VIEW_FORBIDDEN_DURING_AUDIT(403, "현재 심사중인 프로젝트입니다. 프로젝트 생성자만 조회할 수 있습니다."),
 
     //검색 예외 처리
     INVALID_SEARCH_KEYWORD(400, "2글자 이상 입력하세요."),
