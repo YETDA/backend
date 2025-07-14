@@ -66,6 +66,17 @@ public class NoticeController {
     }
 
     @Operation(
+            summary = "공지사항 단건 조회",
+            description = "특정 공지사항을 조회합니다."
+    )
+    @GetMapping("/{noticeId}")
+    public ResponseEntity<ApiResponse<NoticeReseponseDto>> getNoticeById(
+            @PathVariable Long noticeId) {
+
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "공지사항 수정 성공", new NoticeReseponseDto(noticeService.findNoticeById(noticeId))));
+    }
+
+    @Operation(
             summary = "프로젝트의 공지사항 전체 조회",
             description = "특정 프로젝트의 모든 공지사항을 조회합니다."
     )

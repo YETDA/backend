@@ -18,6 +18,18 @@ public class NoticeReseponseDto {
     @Schema(description = "공지사항 내용", example = "결제는 오후 6시에 진행됩니다.")
     private String noticeContent;
 
+    @Schema(description = "프로젝트 ID", example = "123")
+    private Long projectId;
+
+    @Schema(description = "제작자 ID", example = "456")
+    private Long hostId;
+
+    @Schema(description = "제작자 이름", example = "홍길동")
+    private String hostName;
+
+    @Schema(description = "제작자 프로필 이미지 URL", example = "https://example.com/profile.jpg")
+    private String hostProfileImageUrl;
+
     @Schema(description = "생성일", example = "2025-07-15T14:25:14.293Z")
     private LocalDateTime createdAt;
 
@@ -28,6 +40,10 @@ public class NoticeReseponseDto {
         this.id = notice.getId();
         this.noticeTitle = notice.getTitle();
         this.noticeContent = notice.getContent();
+        this.projectId = notice.getProject().getId();
+        this.hostId = notice.getProject().getUser().getId();
+        this.hostName = notice.getProject().getUser().getName();
+        this.hostProfileImageUrl = notice.getProject().getUser().getImage();
         this.createdAt = notice.getCreatedAt();
         this.modifiedAt = notice.getModifiedAt();
     }
