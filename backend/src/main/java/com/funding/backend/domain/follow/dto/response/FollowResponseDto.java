@@ -9,8 +9,15 @@ import lombok.Getter;
 public class FollowResponseDto {
     private Long userId;
     private String name;
+    private String image;
+    private String introduce;
 
     public static FollowResponseDto from(User user) {
-        return new FollowResponseDto(user.getId(), user.getName());
+        return new FollowResponseDto(
+                user.getId(),
+                user.getName(),
+                user.getImage(),
+                user.getIntroduce()
+        );
     }
 }
