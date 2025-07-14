@@ -31,7 +31,10 @@ public class PermitUrl {
             "/api/v1/project/donation/**",
 
             // 리뷰
-            "/api/v1/reviews/project/**"
+            "/api/v1/reviews/**",
+
+            // Qna
+            "/api/v1/qna/**"
 
             ,//구매 옵션
             "/api/v1/purchaseOption/**"
