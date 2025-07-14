@@ -7,6 +7,7 @@ import com.funding.backend.global.utils.s3.ByteArrayMultipartFile;
 import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.security.jwt.JwtTokenizer;
 import com.funding.backend.security.jwt.RefreshTokenService;
+import com.funding.backend.security.jwt.TokenService;
 import com.funding.backend.security.oauth.model.CustomOAuth2User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +32,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final RefreshTokenService refreshTokenService;
     private final ImageService imageService;
     private final UserRepository userRepository;
+    private final TokenService tokenService;
 
     @Value("${custom.dev.frontUrl}")
     private String frontRedirectUrl;
@@ -92,14 +94,17 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 user.getRole().getRole()
         );
 
-        // 쿠키 생성
-        ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
-                .secure(true) // 로컬 HTTP 개발 시 false. HTTPS 프로덕션에선 true
-                .path("/")
-                .sameSite("None")
-                .maxAge(JwtTokenizer.ACCESS_TOKEN_EXPIRE_TIME / 1000) // 초 단위
-                .build();
-        response.addHeader("Set-Cookie", accessTokenCookie.toString());
+
+
+//        // 쿠키 생성
+//        ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
+//                .secure(true) // 로컬 HTTP 개발 시 false. HTTPS 프로덕션에선 true
+//                .path("/")
+//                .sameSite("None")
+//                .maxAge(JwtTokenizer.ACCESS_TOKEN_EXPIRE_TIME / 1000) // 초 단위
+//                .build();
+//        response.addHeader("Set-Cookie", accessTokenCookie.toString());
+        tokenService.setCookie("accessToken", accessToken);
 
         //response.addHeader("Authorization", "Bearer " + accessToken);
 
