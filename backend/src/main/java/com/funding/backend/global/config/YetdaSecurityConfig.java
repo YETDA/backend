@@ -74,7 +74,8 @@ public class YetdaSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000", "https://yetda.kro.kr"));
+        config.setAllowedOrigins(List.of("http://localhost:3000", "https://yetda.kro.kr"
+                ,"https://www.yetda.booktri.site"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.addAllowedHeader("*");
         config.setAllowCredentials(true); // 💡 쿠키 포함 허용 필수
