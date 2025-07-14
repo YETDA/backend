@@ -23,9 +23,9 @@ import org.springframework.context.annotation.Configuration;
                 @SecurityRequirement(name = "kakaoOAuth")
         },
         servers = {
-                @Server(url = "http://localhost:8080", description = "로컬 개발 서버"),
+                @Server(url = "https://yetda.kro.kr", description = "배포 서버"),
                 @Server(url = "https://localhost", description = "로컬 Nginx 서버"),
-                @Server(url = "https://yetda.kro.kr", description = "배포 서버")
+                @Server(url = "http://localhost:8080", description = "로컬 개발 서버")
         }
 )
 @SecurityScheme(
