@@ -1,6 +1,7 @@
 package com.funding.backend.domain.project.controller;
 
 
+import com.funding.backend.domain.project.dto.response.ProjectCountResponseDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
@@ -76,6 +77,16 @@ public class ProjectController {
             @RequestParam String keyword, Pageable pageable) {
 
         Page<ProjectInfoResponseDto> response = projectService.searchProjectsByTitle(keyword.trim(), pageable);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 검색 성공", response));
+    }
+
+    @Operation(summary = "유저 프로젝트 개수 조회", description = "유저가 생성한 프로젝트 개수 조회 ( 모집중, 심사중만 표시 ) ")
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<ProjectCountResponseDto>> searchProject() {
+
+        ProjectCountResponseDto response = projectService.countProject();
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 검색 성공", response));

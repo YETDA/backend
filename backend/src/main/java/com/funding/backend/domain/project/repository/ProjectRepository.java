@@ -88,5 +88,12 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
     Page<Project> findByUserIdAndProjectStatusIn(Long userId, List<ProjectStatus> statuses, Pageable pageable);
 
     // 사용자가 가진 프로젝트 중 RECRUITING 또는 COMPLETED 상태인 프로젝트의 전체 갯수 조회
-    long countByUserIdAndProjectStatusIn(Long userId, List<ProjectStatus> statuses);
+    Long countByUserIdAndProjectStatusIn(Long userId, List<ProjectStatus> statuses);
+
+
+    // 유저가 생성한 Donation, Project 프로젝트 수 (상태 제한 포함)
+    Long countByUserIdAndProjectTypeAndProjectStatusIn(Long userId, ProjectType type, List<ProjectStatus> statuses);
+
+
+
 }
