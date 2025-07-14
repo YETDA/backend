@@ -5,6 +5,7 @@ import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -76,6 +77,7 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
     );
 
     //부분 일치 검색
+    @EntityGraph(attributePaths = {"orderList", "likeList", "projectImage", "user", "purchase", "donation"})
     Page<Project> findByTitleContaining(String title, Pageable pageable);
 
     @Modifying
