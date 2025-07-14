@@ -1,7 +1,5 @@
 package com.funding.backend.global.config;
 
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import com.funding.backend.security.jwt.JwtAuthFilter;
 import com.funding.backend.security.oauth.CustomOAuth2UserService;
 import com.funding.backend.security.oauth.handler.OAuth2LoginSuccessHandler;
@@ -10,6 +8,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -34,7 +33,7 @@ public class YetdaSecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests( auth -> auth
+                .authorizeHttpRequests(auth -> auth
                         // GET 요청 허용
                         .requestMatchers(HttpMethod.GET, PermitUrl.GET_URLS).permitAll()
                         // POST 요청 허용
@@ -75,7 +74,7 @@ public class YetdaSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000")); // 실제 도메인 추후 추가
+        config.setAllowedOrigins(List.of("http://localhost:3000", "https://yetda.kro.kr"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.addAllowedHeader("*");
         config.setAllowCredentials(true); // 💡 쿠키 포함 허용 필수
