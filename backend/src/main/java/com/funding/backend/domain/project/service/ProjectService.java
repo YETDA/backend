@@ -5,6 +5,7 @@ import com.funding.backend.domain.donation.service.DonationService;
 import com.funding.backend.domain.pricingPlan.repository.PricingRepository;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
+import com.funding.backend.domain.project.dto.response.ProjectCountResponseDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.AuditProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
@@ -26,6 +27,7 @@ import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.security.jwt.TokenService;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
@@ -230,6 +232,19 @@ public class ProjectService {
 
     public long getCountOfProjectsByUserAndStatus(Long userId, List<ProjectStatus> statuses) {
         return projectRepository.countByUserIdAndProjectStatusIn(userId, statuses);
+    }
+
+    public ProjectCountResponseDto countProject(){
+       User user =  userService.findUserById(tokenService.getUserIdFromAccessToken());
+       Long allCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(),
+               Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
+       Long projectCount =projectRepository.countByUserIdAndProjectTypeAndProjectStatusIn(user.getId(),
+               ProjectType.PURCHASE,Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
+        Long donationCount =projectRepository.countByUserIdAndProjectTypeAndProjectStatusIn(user.getId(),
+                ProjectType.DONATION,Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
+
+        return new ProjectCountResponseDto(allCount,donationCount,projectCount);
+
     }
 
 
