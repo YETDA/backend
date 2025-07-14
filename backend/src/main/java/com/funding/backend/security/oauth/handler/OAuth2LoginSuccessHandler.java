@@ -96,7 +96,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
                 .secure(true) // 로컬 HTTP 개발 시 false. HTTPS 프로덕션에선 true
                 .path("/")
-                .sameSite("Lax")
+                .sameSite("None")
                 .maxAge(JwtTokenizer.ACCESS_TOKEN_EXPIRE_TIME / 1000) // 초 단위
                 .build();
         response.addHeader("Set-Cookie", accessTokenCookie.toString());
