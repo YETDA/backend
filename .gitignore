@@ -18,3 +18,4 @@ out/
 .vscode/
 
 .env
+/nginx/ssl/

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.security.OAuthFlows;
 import io.swagger.v3.oas.annotations.security.OAuthScope;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
@@ -20,6 +21,11 @@ import org.springframework.context.annotation.Configuration;
         security = {
                 @SecurityRequirement(name = "bearerAuth"),
                 @SecurityRequirement(name = "kakaoOAuth")
+        },
+        servers = {
+                @Server(url = "http://localhost:8080", description = "로컬 개발 서버"),
+                @Server(url = "https://localhost", description = "로컬 Nginx 서버"),
+                @Server(url = "https://yetda.kro.kr", description = "배포 서버")
         }
 )
 @SecurityScheme(
