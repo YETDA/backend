@@ -7,7 +7,6 @@ import com.funding.backend.domain.pricingPlan.service.PricingService;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.AuditProjectResponseDto;
-import com.funding.backend.domain.project.dto.response.ProjectSearchResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
 import com.funding.backend.domain.project.repository.ProjectRepository;
@@ -214,29 +213,12 @@ public class ProjectService {
 
     //검색 기능
     @Transactional(readOnly = true)
-    public Page<ProjectSearchResponseDto> searchProjectsByTitle(String keyword, Pageable pageable) {
+    public Page<ProjectInfoResponseDto> searchProjectsByTitle(String keyword, Pageable pageable) {
         if (keyword == null || keyword.trim().isEmpty() || keyword.trim().length() < 2) {
             throw new BusinessLogicException(ExceptionCode.INVALID_SEARCH_KEYWORD);
         }
         return projectRepository.findByTitleContaining(keyword.trim(), pageable)
-                .map(project -> {
-                    ProjectSearchResponseDto dto = new ProjectSearchResponseDto();
-                    dto.setId(project.getId());
-                    dto.setTitle(project.getTitle());
-                    dto.setIntroduce(project.getIntroduce());
-                    dto.setProjectType(project.getProjectType());
-                    dto.setProjectStatus(project.getProjectStatus());
-                    if (project.getProjectImage() != null && !project.getProjectImage().isEmpty()) {
-                        dto.setThumbnailUrl(project.getProjectImage().get(0).getImageUrl());
-                    }
-                    dto.setOwnerName(project.getUser() != null ? project.getUser().getName() : null);
-                    if (project.getProjectType() == ProjectType.PURCHASE && project.getPurchase() != null) {
-                        dto.setCategoryName(project.getPurchase().getPurchaseCategory() != null
-                                ? project.getPurchase().getPurchaseCategory().getName() : null);
-                    }
-                    // 추후 else if로 도네이션 추가
-                    return dto;
-                });
+                .map(ProjectInfoResponseDto::new);
     }
 
     /**

@@ -3,7 +3,6 @@ package com.funding.backend.domain.project.controller;
 
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
-import com.funding.backend.domain.project.dto.response.ProjectSearchResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.enums.PopularProjectSortType;
 import com.funding.backend.enums.ProjectTypeFilter;
@@ -73,10 +72,10 @@ public class ProjectController {
 
     @Operation(summary = "프로젝트 검색 기능", description = "두 글자 이상 포함된 프로젝트 제목 검색")
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<Page<ProjectSearchResponseDto>>> searchProject(
+    public ResponseEntity<ApiResponse<Page<ProjectInfoResponseDto>>> searchProject(
             @RequestParam String keyword, Pageable pageable) {
 
-        Page<ProjectSearchResponseDto> response = projectService.searchProjectsByTitle(keyword.trim(), pageable);
+        Page<ProjectInfoResponseDto> response = projectService.searchProjectsByTitle(keyword.trim(), pageable);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 검색 성공", response));
