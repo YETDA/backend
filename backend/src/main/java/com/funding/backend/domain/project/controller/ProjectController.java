@@ -83,7 +83,7 @@ public class ProjectController {
     }
 
     @Operation(summary = "유저 프로젝트 개수 조회", description = "유저가 생성한 프로젝트 개수 조회 ( 모집중, 심사중만 표시 ) ")
-    @GetMapping("/search")
+    @GetMapping("/count")
     public ResponseEntity<ApiResponse<ProjectCountResponseDto>> searchProject() {
 
         ProjectCountResponseDto response = projectService.countProject();
