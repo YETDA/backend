@@ -97,12 +97,12 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 .httpOnly(true)
                 .secure(true) // 로컬 HTTP 개발 시 false. HTTPS 프로덕션에선 true
                 .path("/")
-                .sameSite("None")
+                .sameSite("Strict")
                 .maxAge(JwtTokenizer.ACCESS_TOKEN_EXPIRE_TIME / 1000) // 초 단위
                 .build();
         response.addHeader("Set-Cookie", accessTokenCookie.toString());
 
-        response.addHeader("Authorization", "Bearer " + accessToken);
+        //response.addHeader("Authorization", "Bearer " + accessToken);
 
 
         // 2. RefreshToken은 Redis에 있으면 재사용, 없으면 발급 및 저장
