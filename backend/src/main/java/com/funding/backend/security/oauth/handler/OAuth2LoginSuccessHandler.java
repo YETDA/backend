@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.net.URL;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -33,9 +31,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final ImageService imageService;
     private final UserRepository userRepository;
     private final TokenService tokenService;
-
-    @Value("${custom.dev.frontUrl}")
-    private String frontRedirectUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -94,8 +89,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 user.getRole().getRole()
         );
 
-
-
 //        // 쿠키 생성
 //        ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
 //                .secure(true) // 로컬 HTTP 개발 시 false. HTTPS 프로덕션에선 true
@@ -107,7 +100,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         tokenService.setCookie("accessToken", accessToken);
 
         //response.addHeader("Authorization", "Bearer " + accessToken);
-
 
         // 2. RefreshToken은 Redis에 있으면 재사용, 없으면 발급 및 저장
         String refreshToken = refreshTokenService.getRefreshToken(user.getId());
@@ -127,9 +119,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         }
 
         String redirectUrl = request.getParameter("state");
-        String redirectWithToken = redirectUrl + "?token=" + accessToken;
 
-
-        response.sendRedirect(redirectWithToken);
+        response.sendRedirect(redirectUrl);
     }
 }

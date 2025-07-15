@@ -28,7 +28,6 @@ public class AuthController {
     @Qualifier("redisTemplate")
     private final RedisTemplate<String, Object> redisTemplate;
 
-
     @PostMapping("/reissue")
     public ResponseEntity<TokenReissueResponse> reissue(@RequestBody TokenReissueRequest request) {
         String refreshToken = request.getRefreshToken();
