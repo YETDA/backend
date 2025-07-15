@@ -12,6 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class UserProfileResponse {
+    private Long user_id;
     private String name;
     private String email;
     private String introduce;

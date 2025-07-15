@@ -30,6 +30,7 @@ public class UserService {
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
         return UserProfileResponse.builder()
+                .user_id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
                 .introduce(user.getIntroduce())
@@ -135,11 +136,12 @@ public class UserService {
         user.setAccount(null);
     }
 
-    public User findUserById(Long id){
+    public User findUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
     }
+
     public User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
