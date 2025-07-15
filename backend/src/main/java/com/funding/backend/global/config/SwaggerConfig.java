@@ -43,7 +43,8 @@ import org.springframework.context.annotation.Configuration;
                         tokenUrl = "https://kauth.kakao.com/oauth/token",             // 카카오 토큰 발급 URL
                         scopes = {
                                 @OAuthScope(name = "profile_nickname", description = "사용자 닉네임"),
-                                @OAuthScope(name = "account_email", description = "사용자 이메일")
+                                @OAuthScope(name = "account_email", description = "사용자 이메일"),
+                                @OAuthScope(name = "profile_image", description = "사용자 프로필 이미지")
                         }
                 )
         )
