@@ -22,7 +22,7 @@ public class PermitUrl {
             "/api/v1/purchaseOption/**",
 
             // 공지사항
-            "/api/v1/notice/project/**",
+            "/api/v1/notice/**",
 
             // 좋아요
             "/api/v1/like/project/*/count",

@@ -16,6 +16,18 @@ services:
     networks:
       - yetda-network
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: yetda-frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - frontend/.env
+    networks:
+      - yetda-network
+
   backend:
     build:
       context: ./backend
