@@ -22,7 +22,7 @@ public class PermitUrl {
             "/api/v1/purchaseOption/**",
 
             // 공지사항
-            "/api/v1/notice/project/**",
+            "/api/v1/notice/**",
 
             // 좋아요
             "/api/v1/like/project/*/count",
@@ -34,17 +34,15 @@ public class PermitUrl {
             "/api/v1/reviews/**",
 
             // Qna
-            "/api/v1/qna/**"
+            "/api/v1/qna/**",
 
-            ,//구매 옵션
+            //구매 옵션
             "/api/v1/purchaseOption/**"
     };
 
     public static final String[] POST_URLS = {
-            "/api/v1/token/**"
-            ,"/api/v1/project/purchase/**"
-
-
+            "/api/v1/token/**",
+            "/api/v1/project/purchase/**"
     };
 
     public static final String[] PUT_URLS = {
@@ -65,8 +63,4 @@ public class PermitUrl {
     public static final String[] OPTIONS_URLS = {
             "/**"
     };
-
-
-
-
 }
