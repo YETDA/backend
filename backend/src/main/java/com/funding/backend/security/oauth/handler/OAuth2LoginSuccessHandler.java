@@ -127,9 +127,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         }
 
         String redirectUrl = request.getParameter("state");
-        String redirectWithToken = redirectUrl + "?token=" + accessToken;
 
-
-        response.sendRedirect(redirectWithToken);
+        response.sendRedirect(redirectUrl);
     }
 }
