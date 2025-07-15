@@ -77,7 +77,7 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
     );
 
     //부분 일치 검색
-    @EntityGraph(attributePaths = {"orderList", "likeList", "projectImage", "user", "purchase", "donation"})
+    @EntityGraph(attributePaths = {"projectImage", "user", "purchase", "donation"})
     Page<Project> findByTitleContaining(String title, Pageable pageable);
 
     @Modifying
