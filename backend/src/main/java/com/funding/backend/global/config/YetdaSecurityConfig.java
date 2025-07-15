@@ -34,6 +34,8 @@ public class YetdaSecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+
+                        .requestMatchers(HttpMethod.OPTIONS, PermitUrl.OPTIONS_URLS).permitAll()
                         // GET 요청 허용
                         .requestMatchers(HttpMethod.GET, PermitUrl.GET_URLS).permitAll()
                         // POST 요청 허용
@@ -47,7 +49,6 @@ public class YetdaSecurityConfig {
                         // 모든 요청 허용 (ALL_URLS)
                         .requestMatchers(PermitUrl.ALL_URLS).permitAll()
 
-                        .requestMatchers(HttpMethod.OPTIONS, PermitUrl.OPTIONS_URLS).permitAll()
                         // 나머지 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
@@ -74,8 +75,8 @@ public class YetdaSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000", "https://yetda.kro.kr"
-                ,"https://www.yetda.booktri.site","https://www.yetfront.booktri.site"));
+        config.setAllowedOrigins(List.of("http://localhost:3000", "https://yetda.kro.kr",
+                "https://www.yetda.booktri.site", "https://www.yetfront.booktri.site"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.addAllowedHeader("*");
         config.setAllowCredentials(true); // 💡 쿠키 포함 허용 필수
