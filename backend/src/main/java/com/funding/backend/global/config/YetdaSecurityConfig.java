@@ -4,6 +4,7 @@ import com.funding.backend.security.jwt.JwtAuthFilter;
 import com.funding.backend.security.oauth.CustomOAuth2UserService;
 import com.funding.backend.security.oauth.handler.OAuth2LoginSuccessHandler;
 import com.funding.backend.security.oauth.resolver.CustomAuthorizationRequestResolver;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -34,25 +35,45 @@ public class YetdaSecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        //부서 ( 예시 )
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/api/v1/token/**",
+                                "/oauth2/**",
+                                "/api/v1/user/logout"
+                        ).permitAll()
+                        //프로젝트 (검색 포함됨)
+                        .requestMatchers(HttpMethod.GET,  "/api/v1/project/**").permitAll()
 
-                        .requestMatchers(HttpMethod.OPTIONS, PermitUrl.OPTIONS_URLS).permitAll()
-                        // GET 요청 허용
-                        .requestMatchers(HttpMethod.GET, PermitUrl.GET_URLS).permitAll()
-                        // POST 요청 허용
-                        .requestMatchers(HttpMethod.POST, PermitUrl.POST_URLS).permitAll()
-                        // PUT 요청 허용
-                        .requestMatchers(HttpMethod.PUT, PermitUrl.PUT_URLS).permitAll()
-                        // PATCH 요청 허용
-                        .requestMatchers(HttpMethod.PATCH, PermitUrl.PATCH_URLS).permitAll()
-                        // DELETE 요청 허용
-                        .requestMatchers(HttpMethod.DELETE, PermitUrl.DELETE_URLS).permitAll()
-                        // 모든 요청 허용 (ALL_URLS)
-                        .requestMatchers(PermitUrl.ALL_URLS).permitAll()
+                        //구매옵션
+                        .requestMatchers(HttpMethod.GET, "/api/v1/purchaseOption/**").permitAll()
 
-                        // 나머지 요청은 인증 필요
+                        //공지사항
+                        .requestMatchers(HttpMethod.GET, "/api/v1/notice/project/**").permitAll()
+
+                        //좋아요
+                        .requestMatchers(HttpMethod.GET, "/api/v1/like/project/**").permitAll()
+
+                        //후원형
+                        .requestMatchers(HttpMethod.GET, "/api/v1/donation/**").permitAll()
+
+                        //리뷰
+                        .requestMatchers(HttpMethod.GET, "/api/v1/reviews/**").permitAll()
+
+                        //Q&A
+                        .requestMatchers(HttpMethod.GET, "/api/v1/reviews/**").permitAll()
+
+                        .requestMatchers(HttpMethod.GET,  "/api/v1/departments/management/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/departments/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/departments/**").hasAnyRole("MANAGER", "USER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/departments/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/departments/**").hasRole("MANAGER")
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
                 .csrf(csrf -> csrf.disable())
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo
@@ -65,9 +86,18 @@ public class YetdaSecurityConfig {
                                                 customAuthorizationRequestResolver)
                         )
                 )
+
                 .formLogin(form -> form.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .httpBasic(httpBasic -> httpBasic.disable());
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"message\": \"Unauthorized\"}");
+                        })
+                );
+
 
         return http.build();
     }
