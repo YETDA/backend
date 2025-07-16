@@ -122,15 +122,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         }
 
         String redirectUrl = request.getParameter("state");
-        
-        String redirectWithTokens = String.format(
-                "%s?accessToken=%s&refreshToken=%s",
-                redirectUrl,
-                accessToken,
-                refreshToken
-        );
-
-        response.sendRedirect(redirectWithTokens);
-
+        String redirectWithToken = redirectUrl + "?token=" + accessToken;
+        log.info("url : :: " + redirectUrl);
+        log.info("리다이렉트!!!!!!");
+        response.sendRedirect(redirectWithToken);
     }
 }

@@ -49,7 +49,7 @@ public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRe
 
         return OAuth2AuthorizationRequest.from(authorizationRequest)
                 .additionalParameters(additionalParameters)
-                //.state(redirectUrl)
+                .state(redirectUrl)
                 .build();
     }
 }
