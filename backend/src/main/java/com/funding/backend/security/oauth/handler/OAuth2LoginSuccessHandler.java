@@ -100,9 +100,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 //                .maxAge(JwtTokenizer.ACCESS_TOKEN_EXPIRE_TIME / 1000) // 초 단위
 //                .build();
 //        response.addHeader("Set-Cookie", accessTokenCookie.toString());
-        //tokenService.setCookie("accessToken", accessToken);
+        tokenService.setCookie("accessToken", accessToken);
 
-        //response.addHeader("Authorization", "Bearer " + accessToken);
+        response.addHeader("Authorization", "Bearer " + accessToken);
 
         // 2. RefreshToken은 Redis에 있으면 재사용, 없으면 발급 및 저장
         String refreshToken = refreshTokenService.getRefreshToken(user.getId());
@@ -121,29 +121,16 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             );
         }
 
-        //String redirectUrl = request.getParameter("state");
-
-//        response.sendRedirect(redirectUrl);
-        //        String redirectUrl = request.getParameter("state");
-//        response.sendRedirect(redirectUrl);
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("application/json;charset=UTF-8");
-
-        String json = String.format(
-                "{\"accessToken\":\"%s\", \"refreshToken\":\"%s\"}",
+        String redirectUrl = request.getParameter("state");
+        
+        String redirectWithTokens = String.format(
+                "%s?accessToken=%s&refreshToken=%s",
+                redirectUrl,
                 accessToken,
                 refreshToken
         );
-        response.getWriter().write(json);
 
-
-        // DTO 에 담아서 JSON 바디로 내려주기
-        TokenResponseDto tokenDto = new TokenResponseDto(accessToken, refreshToken);
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("application/json;charset=UTF-8");
-        // HTTP-Only 쿠키 대신 DTO 로 보내기 때문에 secure/HttpOnly 설정은 여기서 제외
-        objectMapper.writeValue(response.getWriter(), tokenDto);
+        response.sendRedirect(redirectWithTokens);
 
     }
 }
