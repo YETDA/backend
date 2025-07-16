@@ -1,5 +1,6 @@
 package com.funding.backend.security.oauth.handler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.enums.UserActive;
@@ -31,6 +32,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final ImageService imageService;
     private final UserRepository userRepository;
     private final TokenService tokenService;
+    private final ObjectMapper objectMapper;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -119,7 +121,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         }
 
         String redirectUrl = request.getParameter("state");
+        String redirectWithToken = redirectUrl + "?token=" + accessToken;
 
-        response.sendRedirect(redirectUrl);
+        response.sendRedirect(redirectWithToken);
     }
 }
