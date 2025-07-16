@@ -21,5 +21,10 @@ out/
 /nginx/ssl/
 /frontend
 
+<<<<<<< HEAD
 frontend-test/
 package-lock.json
+=======
+/frontend-test
+/package-lock.json
+>>>>>>> 7612f18 ([ fix ] 86 Update .gitignore)
