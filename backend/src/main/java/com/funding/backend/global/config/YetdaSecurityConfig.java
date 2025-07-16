@@ -35,13 +35,13 @@ public class YetdaSecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        //부서 ( 예시 )
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/api/v1/token/**",
                                 "/oauth2/**",
-                                "/api/v1/user/logout"
+                                "/api/v1/user/logout",
+                                "/login"
                         ).permitAll()
                         //프로젝트 (검색 포함됨)
                         .requestMatchers(HttpMethod.GET,  "/api/v1/project/**").permitAll()
@@ -58,8 +58,16 @@ public class YetdaSecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN","USER")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN","USER")
 
+                        //유저
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/user/mypage/account/** ").hasAnyRole("ADMIN","USER")
+
+
                         //공지사항
                         .requestMatchers(HttpMethod.GET, "/api/v1/notice/project/**").permitAll()
+
+
+
+
 
                         //좋아요
                         .requestMatchers(HttpMethod.GET, "/api/v1/like/project/**").permitAll()
@@ -76,7 +84,6 @@ public class YetdaSecurityConfig {
 
 
 
-
                         .requestMatchers(HttpMethod.GET,  "/api/v1/departments/management/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/departments/**").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.GET, "/api/v1/departments/**").hasAnyRole("MANAGER", "USER")
@@ -89,15 +96,18 @@ public class YetdaSecurityConfig {
 
                 .csrf(csrf -> csrf.disable())
                 .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
+                        // OAuth 진입점
+                        .loginPage("/oauth2/authorization/**")
+                        // state 생성/검증은 커스텀 리졸버가 알아서…
+                        .authorizationEndpoint(endpoint ->
+                                endpoint.authorizationRequestResolver(customAuthorizationRequestResolver)
                         )
                         .successHandler(oAuth2LoginSuccessHandler)
-                        .authorizationEndpoint(
-                                authorizationEndpoint ->
-                                        authorizationEndpoint.authorizationRequestResolver(
-                                                customAuthorizationRequestResolver)
-                        )
+                        .failureHandler((req, res, ex) -> {
+                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            res.setContentType("application/json;charset=UTF-8");
+                            res.getWriter().write("{\"message\":\"" + ex.getMessage() + "\"}");
+                        })
                 )
 
                 .formLogin(form -> form.disable())

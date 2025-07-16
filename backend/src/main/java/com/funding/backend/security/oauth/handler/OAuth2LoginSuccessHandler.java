@@ -1,5 +1,6 @@
 package com.funding.backend.security.oauth.handler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.enums.UserActive;
@@ -8,6 +9,7 @@ import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.security.jwt.JwtTokenizer;
 import com.funding.backend.security.jwt.RefreshTokenService;
 import com.funding.backend.security.jwt.TokenService;
+import com.funding.backend.security.jwt.dto.response.TokenResponseDto;
 import com.funding.backend.security.oauth.model.CustomOAuth2User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +33,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final ImageService imageService;
     private final UserRepository userRepository;
     private final TokenService tokenService;
+    private final ObjectMapper objectMapper;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -97,7 +100,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 //                .maxAge(JwtTokenizer.ACCESS_TOKEN_EXPIRE_TIME / 1000) // 초 단위
 //                .build();
 //        response.addHeader("Set-Cookie", accessTokenCookie.toString());
-        tokenService.setCookie("accessToken", accessToken);
+        //tokenService.setCookie("accessToken", accessToken);
 
         //response.addHeader("Authorization", "Bearer " + accessToken);
 
@@ -118,8 +121,29 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             );
         }
 
-        String redirectUrl = request.getParameter("state");
+        //String redirectUrl = request.getParameter("state");
 
-        response.sendRedirect(redirectUrl);
+//        response.sendRedirect(redirectUrl);
+        //        String redirectUrl = request.getParameter("state");
+//        response.sendRedirect(redirectUrl);
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json;charset=UTF-8");
+
+        String json = String.format(
+                "{\"accessToken\":\"%s\", \"refreshToken\":\"%s\"}",
+                accessToken,
+                refreshToken
+        );
+        response.getWriter().write(json);
+
+
+        // DTO 에 담아서 JSON 바디로 내려주기
+        TokenResponseDto tokenDto = new TokenResponseDto(accessToken, refreshToken);
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json;charset=UTF-8");
+        // HTTP-Only 쿠키 대신 DTO 로 보내기 때문에 secure/HttpOnly 설정은 여기서 제외
+        objectMapper.writeValue(response.getWriter(), tokenDto);
+
     }
 }
