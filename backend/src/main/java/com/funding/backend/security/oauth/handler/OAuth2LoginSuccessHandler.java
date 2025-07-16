@@ -9,6 +9,7 @@ import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.security.jwt.JwtTokenizer;
 import com.funding.backend.security.jwt.RefreshTokenService;
 import com.funding.backend.security.jwt.TokenService;
+import com.funding.backend.security.jwt.dto.response.TokenResponseDto;
 import com.funding.backend.security.oauth.model.CustomOAuth2User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -101,7 +102,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 //        response.addHeader("Set-Cookie", accessTokenCookie.toString());
         tokenService.setCookie("accessToken", accessToken);
 
-        //response.addHeader("Authorization", "Bearer " + accessToken);
+        response.addHeader("Authorization", "Bearer " + accessToken);
 
         // 2. RefreshToken은 Redis에 있으면 재사용, 없으면 발급 및 저장
         String refreshToken = refreshTokenService.getRefreshToken(user.getId());
@@ -122,7 +123,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         String redirectUrl = request.getParameter("state");
         String redirectWithToken = redirectUrl + "?token=" + accessToken;
-
+        log.info("url : :: " + redirectUrl);
+        log.info("리다이렉트!!!!!!");
         response.sendRedirect(redirectWithToken);
     }
 }
