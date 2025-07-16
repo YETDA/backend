@@ -21,10 +21,5 @@ out/
 /nginx/ssl/
 /frontend
 
-
 frontend-test/
 package-lock.json
-
-/frontend-test
-/package-lock.json
-
