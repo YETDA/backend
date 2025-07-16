@@ -43,31 +43,27 @@ public class YetdaSecurityConfig {
                                 "/api/v1/user/logout",
                                 "/login"
                         ).permitAll()
+
                         //프로젝트 (검색 포함됨)
-                        .requestMatchers(HttpMethod.GET,  "/api/v1/project/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/project/**").permitAll()
 
                         //구매 프로젝트 CRUD
                         .requestMatchers(HttpMethod.GET, "/api/v1/project/purchase/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/project/purchase/**").hasAnyRole("ADMIN","USER")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/project/purchase/**").hasAnyRole("ADMIN","USER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/project/purchase/**").hasAnyRole("ADMIN","USER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/project/purchase/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/project/purchase/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/project/purchase/**").hasAnyRole("ADMIN", "USER")
 
                         //구매옵션
                         .requestMatchers(HttpMethod.GET, "/api/v1/purchaseOption/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN","USER")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN","USER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN","USER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN", "USER")
 
                         //유저
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/user/mypage/account/** ").hasAnyRole("ADMIN","USER")
-
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/user/mypage/account/** ").hasAnyRole("ADMIN", "USER")
 
                         //공지사항
                         .requestMatchers(HttpMethod.GET, "/api/v1/notice/project/**").permitAll()
-
-
-
-
 
                         //좋아요
                         .requestMatchers(HttpMethod.GET, "/api/v1/like/project/**").permitAll()
@@ -80,15 +76,6 @@ public class YetdaSecurityConfig {
 
                         //Q&A
                         .requestMatchers(HttpMethod.GET, "/api/v1/reviews/**").permitAll()
-
-
-
-
-                        .requestMatchers(HttpMethod.GET,  "/api/v1/departments/management/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/departments/**").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/api/v1/departments/**").hasAnyRole("MANAGER", "USER")
-                        .requestMatchers(HttpMethod.PATCH, "/api/v1/departments/**").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/departments/**").hasRole("MANAGER")
 
                         .anyRequest().authenticated()
                 )
@@ -120,7 +107,6 @@ public class YetdaSecurityConfig {
                             response.getWriter().write("{\"message\": \"Unauthorized\"}");
                         })
                 );
-
 
         return http.build();
     }
