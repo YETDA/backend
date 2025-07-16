@@ -120,7 +120,7 @@ public class YetdaSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:3000", "https://yetda.kro.kr"
-                ,"https://yetdatest.kro.kr",
+                ,"https://yetdatest.kro.kr"," https://yetdatest.kro.kr:3000",
                 "https://www.yetda.booktri.site", "https://www.yetfront.booktri.site"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.addAllowedHeader("*");
