@@ -35,29 +35,32 @@ public class YetdaSecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        //부서 ( 예시 )
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/api/v1/token/**",
                                 "/oauth2/**",
-                                "/api/v1/user/logout"
+                                "/api/v1/user/logout",
+                                "/login"
                         ).permitAll()
+
                         //프로젝트 (검색 포함됨)
-                        .requestMatchers(HttpMethod.GET,  "/api/v1/project/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/project/**").permitAll()
 
                         //구매 프로젝트 CRUD
                         .requestMatchers(HttpMethod.GET, "/api/v1/project/purchase/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/project/purchase/**").hasAnyRole("ADMIN","USER")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/project/purchase/**").hasAnyRole("ADMIN","USER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/project/purchase/**").hasAnyRole("ADMIN","USER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/project/purchase/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/project/purchase/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/project/purchase/**").hasAnyRole("ADMIN", "USER")
 
                         //구매옵션
                         .requestMatchers(HttpMethod.GET, "/api/v1/purchaseOption/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN","USER")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN","USER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN","USER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN", "USER")
 
+                        //유저
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/user/mypage/account/** ").hasAnyRole("ADMIN", "USER")
 
                         //공지사항
                         .requestMatchers(HttpMethod.GET, "/api/v1/notice/project/**").permitAll()
@@ -73,16 +76,6 @@ public class YetdaSecurityConfig {
 
                         //Q&A
                         .requestMatchers(HttpMethod.GET, "/api/v1/reviews/**").permitAll()
-
-
-
-
-
-                        .requestMatchers(HttpMethod.GET,  "/api/v1/departments/management/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/departments/**").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/api/v1/departments/**").hasAnyRole("MANAGER", "USER")
-                        .requestMatchers(HttpMethod.PATCH, "/api/v1/departments/**").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/departments/**").hasRole("MANAGER")
 
                         .anyRequest().authenticated()
                 )
@@ -112,7 +105,6 @@ public class YetdaSecurityConfig {
                         })
                 );
 
-
         return http.build();
     }
 
@@ -120,8 +112,8 @@ public class YetdaSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:3000", "https://yetda.kro.kr"
-                ,"https://yetdatest.kro.kr"," https://yetdatest.kro.kr:3000",
-                "https://www.yetda.booktri.site", "https://www.yetfront.booktri.site"));
+                ,"https://yetdatest.kro.kr"," https://yetdatest.kro.kr:3000", "https://localhost:3000"
+                ,"https://www.yetda.booktri.site", "https://www.yetfront.booktri.site"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.addAllowedHeader("*");
         config.setAllowCredentials(true); // 💡 쿠키 포함 허용 필수
