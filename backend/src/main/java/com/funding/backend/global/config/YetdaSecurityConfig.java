@@ -68,6 +68,9 @@ public class YetdaSecurityConfig {
                         //유저
                         .requestMatchers(HttpMethod.PUT, "/api/v1/user/mypage/account/** ").hasAnyRole("ADMIN", "USER")
 
+                        //유저
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/user/mypage/account/** ").hasAnyRole("ADMIN","USER")
+
                         //공지사항
                         .requestMatchers(HttpMethod.GET, "/api/v1/notice/project/**").permitAll()
 
