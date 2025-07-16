@@ -83,18 +83,15 @@ public class YetdaSecurityConfig {
 
                 .csrf(csrf -> csrf.disable())
                 .oauth2Login(oauth2 -> oauth2
-                        // OAuth 진입점
-                        .loginPage("/oauth2/authorization/**")
-                        // state 생성/검증은 커스텀 리졸버가 알아서…
-                        .authorizationEndpoint(endpoint ->
-                                endpoint.authorizationRequestResolver(customAuthorizationRequestResolver)
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
                         )
                         .successHandler(oAuth2LoginSuccessHandler)
-                        .failureHandler((req, res, ex) -> {
-                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            res.setContentType("application/json;charset=UTF-8");
-                            res.getWriter().write("{\"message\":\"" + ex.getMessage() + "\"}");
-                        })
+                        .authorizationEndpoint(
+                                authorizationEndpoint ->
+                                        authorizationEndpoint.authorizationRequestResolver(
+                                                customAuthorizationRequestResolver)
+                        )
                 )
 
                 .formLogin(form -> form.disable())
