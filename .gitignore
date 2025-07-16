@@ -20,3 +20,6 @@ out/
 .env
 /nginx/ssl/
 /frontend
+
+frontend-test/
+package-lock.json
