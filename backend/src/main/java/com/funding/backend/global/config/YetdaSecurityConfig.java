@@ -58,7 +58,6 @@ public class YetdaSecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN","USER")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN","USER")
 
-
                         //공지사항
                         .requestMatchers(HttpMethod.GET, "/api/v1/notice/project/**").permitAll()
 
@@ -120,6 +119,7 @@ public class YetdaSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:3000", "https://yetda.kro.kr",
+                "https://localhost:3000",
                 "https://www.yetda.booktri.site", "https://www.yetfront.booktri.site"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.addAllowedHeader("*");
