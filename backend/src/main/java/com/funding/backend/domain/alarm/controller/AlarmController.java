@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/notifications")
 @Tag(name = "알림 컨트롤러")
 @RequiredArgsConstructor
-public class NotificationController {
+public class AlarmController {
 
 
 }
