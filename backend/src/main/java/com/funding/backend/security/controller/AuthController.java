@@ -14,9 +14,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,10 +33,12 @@ public class AuthController {
     private final JwtTokenizer jwtTokenizer;
     private final TokenService tokenService;
 
-    @Qualifier("redisTemplate")
-    private final RedisTemplate<String, Object> redisTemplate;
+    @Autowired
+    @Qualifier("customStringRedisTemplate")
+    private RedisTemplate<String, String> redisTemplate;
 
 
+    @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     @PostMapping("/refresh")
     public void refresh(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
@@ -58,7 +62,7 @@ public class AuthController {
         Long userId = Long.valueOf(claims.get("userId").toString());
 
         String key = "refreshToken:" + userId;
-        String storedToken = (String) redisTemplate.opsForValue().get(key);
+        Object storedToken = redisTemplate.opsForValue().get(key);
         log.info("✅ Redis 저장된 토큰: {}", storedToken);
 
         if (storedToken == null || !storedToken.equals(refreshToken)) {
@@ -76,8 +80,8 @@ public class AuthController {
         redisTemplate.opsForValue().set(key, newRefreshToken);
 
         // 쿠키에 새 토큰 세팅
-        tokenService.setCookie("refreshToken", newRefreshToken);
-        tokenService.setCookie("accessToken", newAccessToken);
+        //tokenService.setCookie("refreshToken", newRefreshToken);
+        //tokenService.setCookie("accessToken", newAccessToken);
 
         String redirectUrl = request.getParameter("state");
         String redirectWithToken = redirectUrl + "?token=" + newAccessToken;

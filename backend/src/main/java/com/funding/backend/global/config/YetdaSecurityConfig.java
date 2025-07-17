@@ -40,10 +40,11 @@ public class YetdaSecurityConfig {
                                 "/v3/api-docs/**",
                                 "/api/v1/token/**",
                                 "/oauth2/**",
+                                "/login/oauth2/**",
                                 "/auth/refresh",
                                 "/api/v1/user/logout",
                                 "/login/oauth2/**",
-                                "/login"
+                                "/login/**"
                         ).permitAll()
 
                         //프로젝트 (검색 포함됨)
@@ -85,7 +86,7 @@ public class YetdaSecurityConfig {
 
                 .csrf(csrf -> csrf.disable())
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/login")
+                        .loginPage("/oauth2/authorization/**")
                         .authorizationEndpoint(endpoint ->
                                 endpoint.authorizationRequestResolver(customAuthorizationRequestResolver)
                         )
