@@ -102,7 +102,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 //                .build();
 //        response.addHeader("Set-Cookie", accessTokenCookie.toString());
 
-//        tokenService.setCookie("accessToken", accessToken);
+        tokenService.setCookie("accessToken", accessToken);
 //        response.addHeader("Authorization", "Bearer " + accessToken);
 
         // 2. RefreshToken은 Redis에 있으면 재사용, 없으면 발급 및 저장
@@ -122,7 +122,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             );
         }
 
-        tokenService.setCookie("refreshToken", refreshToken);
+//        tokenService.setCookie("refreshToken", refreshToken);
 
         String redirectUrl = request.getParameter("state");
 //        String redirectWithToken = redirectUrl + "?token=" + refreshToken;
