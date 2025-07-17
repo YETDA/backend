@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order,Long> {
+public interface OrderRepository extends JpaRepository<Order, Long> {
     Optional<Order> findByOrderId(String orderId);
 
     @Query("SELECT o FROM Order o WHERE o.user = :user AND o.orderStatus = :status")
@@ -22,6 +22,4 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
             @Param("status") TossPaymentStatus status,
             Pageable pageable
     );
-
-
 }
