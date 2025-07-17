@@ -40,7 +40,9 @@ public class YetdaSecurityConfig {
                                 "/v3/api-docs/**",
                                 "/api/v1/token/**",
                                 "/oauth2/**",
+                                "/auth/refresh",
                                 "/api/v1/user/logout",
+                                "/login/oauth2/**",
                                 "/login"
                         ).permitAll()
 
@@ -83,9 +85,7 @@ public class YetdaSecurityConfig {
 
                 .csrf(csrf -> csrf.disable())
                 .oauth2Login(oauth2 -> oauth2
-                        // OAuth 진입점
-                        .loginPage("/oauth2/authorization/**")
-                        // state 생성/검증은 커스텀 리졸버가 알아서…
+                        .loginPage("/login")
                         .authorizationEndpoint(endpoint ->
                                 endpoint.authorizationRequestResolver(customAuthorizationRequestResolver)
                         )
