@@ -40,8 +40,11 @@ public class YetdaSecurityConfig {
                                 "/v3/api-docs/**",
                                 "/api/v1/token/**",
                                 "/oauth2/**",
+                                "/login/oauth2/**",
+                                "/auth/refresh",
                                 "/api/v1/user/logout",
-                                "/login"
+                                "/login/oauth2/**",
+                                "/login/**"
                         ).permitAll()
 
                         //프로젝트 (검색 포함됨)
@@ -83,9 +86,7 @@ public class YetdaSecurityConfig {
 
                 .csrf(csrf -> csrf.disable())
                 .oauth2Login(oauth2 -> oauth2
-                        // OAuth 진입점
                         .loginPage("/oauth2/authorization/**")
-                        // state 생성/검증은 커스텀 리졸버가 알아서…
                         .authorizationEndpoint(endpoint ->
                                 endpoint.authorizationRequestResolver(customAuthorizationRequestResolver)
                         )
@@ -114,9 +115,9 @@ public class YetdaSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000", "https://yetda.kro.kr",
-                "https://localhost:3000",
-                "https://www.yetda.booktri.site", "https://www.yetfront.booktri.site"));
+        config.setAllowedOrigins(List.of("http://localhost:3000", "https://yetda.kro.kr"
+                ,"https://yetdatest.kro.kr","https://yetdatest.kro.kr:3000", "https://localhost:3000"
+                ,"https://www.yetda.booktri.site", "https://www.yetfront.booktri.site"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.addAllowedHeader("*");
         config.setAllowCredentials(true); // 💡 쿠키 포함 허용 필수
