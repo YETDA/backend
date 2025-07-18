@@ -40,6 +40,8 @@ public class YetdaSecurityConfig {
                                 "/v3/api-docs/**",
                                 "/api/v1/token/**",
                                 "/oauth2/**",
+                                "/api/v1/user/logout",
+                                "/login",
                                 "/login/oauth2/**",
                                 "/auth/refresh",
                                 "/api/v1/user/logout",
@@ -56,6 +58,8 @@ public class YetdaSecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/v1/project/purchase/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/project/purchase/**").hasAnyRole("ADMIN", "USER")
 
+
+
                         //구매옵션
                         .requestMatchers(HttpMethod.GET, "/api/v1/purchaseOption/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN", "USER")
@@ -64,6 +68,9 @@ public class YetdaSecurityConfig {
 
                         //유저
                         .requestMatchers(HttpMethod.PUT, "/api/v1/user/mypage/account/** ").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN","USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN","USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN","USER")
 
                         //공지사항
                         .requestMatchers(HttpMethod.GET, "/api/v1/notice/project/**").permitAll()
@@ -79,6 +86,7 @@ public class YetdaSecurityConfig {
 
                         //Q&A
                         .requestMatchers(HttpMethod.GET, "/api/v1/reviews/**").permitAll()
+
 
                         .anyRequest().authenticated()
                 )
