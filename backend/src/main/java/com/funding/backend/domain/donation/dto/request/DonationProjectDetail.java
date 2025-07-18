@@ -32,4 +32,6 @@ public class DonationProjectDetail {
     private String deployAddress;
 
     private String gitAddress;
+
+    private List<DonationRewardRequestDto> donationRewardList;
 }

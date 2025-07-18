@@ -1,7 +1,13 @@
 package com.funding.backend.domain.donationReward.entity;
 
+import com.funding.backend.domain.donation.entity.Donation;
+import com.funding.backend.domain.orderReward.entity.OrderReward;
+import com.funding.backend.enums.ProvidingMethod;
 import com.funding.backend.global.auditable.Auditable;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,5 +30,21 @@ public class DonationReward extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "donation_id", nullable = false)
+    private Donation donation;
+
+    @Column(name = "title", length = 100, nullable = false)
+    private String title; // 리워드 이름
+
+    @Column(name = "content", length = 100, nullable = false)
+    private String content;
+
+    @Column(name = "price", nullable = false)
+    private Long price;
+
+    @OneToMany(mappedBy = "donationReward")
+    private List<OrderReward> orderRewardList = new ArrayList<>();
 
 }

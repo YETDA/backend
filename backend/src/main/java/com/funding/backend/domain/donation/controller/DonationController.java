@@ -31,7 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/v1/project/donation")
 @Validated
 @AllArgsConstructor
-@Tag(name = "프로젝트 후원 관리 컨트롤러")
+@Tag(name = "후원 프로젝트 관리 컨트롤러")
 @Slf4j
 public class DonationController {
 

@@ -1,7 +1,10 @@
 package com.funding.backend.domain.donation.service;
 
 import com.funding.backend.domain.donation.dto.request.DonationUpdateRequestDto;
+import com.funding.backend.domain.donation.dto.response.DonationResponseDto;
 import com.funding.backend.domain.donation.entity.Donation;
+import com.funding.backend.domain.donationReward.dto.request.DonationRewardCreateRequestDto;
+import com.funding.backend.domain.donationReward.service.DonationRewardService;
 import com.funding.backend.domain.project.dto.request.DonationCreateRequestDto;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
@@ -11,6 +14,7 @@ import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.domain.purchase.service.PurchaseService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
+import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.exception.BusinessLogicException;
@@ -20,6 +24,7 @@ import com.funding.backend.security.jwt.TokenService;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,12 +43,14 @@ public class DonationProjectService {
     private final PricingService pricingService;
     private final DonationService donationService;
     private final PurchaseService purchaseService;
+    private final DonationRewardService donationRewardService;
 
     private final TokenService tokenService;
+    private final UserService userService;
 
 
     @Transactional
-    public void createDonationProject(DonationCreateRequestDto dto){
+    public DonationResponseDto createDonationProject(DonationCreateRequestDto dto){
 
         User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
             .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
@@ -59,14 +66,35 @@ public class DonationProjectService {
                 .build();
         Project saveProject = projectRepository.save(project);
 
+
+        // 중복된 Donation 생성 제거
         Donation savedDonation = donationService.createDonation(saveProject, dto.getDonationProjectDetail());
         project.setDonation(savedDonation);
 
+        // 이미지 저장
         List<ProjectImage> projectImage = new ArrayList<>();
         if (dto.getContentImage() != null && !dto.getContentImage().isEmpty()) {
             projectImage = imageService.saveImageList(dto.getContentImage(), project);
         }
         project.setProjectImage(projectImage);
+
+        // 리워드 저장
+        if (dto.getDonationProjectDetail().getDonationRewardList() != null &&
+            !dto.getDonationProjectDetail().getDonationRewardList().isEmpty()) {
+
+            List<DonationRewardCreateRequestDto> rewardCreateDtos =
+                dto.getDonationProjectDetail().getDonationRewardList().stream()
+                    .map(rewardDto -> DonationRewardCreateRequestDto.builder()
+                        .title(rewardDto.getTitle())
+                        .content(rewardDto.getContent())
+                        .price(rewardDto.getPrice())
+                        .build())
+                    .collect(Collectors.toList());
+
+            donationRewardService.createDonationReward(saveProject.getId(), rewardCreateDtos);
+        }
+
+        return new DonationResponseDto(saveProject.getId());
     }
 
 
