@@ -93,5 +93,18 @@ public class ProjectController {
     }
 
 
+    @GetMapping("/user/purchase")
+    @Operation(
+            summary = "사용자가 생성한 프로젝트 리스트 조회 ",
+            description = "구매용, 후원용에 따라 응답 형식이 달라집니다."
+    )
+    public ResponseEntity<ApiResponse<Page<ProjectResponseDto>>> getUserPurchaseProjectList(Pageable pageable) {
+        Page<ProjectResponseDto> response = projectService.getUserPurchaseProjectList(pageable);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 상세 조회 성공", response));
+    }
+
+
 
 }

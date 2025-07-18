@@ -2,12 +2,14 @@ package com.funding.backend.domain.project.service;
 
 import com.funding.backend.domain.donation.service.DonationProjectService;
 import com.funding.backend.domain.donation.service.DonationService;
+import com.funding.backend.domain.follow.service.FollowService;
 import com.funding.backend.domain.pricingPlan.repository.PricingRepository;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.dto.response.ProjectCountResponseDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.AuditProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
 import com.funding.backend.domain.project.repository.ProjectRepository;
@@ -16,6 +18,7 @@ import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
 import com.funding.backend.domain.purchase.dto.response.PurchaseResponseDto;
 import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.domain.purchase.service.PurchaseService;
+import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionResponseDto;
 import com.funding.backend.domain.purchaseOption.service.PurchaseOptionService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
@@ -56,6 +59,7 @@ public class ProjectService {
 
     private final TokenService tokenService;
     private final UserService userService;
+    private final FollowService followService;
 
     @Transactional
     public PurchaseResponseDto createPurchaseProject(ProjectCreateRequestDto dto) {
@@ -142,6 +146,48 @@ public class ProjectService {
             throw new BusinessLogicException(ExceptionCode.INVALID_PROJECT_TYPE);
         }
     }
+
+
+    //사용자가 생성한 모든 구매 프로젝트 조회
+    public Page<ProjectResponseDto> getUserPurchaseProjectList(Pageable pageable){
+        User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
+        //사용자 정지 확인도 추가 하기
+
+        List<ProjectStatus> allowedStatuses = List.of(
+                ProjectStatus.RECRUITING,
+                ProjectStatus.COMPLETED,
+                ProjectStatus.UNDER_AUDIT,
+                ProjectStatus.REJECTED
+        );
+
+        Page<Project> projectPage = projectRepository.findByUserIdAndProjectTypeAndProjectStatusIn(
+                user.getId(),
+                ProjectType.PURCHASE,
+                allowedStatuses,
+                pageable
+        );
+
+        Long projectCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(), allowedStatuses);
+        Long followerCount = followService.countFollowers(user.getId());
+
+        return projectPage.map(project -> {
+            Purchase purchase = project.getPurchase();
+            if (purchase == null) {
+                throw new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND);
+            }
+
+            List<PurchaseOptionResponseDto> optionDtos = purchase.getPurchaseOptionList().stream()
+                    .map(PurchaseOptionResponseDto::new)
+                    .toList();
+
+            // 👇 핵심: 형변환하여 인터페이스 타입으로 반환
+            return (ProjectResponseDto) new PurchaseProjectResponseDto(
+                    project, purchase, optionDtos, projectCount, followerCount
+            );
+        });
+    }
+
+
 
 
     @Transactional
