@@ -5,6 +5,9 @@ import com.funding.backend.domain.order.entity.Order;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.global.toss.enums.TossPaymentStatus;
 import io.lettuce.core.dynamic.annotation.Param;
+
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,5 +26,5 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
             Pageable pageable
     );
 
-
+    List<Order> findByProject_Donation_EndDateBefore(LocalDateTime now);
 }

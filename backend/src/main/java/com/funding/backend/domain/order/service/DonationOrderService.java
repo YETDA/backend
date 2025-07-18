@@ -18,7 +18,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -67,5 +69,9 @@ public class DonationOrderService {
         orderRepository.save(order);
 
         return true;
+    }
+
+    public List<Order> getSettlementOrders() {
+        return orderRepository.findByProject_Donation_EndDateBefore(LocalDateTime.now().minusDays(1));
     }
 }
