@@ -41,7 +41,12 @@ public class YetdaSecurityConfig {
                                 "/api/v1/token/**",
                                 "/oauth2/**",
                                 "/api/v1/user/logout",
-                                "/login"
+                                "/login",
+                                "/login/oauth2/**",
+                                "/auth/refresh",
+                                "/api/v1/user/logout",
+                                "/login/oauth2/**",
+                                "/login/**"
                         ).permitAll()
 
                         //프로젝트 (검색 포함됨)
@@ -54,11 +59,6 @@ public class YetdaSecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/project/purchase/**").hasAnyRole("ADMIN", "USER")
 
 
-                        //구매 프로젝트 CRUD
-                        .requestMatchers(HttpMethod.GET, "/api/v1/project/purchase/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/project/purchase/**").hasAnyRole("ADMIN","USER")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/project/purchase/**").hasAnyRole("ADMIN","USER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/project/purchase/**").hasAnyRole("ADMIN","USER")
 
                         //구매옵션
                         .requestMatchers(HttpMethod.GET, "/api/v1/purchaseOption/**").permitAll()
@@ -88,28 +88,22 @@ public class YetdaSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/reviews/**").permitAll()
 
 
-
-                        .requestMatchers(HttpMethod.GET,  "/api/v1/departments/management/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/departments/**").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/api/v1/departments/**").hasAnyRole("MANAGER", "USER")
-                        .requestMatchers(HttpMethod.PATCH, "/api/v1/departments/**").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/departments/**").hasRole("MANAGER")
-
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .csrf(csrf -> csrf.disable())
                 .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
+                        .loginPage("/oauth2/authorization/**")
+                        .authorizationEndpoint(endpoint ->
+                                endpoint.authorizationRequestResolver(customAuthorizationRequestResolver)
                         )
                         .successHandler(oAuth2LoginSuccessHandler)
-                        .authorizationEndpoint(
-                                authorizationEndpoint ->
-                                        authorizationEndpoint.authorizationRequestResolver(
-                                                customAuthorizationRequestResolver)
-                        )
+                        .failureHandler((req, res, ex) -> {
+                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            res.setContentType("application/json;charset=UTF-8");
+                            res.getWriter().write("{\"message\":\"" + ex.getMessage() + "\"}");
+                        })
                 )
 
                 .formLogin(form -> form.disable())
@@ -129,10 +123,9 @@ public class YetdaSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000", "https://yetda.kro.kr",
-                "https://localhost:3000",
-                "https://www.yetda.booktri.site", "https://www.yetfront.booktri.site",
-                "https://yetdatest.kro.kr:3000"));
+        config.setAllowedOrigins(List.of("http://localhost:3000", "https://yetda.kro.kr"
+                ,"https://yetdatest.kro.kr","https://yetdatest.kro.kr:3000", "https://localhost:3000"
+                ,"https://www.yetda.booktri.site", "https://www.yetfront.booktri.site"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.addAllowedHeader("*");
         config.setAllowCredentials(true); // 💡 쿠키 포함 허용 필수

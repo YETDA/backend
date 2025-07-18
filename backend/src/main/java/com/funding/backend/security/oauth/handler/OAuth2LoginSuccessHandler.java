@@ -39,6 +39,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
 
+        log.info("✅ OAuth2LoginSuccessHandler 호출됨!");
+
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         User user = oAuth2User.getUser();
 
@@ -99,9 +101,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 //                .maxAge(JwtTokenizer.ACCESS_TOKEN_EXPIRE_TIME / 1000) // 초 단위
 //                .build();
 //        response.addHeader("Set-Cookie", accessTokenCookie.toString());
-        tokenService.setCookie("accessToken", accessToken);
 
-        //response.addHeader("Authorization", "Bearer " + accessToken);
+        tokenService.setCookie("accessToken", accessToken);
+//        response.addHeader("Authorization", "Bearer " + accessToken);
 
         // 2. RefreshToken은 Redis에 있으면 재사용, 없으면 발급 및 저장
         String refreshToken = refreshTokenService.getRefreshToken(user.getId());
@@ -121,10 +123,13 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         }
 
         String redirectUrl = request.getParameter("state");
-        String redirectWithToken = redirectUrl + "?token=" + accessToken;
 
         log.info("url : :: " + redirectUrl);
         log.info("리다이렉트!!!!!!");
-        response.sendRedirect(redirectWithToken);
+//        tokenService.setCookie("refreshToken", refreshToken);
+
+//        String redirectWithToken = redirectUrl + "?token=" + refreshToken;
+//        log.info("!!!!!! redirect - url :::: " + redirectUrl);
+        response.sendRedirect(redirectUrl);
     }
 }
