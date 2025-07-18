@@ -58,8 +58,6 @@ public class YetdaSecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/v1/project/purchase/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/project/purchase/**").hasAnyRole("ADMIN", "USER")
 
-
-
                         //구매옵션
                         .requestMatchers(HttpMethod.GET, "/api/v1/purchaseOption/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN", "USER")
@@ -78,8 +76,17 @@ public class YetdaSecurityConfig {
                         //좋아요
                         .requestMatchers(HttpMethod.GET, "/api/v1/like/project/**").permitAll()
 
-                        //후원형
-                        .requestMatchers(HttpMethod.GET, "/api/v1/donation/**").permitAll()
+                        //후원 프로젝트 CRUD
+                        .requestMatchers(HttpMethod.GET, "/api/v1/project/donation/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/project/donation/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/project/donation/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/project/donation/**").hasAnyRole("ADMIN", "USER")
+
+                        //후원 리워드
+                        //.requestMatchers(HttpMethod.GET, "/api/v1/donationReward/**").permitAll()
+                        //.requestMatchers(HttpMethod.POST, "/api/v1/donationReward/**").hasAnyRole("ADMIN", "USER")
+                        //.requestMatchers(HttpMethod.PUT, "/api/v1/donationReward/**").hasAnyRole("ADMIN", "USER")
+                        //.requestMatchers(HttpMethod.DELETE, "/api/v1/donationReward/**").hasAnyRole("ADMIN", "USER")
 
                         //리뷰
                         .requestMatchers(HttpMethod.GET, "/api/v1/reviews/**").permitAll()

@@ -33,7 +33,6 @@ public class Donation extends Auditable {
 
     @OneToOne
     @JoinColumn(name = "project_id", nullable = false, unique = true)
-
     private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)

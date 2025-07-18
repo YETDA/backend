@@ -3,10 +3,9 @@ package com.funding.backend.domain.donation.service;
 import com.funding.backend.domain.donation.dto.request.DonationUpdateRequestDto;
 import com.funding.backend.domain.donation.dto.response.DonationResponseDto;
 import com.funding.backend.domain.donation.entity.Donation;
-import com.funding.backend.domain.donationReward.dto.request.DonationRewardCreateRequestDto;
 import com.funding.backend.domain.donationReward.service.DonationRewardService;
-import com.funding.backend.domain.project.dto.request.DonationCreateRequestDto;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
+import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
@@ -24,7 +23,6 @@ import com.funding.backend.security.jwt.TokenService;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -50,7 +48,7 @@ public class DonationProjectService {
 
 
     @Transactional
-    public DonationResponseDto createDonationProject(DonationCreateRequestDto dto){
+    public DonationResponseDto createDonationProject(ProjectCreateRequestDto dto){
 
         User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
             .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
@@ -67,8 +65,7 @@ public class DonationProjectService {
         Project saveProject = projectRepository.save(project);
 
 
-        // 중복된 Donation 생성 제거
-        Donation savedDonation = donationService.createDonation(saveProject, dto.getDonationProjectDetail());
+        Donation savedDonation = donationService.createDonation(saveProject, dto.getDonationDetail());
         project.setDonation(savedDonation);
 
         // 이미지 저장
@@ -79,19 +76,9 @@ public class DonationProjectService {
         project.setProjectImage(projectImage);
 
         // 리워드 저장
-        if (dto.getDonationProjectDetail().getDonationRewardList() != null &&
-            !dto.getDonationProjectDetail().getDonationRewardList().isEmpty()) {
-
-            List<DonationRewardCreateRequestDto> rewardCreateDtos =
-                dto.getDonationProjectDetail().getDonationRewardList().stream()
-                    .map(rewardDto -> DonationRewardCreateRequestDto.builder()
-                        .title(rewardDto.getTitle())
-                        .content(rewardDto.getContent())
-                        .price(rewardDto.getPrice())
-                        .build())
-                    .collect(Collectors.toList());
-
-            donationRewardService.createDonationReward(saveProject.getId(), rewardCreateDtos);
+        if (dto.getDonationDetail().getDonationRewardList() != null &&
+            !dto.getDonationDetail().getDonationRewardList().isEmpty()) {
+            donationRewardService.createDonationRewardForProject(saveProject.getId(), dto);
         }
 
         return new DonationResponseDto(saveProject.getId());

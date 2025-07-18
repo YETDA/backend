@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/project/donationReward")
+@RequestMapping("/api/v1/donationReward")
 @Validated
 @AllArgsConstructor
 @Tag(name = "후원 리워드 관리 컨트롤러")
@@ -33,9 +33,9 @@ public class DonationRewardController {
         summary = "후원 리워드 생성",
         description = "후원 리워드(DonationReward)를 생성합니다."
     )
-    public ResponseEntity<ApiResponse<Void>> createDonationReward(
+    public ResponseEntity<ApiResponse<Void>> createDonationProject(
         @PathVariable("projectId") Long projectId,
-        @ModelAttribute @Valid List<DonationRewardCreateRequestDto> requestDto
+        @ModelAttribute @Valid DonationRewardCreateRequestDto requestDto
     ) {
       donationRewardService.createDonationReward(projectId, requestDto);
       return ResponseEntity

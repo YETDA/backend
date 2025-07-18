@@ -1,6 +1,7 @@
 package com.funding.backend.domain.project.dto.response;
 
 import com.funding.backend.domain.donation.entity.Donation;
+import com.funding.backend.domain.donationReward.dto.response.DonationRewardResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.domain.projectSubCategory.dto.request.ProjectSubRequestDto;
@@ -23,13 +24,22 @@ public class DonationProjectResponseDto implements ProjectResponseDto {
     private Long mainCategoryId;
     private String mainCategoryName;
     private List<ProjectSubRequestDto> projectSubCategories;
-    private Long priceGoal;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String gitAddress;
     private String deployAddress;
+    private List<DonationRewardResponseDto> donationRewards;
 
-    public DonationProjectResponseDto(Project project, Donation donation, List<ProjectSubRequestDto> projectSubCategories){
+    private Long userId;
+    private String name;
+    private String userProfileImage;
+    private Long projectCount;
+    private Long followerCount;
+    private String userIntroduce;
+    private String email;
+
+    public DonationProjectResponseDto(Project project, Donation donation, List<DonationRewardResponseDto> donationRewards,
+        Long projectCount, Long followerCount){
 
         this.projectId = project.getId();
         this.title = project.getTitle();
@@ -49,11 +59,19 @@ public class DonationProjectResponseDto implements ProjectResponseDto {
                 psc.getSubjectCategory().getName()
             ))
             .collect(Collectors.toList());
-        this.priceGoal = donation.getPriceGoal();
         this.startDate = donation.getStartDate();
         this.endDate = donation.getEndDate();
         this.gitAddress = donation.getGitAddress();
         this.deployAddress = donation.getDeployAddress();
+        this.donationRewards = donationRewards;
+
+        this.userId = project.getUser().getId();
+        this.name=project.getUser().getName();
+        this.userProfileImage= project.getUser().getImage();
+        this.userIntroduce = project.getUser().getIntroduce();
+        this.email = project.getUser().getEmail();
+        this.projectCount = projectCount;
+        this.followerCount= followerCount;
 
     }
 }
