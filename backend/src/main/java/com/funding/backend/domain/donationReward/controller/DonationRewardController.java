@@ -2,16 +2,20 @@ package com.funding.backend.domain.donationReward.controller;
 
 import com.funding.backend.domain.donationReward.dto.request.DonationRewardCreateRequestDto;
 import com.funding.backend.domain.donationReward.dto.request.DonationRewardUpdateRequestDto;
+import com.funding.backend.domain.donationReward.dto.response.DonationRewardResponseDto;
 import com.funding.backend.domain.donationReward.service.DonationRewardService;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +33,7 @@ public class DonationRewardController {
 
     private final DonationRewardService donationRewardService;
 
-    @PostMapping(value = "{projectId}")
+    @PostMapping(value = "/{projectId}")
     @Operation(
         summary = "후원 리워드 생성",
         description = "후원 리워드(DonationReward)를 생성합니다."
@@ -45,7 +49,7 @@ public class DonationRewardController {
     }
 
 
-    @PutMapping(value = "{rewardId}")
+    @PutMapping(value = "/{rewardId}")
     @Operation(
         summary = "후원 리워드 수정",
         description = "후원 리워드(DonationReward)를 수정합니다."
@@ -58,6 +62,20 @@ public class DonationRewardController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ApiResponse.of(HttpStatus.OK.value(), "후원 리워드 수정 성공"));
+    }
+
+    @GetMapping("/{projectId}")
+    @Operation(
+        summary = "후원 리워드 조회",
+        description = "특정 프로젝트에 등록된 모든 후원 리워드(DonationReward)를 조회합니다."
+    )
+    public ResponseEntity<ApiResponse<List<DonationRewardResponseDto>>> getDonationRewardByProject(
+        @PathVariable("projectId") Long projectId
+    ){
+        List<DonationRewardResponseDto> rewards = donationRewardService.getDonationRewardByProject(projectId);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ApiResponse.of(HttpStatus.OK.value(), "후원 리워드 조회 성공", rewards));
     }
 
 

@@ -5,6 +5,7 @@ import com.funding.backend.domain.donation.entity.Donation;
 import com.funding.backend.domain.donation.repository.DonationRepository;
 import com.funding.backend.domain.donationReward.dto.request.DonationRewardCreateRequestDto;
 import com.funding.backend.domain.donationReward.dto.request.DonationRewardUpdateRequestDto;
+import com.funding.backend.domain.donationReward.dto.response.DonationRewardResponseDto;
 import com.funding.backend.domain.donationReward.entity.DonationReward;
 import com.funding.backend.domain.donationReward.repository.DonationRewardRepository;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
@@ -18,6 +19,7 @@ import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.security.jwt.TokenService;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -56,7 +58,7 @@ public class DonationRewardService {
         User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
             .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
-        Donation donation = getVerifiedPurchaseByProjectId(projectId);
+        Donation donation = getVerifiedDonationByProjectId(projectId);
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PROJECT_NOT_FOUND));
         validateProjectCreator(project, loginUser);
@@ -88,13 +90,23 @@ public class DonationRewardService {
     }
 
 
+    public List<DonationRewardResponseDto> getDonationRewardByProject(Long projectId) {
+        Donation donation = getVerifiedDonationByProjectId(projectId);
+        List<DonationReward> rewardList = donationRewardRepository.findAllByDonation(donation);
+
+        return rewardList.stream()
+            .map(DonationRewardResponseDto::new)
+            .collect(Collectors.toList());
+    }
+
+
     public DonationReward findDonationRewardById(Long donationRewardId) {
         return donationRewardRepository.findById(donationRewardId)
             .orElseThrow(() -> new BusinessLogicException(ExceptionCode.DONATION_REWARD_NOT_FOUND));
     }
 
     //순환 참조 이슈로 따로 구현한 메서드
-    private Donation getVerifiedPurchaseByProjectId(Long projectId) {
+    private Donation getVerifiedDonationByProjectId(Long projectId) {
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PROJECT_NOT_FOUND));
 
