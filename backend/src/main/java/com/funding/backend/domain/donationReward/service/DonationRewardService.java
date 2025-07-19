@@ -15,7 +15,6 @@ import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
-import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.security.jwt.TokenService;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +34,6 @@ public class DonationRewardService {
     private final DonationRepository donationRepository;
     private final ProjectRepository projectRepository;
 
-    private final ImageService imageService;
     private final TokenService tokenService;
     private final UserRepository userRepository;
 
@@ -87,6 +85,19 @@ public class DonationRewardService {
             .ifPresent(donationReward::setPrice);
 
         donationRewardRepository.save(donationReward);
+    }
+
+    @Transactional
+    public void deleteDonationReward(Long rewardId) {
+        Donation donation = donationRepository.findByDonationRewardId(rewardId)
+            .orElseThrow(() -> new BusinessLogicException(ExceptionCode.DONATION_NOT_FOUND));
+        User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
+            .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
+
+        DonationReward donationReward = findDonationRewardById(rewardId);
+        validateProjectCreator(donation.getProject(),loginUser);
+
+        donationRewardRepository.delete(donationReward);
     }
 
 
