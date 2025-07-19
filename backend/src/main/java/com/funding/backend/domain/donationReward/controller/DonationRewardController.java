@@ -1,12 +1,12 @@
 package com.funding.backend.domain.donationReward.controller;
 
 import com.funding.backend.domain.donationReward.dto.request.DonationRewardCreateRequestDto;
+import com.funding.backend.domain.donationReward.dto.request.DonationRewardUpdateRequestDto;
 import com.funding.backend.domain.donationReward.service.DonationRewardService;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,7 +34,7 @@ public class DonationRewardController {
         summary = "후원 리워드 생성",
         description = "후원 리워드(DonationReward)를 생성합니다."
     )
-    public ResponseEntity<ApiResponse<Void>> createDonationProject(
+    public ResponseEntity<ApiResponse<Void>> createDonationReward(
         @PathVariable("projectId") Long projectId,
         @ModelAttribute @Valid DonationRewardCreateRequestDto requestDto
     ) {
@@ -42,5 +43,22 @@ public class DonationRewardController {
           .status(HttpStatus.CREATED)
           .body(ApiResponse.of(HttpStatus.CREATED.value(), "후원 리워드 생성 성공"));
     }
+
+
+    @PutMapping(value = "{rewardId}")
+    @Operation(
+        summary = "후원 리워드 수정",
+        description = "후원 리워드(DonationReward)를 수정합니다."
+    )
+    public ResponseEntity<ApiResponse<Void>> updateDonationReward(
+        @PathVariable("rewardId") Long rewardId,
+        @ModelAttribute @Valid DonationRewardUpdateRequestDto requestDto
+    ) {
+        donationRewardService.updateDonationReward(rewardId, requestDto);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ApiResponse.of(HttpStatus.OK.value(), "후원 리워드 수정 성공"));
+    }
+
 
 }

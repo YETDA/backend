@@ -13,7 +13,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
 
   Optional<Donation> findByProject(Project project);
 
-  @Query("SELECT d FROM Donation d JOIN d.donationRewardList po WHERE po.id = :donationRewardId")
+  @Query("SELECT d FROM Donation d JOIN d.donationRewardList dr WHERE dr.id = :donationRewardId")
   Optional<Donation> findByDonationRewardId(@Param("donationRewardId") Long donationRewardId);
 
   @Query("SELECT d FROM Donation d JOIN FETCH d.project pr JOIN FETCH pr.user u WHERE d.id = :donationId")

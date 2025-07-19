@@ -1,6 +1,7 @@
 package com.funding.backend.domain.donation.controller;
 
 import com.funding.backend.domain.donation.dto.request.DonationUpdateRequestDto;
+import com.funding.backend.domain.donation.dto.response.DonationResponseDto;
 import com.funding.backend.domain.donation.service.DonationService;
 import com.funding.backend.domain.donation.service.DonationProjectService;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
@@ -41,14 +42,14 @@ public class DonationController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "후원형 프로젝트 생성", description = "후원형(Donation) 프로젝트를 생성합니다.")
-    public ResponseEntity<?> createDonationProject(
+    public ResponseEntity<ApiResponse<DonationResponseDto>> createDonationProject(
         @RequestPart("requestDto") @Valid ProjectCreateRequestDto requestDto,
         @RequestPart(value = "contentImage", required = false) List<MultipartFile> contentImages
     ) {
         requestDto.setContentImage(contentImages);
-        donationProjectService.createDonationProject(requestDto);
+        DonationResponseDto response = donationProjectService.createDonationProject(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(ApiResponse.of(HttpStatus.CREATED.value(), "후원형 프로젝트 생성 성공"));
+            .body(ApiResponse.of(HttpStatus.CREATED.value(), "후원형 프로젝트 생성 성공", response));
     }
 
 

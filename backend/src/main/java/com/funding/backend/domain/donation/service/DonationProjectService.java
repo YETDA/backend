@@ -52,6 +52,7 @@ public class DonationProjectService {
 
         User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
             .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
+        validateBankAccountPresence(loginUser);
 
         Project project = Project.builder()
                 .introduce(dto.getIntroduce())
@@ -64,10 +65,6 @@ public class DonationProjectService {
                 .build();
         Project saveProject = projectRepository.save(project);
 
-
-        Donation savedDonation = donationService.createDonation(saveProject, dto.getDonationDetail());
-        project.setDonation(savedDonation);
-
         // 이미지 저장
         List<ProjectImage> projectImage = new ArrayList<>();
         if (dto.getContentImage() != null && !dto.getContentImage().isEmpty()) {
@@ -75,10 +72,13 @@ public class DonationProjectService {
         }
         project.setProjectImage(projectImage);
 
+        //후원 프로젝트 저장
+        Donation createDonation = donationService.createDonation(saveProject, dto.getDonationDetail());
+
         // 리워드 저장
         if (dto.getDonationDetail().getDonationRewardList() != null &&
             !dto.getDonationDetail().getDonationRewardList().isEmpty()) {
-            donationRewardService.createDonationRewardForProject(saveProject.getId(), dto);
+            donationRewardService.createDonationRewardForProject(createDonation.getId(), dto);
         }
 
         return new DonationResponseDto(saveProject.getId());
@@ -144,6 +144,16 @@ public class DonationProjectService {
     public void validProjectUser(User projectUser, User loginUser){
         if (!projectUser.equals(loginUser)) {
             throw new BusinessLogicException(ExceptionCode.NOT_PROJECT_CREATOR);
+        }
+    }
+
+    private void validateBankAccountPresence(User user) {
+        if (user.getAccount() == null && user.getBank() == null) {
+            throw new BusinessLogicException(ExceptionCode.ACCOUNT_NOT_FOUND);
+        }
+
+        if (user.getAccount() == null || user.getBank() == null) {
+            throw new BusinessLogicException(ExceptionCode.BANK_NOT_FOUND);
         }
     }
 
