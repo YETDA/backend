@@ -97,4 +97,5 @@ jobs:
           script: |
             cd /home/${{ secrets.DEPLOY_USER }}/yetda
             docker builder prune -f
+            docker compose down
             docker-compose up -d --build
