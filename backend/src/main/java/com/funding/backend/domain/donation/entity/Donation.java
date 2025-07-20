@@ -1,8 +1,10 @@
 package com.funding.backend.domain.donation.entity;
 
+import com.funding.backend.domain.donationReward.entity.DonationReward;
 import com.funding.backend.domain.mainCategory.entity.MainCategory;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.projectSubCategory.entity.ProjectSubCategory;
+import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
 import com.funding.backend.global.auditable.Auditable;
 
 import jakarta.persistence.*;
@@ -31,7 +33,6 @@ public class Donation extends Auditable {
 
     @OneToOne
     @JoinColumn(name = "project_id", nullable = false, unique = true)
-
     private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -55,5 +56,8 @@ public class Donation extends Auditable {
 
     @OneToMany(mappedBy = "donation", cascade = CascadeType.ALL, orphanRemoval = true)
     List<ProjectSubCategory> projectSubCategories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "donation", cascade = CascadeType.REMOVE, orphanRemoval = false)
+    List<DonationReward> donationRewardList = new ArrayList<>();
 
 }

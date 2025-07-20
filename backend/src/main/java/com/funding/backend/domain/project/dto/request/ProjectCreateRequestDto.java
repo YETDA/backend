@@ -2,13 +2,11 @@ package com.funding.backend.domain.project.dto.request;
 
 import com.funding.backend.domain.donation.dto.request.DonationProjectDetail;
 import com.funding.backend.domain.purchase.dto.request.PurchaseProjectDetail;
-import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
 import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.validator.annotaion.ValidProjectDetail;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import jakarta.websocket.OnMessage;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;

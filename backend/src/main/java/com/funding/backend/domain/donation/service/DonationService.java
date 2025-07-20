@@ -4,6 +4,8 @@ import com.funding.backend.domain.donation.dto.request.DonationUpdateRequestDto;
 import com.funding.backend.domain.donation.entity.Donation;
 import com.funding.backend.domain.donation.repository.DonationRepository;
 import com.funding.backend.domain.donation.dto.request.DonationProjectDetail;
+import com.funding.backend.domain.donationReward.dto.response.DonationRewardResponseDto;
+import com.funding.backend.domain.follow.service.FollowService;
 import com.funding.backend.domain.mainCategory.entity.MainCategory;
 import com.funding.backend.domain.mainCategory.service.MainCategoryService;
 import com.funding.backend.domain.project.dto.response.DonationProjectResponseDto;
@@ -14,9 +16,14 @@ import com.funding.backend.domain.projectSubCategory.entity.ProjectSubCategory;
 import com.funding.backend.domain.projectSubCategory.service.ProjectSubCategoryService;
 import com.funding.backend.domain.subjectCategory.entity.SubjectCategory;
 import com.funding.backend.domain.subjectCategory.service.SubjectCategoryService;
+import com.funding.backend.domain.user.entity.User;
+import com.funding.backend.domain.user.service.UserService;
+import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
+import com.funding.backend.security.jwt.TokenService;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,6 +44,9 @@ public class DonationService {
   private final MainCategoryService mainCategoryService;
   private final SubjectCategoryService subjectCategoryService;
   private final ProjectSubCategoryService projectSubCategoryService;
+  private final UserService userService;
+  private final TokenService tokenService;
+  private final FollowService followService;
 
   @Transactional
   public Donation createDonation(Project project, DonationProjectDetail dto) {
@@ -53,7 +63,6 @@ public class DonationService {
     Donation donation = Donation.builder()
         .project(project)
         .mainCategory(mainCategory)
-        .priceGoal(dto.getPriceGoal())
         .startDate(dto.getStartDate().atStartOfDay())
         .endDate(dto.getEndDate().atStartOfDay())
         .gitAddress(dto.getGitAddress())
@@ -105,15 +114,15 @@ public class DonationService {
   public DonationProjectResponseDto createDonationProjectResponse(Project project) {
     Donation detail = findByProject(project);
 
-    List<ProjectSubRequestDto> projectSubDtos = detail.getProjectSubCategories().stream()
-        .map(psc -> new ProjectSubRequestDto(
-            psc.getSubjectCategory().getId(),
-            psc.getSubjectCategory().getName()
-        ))
-        .collect(Collectors.toList());
+    List<DonationRewardResponseDto> rewardDtos = detail.getDonationRewardList().stream()
+        .map(DonationRewardResponseDto::new).toList();
+    User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
+    Long projectCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(), Arrays.asList(
+        ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
+    Long followerCount = followService.countFollowers(user.getId());
 
     return new DonationProjectResponseDto(
-        project, detail, projectSubDtos
+        project, detail, rewardDtos, projectCount, followerCount
     );
   }
 
