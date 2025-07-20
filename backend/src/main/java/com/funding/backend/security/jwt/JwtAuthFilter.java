@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtTokenizer jwtTokenizer;
@@ -38,8 +40,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    user, null, List.of(new SimpleGrantedAuthority(user.getRole().getRole().name()))
+                    user, null, List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().getRole().name()))
             );
+            log.info(user.getRole().getRole().name());
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -61,6 +64,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("accessToken".equals(cookie.getName())) {
+                    log.info(cookie.getName()+"accessToken!!!");
                     return cookie.getValue();
                 }else if("refreshToken".equals(cookie.getName())){
                     return cookie.getValue();
