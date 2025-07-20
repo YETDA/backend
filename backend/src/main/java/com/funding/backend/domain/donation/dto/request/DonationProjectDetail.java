@@ -19,9 +19,6 @@ public class DonationProjectDetail {
     @Size(max = 2, message = "상세 카테고리는 최대 2개까지 선택 가능합니다.")
     private List<Long> subCategoryIds;
 
-    @NotNull(message = "목표 금액은 필수입니다.")
-    private Long priceGoal;
-
     @NotNull(message = "시작일은 필수입니다.")
     private LocalDate startDate;
 
@@ -32,4 +29,6 @@ public class DonationProjectDetail {
     private String deployAddress;
 
     private String gitAddress;
+
+    private List<DonationRewardRequestDto> donationRewardList;
 }
