@@ -1,5 +1,6 @@
 package com.funding.backend.domain.project.service;
 
+import com.funding.backend.domain.alarm.event.context.NewPurchaseProjectContext;
 import com.funding.backend.domain.donation.service.DonationProjectService;
 import com.funding.backend.domain.donation.service.DonationService;
 import com.funding.backend.domain.pricingPlan.repository.PricingRepository;
@@ -30,6 +31,7 @@ import com.funding.backend.security.jwt.TokenService;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +55,7 @@ public class ProjectService {
     private final UserRepository userRepository;
     private final PurchaseOptionService purchaseOptionService;
     private final DonationProjectService donationProjectService;
+    private final ApplicationEventPublisher eventPublisher;
 
     private final TokenService tokenService;
     private final UserService userService;
@@ -88,6 +91,10 @@ public class ProjectService {
         if (dto.getPurchaseDetail().getPurchaseOptionList() != null && !dto.getPurchaseDetail().getPurchaseOptionList().isEmpty()) {
             purchaseOptionService.createPurchaseOptionForProject(createPurchase.getId(), dto);
         }
+
+        //알림 생성
+        eventPublisher.publishEvent(new NewPurchaseProjectContext(loginUser.getId(), project.getTitle()
+                ,project.getProjectStatus(),project.getProjectType(),project.getPricingPlan()));
 
         return new PurchaseResponseDto(saveProject.getId());
     }

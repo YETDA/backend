@@ -7,10 +7,12 @@ import com.funding.backend.domain.user.dto.response.UserProfileResponse;
 import com.funding.backend.domain.user.email.service.EmailService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
+import com.funding.backend.enums.RoleType;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.s3.S3Uploader;
 import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -145,5 +147,14 @@ public class UserService {
     public User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
+    }
+
+    public List<User> findAllByAdmin(){
+
+        List<User> adminuserList =  userRepository.findUsersByRole(RoleType.ADMIN);
+        if(adminuserList.isEmpty()){
+            throw new BusinessLogicException(ExceptionCode.ADMIN_NOT_FOUND);
+        }
+        return adminuserList;
     }
 }
