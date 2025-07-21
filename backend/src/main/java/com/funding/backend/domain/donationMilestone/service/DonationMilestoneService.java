@@ -5,6 +5,7 @@ import com.funding.backend.domain.donation.entity.Donation;
 import com.funding.backend.domain.donation.repository.DonationRepository;
 import com.funding.backend.domain.donationMilestone.dto.request.DonationMilestoneCreateDto;
 import com.funding.backend.domain.donationMilestone.dto.request.DonationMilestoneUpdateDto;
+import com.funding.backend.domain.donationMilestone.dto.response.DonationMilestoneResponseDto;
 import com.funding.backend.domain.donationMilestone.entity.DonationMilestone;
 import com.funding.backend.domain.donationMilestone.repository.DonationMilestoneRepository;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
@@ -17,6 +18,7 @@ import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.security.jwt.TokenService;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -84,6 +86,16 @@ public class DonationMilestoneService {
             .ifPresent(donationMilestone::setDueDate);
 
         donationMilestoneRepository.save(donationMilestone);
+    }
+
+
+    public List<DonationMilestoneResponseDto> getDonationMilestoneByProject(Long projectId) {
+        Donation donation = getVerifiedDonationByProjectId(projectId);
+        List<DonationMilestone> milestoneList = donationMilestoneRepository.findAllByDonation(donation);
+
+        return milestoneList.stream()
+            .map(DonationMilestoneResponseDto::new)
+            .collect(Collectors.toList());
     }
 
 
