@@ -4,6 +4,7 @@ package com.funding.backend.domain.order.service;
 import com.funding.backend.domain.order.dto.response.OrderResponseDto;
 import com.funding.backend.domain.order.entity.Order;
 import com.funding.backend.domain.order.repository.OrderRepository;
+import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.global.exception.BusinessLogicException;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,5 +58,11 @@ public class OrderService {
         User loginUser = userService.findUserById(tokenService.getUserIdFromAccessToken());
 
         return orderRepository.findOrdersByUserAndStatus(loginUser, TossPaymentStatus.DONE, pageable);
+    }
+
+    //
+    public Long purchaseOrderCount(Project project){
+        return orderRepository.countDoneOrdersByProjectId(project.getId());
+
     }
 }

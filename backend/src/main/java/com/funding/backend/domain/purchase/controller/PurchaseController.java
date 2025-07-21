@@ -1,8 +1,10 @@
 package com.funding.backend.domain.purchase.controller;
 
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
+import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
+import com.funding.backend.domain.purchase.dto.response.PurchaseListResponseDto;
 import com.funding.backend.domain.purchase.dto.response.PurchaseResponseDto;
 import com.funding.backend.domain.purchase.service.PurchaseService;
 import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionResponseDto;
@@ -14,11 +16,15 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -56,7 +62,7 @@ public class PurchaseController {
 
     @PutMapping(value = "/{projectId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "구매형 프로젝트 수정", description = "기존 구매형 프로젝트(Purchase)를 수정합니다.")
-    public ResponseEntity<?> updatePurchaseProject(
+    public ResponseEntity<ApiResponse<Void>> updatePurchaseProject(
             @PathVariable Long projectId,
             @RequestPart("requestDto") @Valid PurchaseUpdateRequestDto requestDto,
             @RequestPart(value = "contentImages", required = false) List<MultipartFile> contentImages
@@ -73,7 +79,7 @@ public class PurchaseController {
             summary = "구매형 프로젝트 삭제",
             description = "구매형 프로젝트(Purchase)를 삭제합니다. 해당 프로젝트의 생성자만 삭제할 수 있습니다."
     )
-    public ResponseEntity<?> deletePurchaseProject(
+    public ResponseEntity<ApiResponse<Void>> deletePurchaseProject(
             @PathVariable Long projectId
     ) {
         purchaseService.deletePurchase(projectId);
@@ -83,6 +89,16 @@ public class PurchaseController {
         );
     }
 
-
+    @GetMapping("/me/list")
+    @Operation(
+            summary = "내가 생성한 구매형 프로젝트 목록 조회",
+            description = "현재 로그인한 사용자가 생성한 모든 구매형 프로젝트(Purchase)를 최신순으로 조회합니다."
+    )
+    public ResponseEntity<ApiResponse<Page<PurchaseListResponseDto>>> getMyPurchaseProjects(@ParameterObject Pageable pageable) {
+        Page<PurchaseListResponseDto> projects = purchaseService.getMyPurchaseProjectList(pageable);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "내가 생성한 구매형 프로젝트 목록 조회 성공", projects));
+    }
 
 }

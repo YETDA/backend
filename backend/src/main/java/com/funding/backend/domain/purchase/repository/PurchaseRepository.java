@@ -4,6 +4,7 @@ import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.purchase.entity.Purchase;
 import io.lettuce.core.dynamic.annotation.Param;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -18,5 +19,8 @@ public interface PurchaseRepository extends JpaRepository<Purchase,Long> {
 
     @Query("SELECT p FROM Purchase p JOIN FETCH p.project pr JOIN FETCH pr.user u WHERE p.id = :purchaseId")
     Optional<Purchase> findByIdWithProjectAndUser(@Param("purchaseId") Long purchaseId);
+
+
+
 
 }

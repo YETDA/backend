@@ -239,11 +239,12 @@ public class ProjectService {
        User user =  userService.findUserById(tokenService.getUserIdFromAccessToken());
        Long allCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(),
                Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
+
        Long projectCount =projectRepository.countByUserIdAndProjectTypeAndProjectStatusIn(user.getId(),
                ProjectType.PURCHASE,Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
-        Long donationCount =projectRepository.countByUserIdAndProjectTypeAndProjectStatusIn(user.getId(),
-                ProjectType.DONATION,Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
 
+       Long donationCount =projectRepository.countByUserIdAndProjectTypeAndProjectStatusIn(user.getId(),
+                ProjectType.DONATION,Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
         return new ProjectCountResponseDto(allCount,donationCount,projectCount);
 
     }
