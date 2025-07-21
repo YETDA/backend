@@ -59,6 +59,7 @@ public class Project extends Auditable {
     private User user;
 
     @ManyToOne
+    //pricingPlan_id로 변경해야함
     @JoinColumn(name = "management_id")
     private PricingPlan pricingPlan;
 
