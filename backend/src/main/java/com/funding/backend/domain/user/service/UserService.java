@@ -146,4 +146,14 @@ public class UserService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
     }
+
+    @Transactional
+    public void reportUser(Long reportedUserId) {
+        User user = userRepository.findById(reportedUserId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
+
+        user.incrementReportCount(); // JPA 영속성 컨텍스트가 변경을 감지해서 자동으로 업데이트합니다.
+    }
+
+
 }

@@ -19,14 +19,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Table(name = "users") // 대문자 주의
@@ -78,6 +76,18 @@ public class User extends Auditable { // Auditable 상속
     @Column(name = "user_active", nullable = false)
     @Enumerated(EnumType.STRING)
     private UserActive userActive = UserActive.ACTIVE;
+
+    // 신규: 신고 횟수
+    @Column(name = "report_count", nullable = false)
+    private int approvedReportCount = 0;
+
+    // 신고 횟수 증가 메서드
+    public void incrementReportCount() {
+        this.approvedReportCount++;
+        if (this.approvedReportCount >= 3) {
+            this.userActive = UserActive.STOP;
+        }
+    }
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)

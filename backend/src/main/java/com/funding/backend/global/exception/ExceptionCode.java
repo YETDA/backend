@@ -22,6 +22,7 @@ public enum ExceptionCode {
     BANK_AND_ACCOUNT_REQUIRED(400, "은행명과 계좌번호를 모두 입력해야 합니다."),
     ROLE_NOT_FOUND(404, "존재하지 않는 역할입니다."),
     ADMIN_ROLE_REQUIRED(403, "관리자 권한이 필요합니다."),
+    USER_STOPPED(403, "정지된 계정입니다. 계정 복구 요청해주세요."),
 
     //유저 예외 처리
     BANK_NOT_FOUND(404, "은행이 존재하지 않습니다."),
@@ -56,9 +57,6 @@ public enum ExceptionCode {
     INVALID_PROVIDING_METHOD(400, "제공 방식이 유효하지 않습니다."),
     MISMATCHED_PAYMENT_AMOUNT(400, "결제 금액이 맞지 않습니다."),
 
-
-    //사용자 예외처리
-
     //구매 카테고리 예외처리
     PURCHASE_CATEGORY_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 카테고리 입니다. "),
 
@@ -68,12 +66,9 @@ public enum ExceptionCode {
     UNSUPPORTED_PROVIDING_METHOD(400, "지원하지 않는 제공 방식입니다."),
     FILE_REQUIRED_FOR_DOWNLOAD_OPTION(400, "DOWNLOAD 방식의 구매 옵션에는 파일이 필수입니다."),
     PURCHASE_OPTION_FILE_NOT_FOUND(400, "해당 옵션에 매칭되는 파일을 찾을 수 없습니다."),
-    UNSUPPORTED_PROJECT_TYPE_ORDER(400,"구매 API는 구매형 프로젝트에만 적용됩니다"),
+    UNSUPPORTED_PROJECT_TYPE_ORDER(400, "구매 API는 구매형 프로젝트에만 적용됩니다"),
     DOWNLOAD_LIMIT_EXCEEDED(403, "다운로드 횟수를 초과했습니다."),
     NOT_PURCHASED_OPTION_OWNER(403, "해당 구매옵션을 구매한 사용자가 아닙니다."),
-
-
-
 
     //S3 예외 처리
     S3_DELETE_ERROR(404, "이미지를 삭제할 수 없습니다."),
@@ -93,7 +88,7 @@ public enum ExceptionCode {
     //후원 리워드 예외처리
     DONATION_REWARD_NOT_FOUND(404, "존재하지 않는 후원 리워드 입니다. "),
     DONATION_MILESTONE_NOT_FOUND(404, "존재하지 않은 후원 로드맵(마일스톤)입니다."),
-  
+
     //QnA 예외 처리
     QNA_NOT_FOUND(404, "존재하지 않는 QnA입니다."),
     QNA_ACCESS_DENIED(403, "접근 권한이 없습니다."),
