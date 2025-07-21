@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URL;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -47,8 +48,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         // 최초 회원가입 판단
         boolean isNewUser = user.getUserActive() == null;
 
+        // 카카오 프로필 이미지 s3 업로드
         String provider = user.getSsoProvider();  // User 객체에 저장된 SSO provider
-
         if ("KAKAO".equalsIgnoreCase(provider)
                 && user.getImage() != null
                 && user.getImage().contains("k.kakaocdn.net")) {
@@ -85,7 +86,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             userRepository.save(user);
         }
 
-        // 1. 매 로그인 시 AccessToken은 새로 발급
+        // AccessToken 발급
         String accessToken = jwtTokenizer.createAccessToken(
                 user.getId(),
                 user.getEmail(),
@@ -93,19 +94,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 user.getRole().getRole()
         );
 
-//        // 쿠키 생성
-//        ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
-//                .secure(true) // 로컬 HTTP 개발 시 false. HTTPS 프로덕션에선 true
-//                .path("/")
-//                .sameSite("None")
-//                .maxAge(JwtTokenizer.ACCESS_TOKEN_EXPIRE_TIME / 1000) // 초 단위
-//                .build();
-//        response.addHeader("Set-Cookie", accessTokenCookie.toString());
-
-        tokenService.setCookie("accessToken", accessToken);
-//        response.addHeader("Authorization", "Bearer " + accessToken);
-
-        // 2. RefreshToken은 Redis에 있으면 재사용, 없으면 발급 및 저장
+        // Refresh Token은 Redis에 있으면 재사용, 없으면 발급 및 저장
         String refreshToken = refreshTokenService.getRefreshToken(user.getId());
         if (refreshToken == null) {
             refreshToken = jwtTokenizer.createRefreshToken(
@@ -122,14 +111,31 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             );
         }
 
+        // 쿠키 생성
+        ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
+                .httpOnly(true)
+                .secure(true) // 로컬 HTTP 개발 시 false. HTTPS 프로덕션에선 true
+                .path("/")
+                .sameSite("None")
+                .maxAge(JwtTokenizer.ACCESS_TOKEN_EXPIRE_TIME / 1000) // 초 단위
+                .build();
+
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("None")
+                .maxAge(JwtTokenizer.REFRESH_TOKEN_EXPIRE_TIME / 1000)
+                .build();
+
+        log.info("→ Setting AccessCookie: {}", accessTokenCookie);
+        log.info("→ Setting RefreshCookie: {}", refreshTokenCookie);
+        response.addHeader("Set-Cookie", accessTokenCookie.toString());
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
+
+        // 리다이렉트
         String redirectUrl = request.getParameter("state");
-
-        log.info("url : :: " + redirectUrl);
-        log.info("리다이렉트!!!!!!");
-//        tokenService.setCookie("refreshToken", refreshToken);
-
-//        String redirectWithToken = redirectUrl + "?token=" + refreshToken;
-//        log.info("!!!!!! redirect - url :::: " + redirectUrl);
+        log.info("리다이렉트 대상: {}", redirectUrl);
         response.sendRedirect(redirectUrl);
     }
 }
