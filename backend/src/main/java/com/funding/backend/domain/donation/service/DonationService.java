@@ -5,6 +5,7 @@ import com.funding.backend.domain.donation.dto.response.DonationListResponseDto;
 import com.funding.backend.domain.donation.entity.Donation;
 import com.funding.backend.domain.donation.repository.DonationRepository;
 import com.funding.backend.domain.donation.dto.request.DonationProjectDetail;
+import com.funding.backend.domain.donationMilestone.dto.response.DonationMilestoneResponseDto;
 import com.funding.backend.domain.donationReward.dto.response.DonationRewardResponseDto;
 import com.funding.backend.domain.follow.service.FollowService;
 import com.funding.backend.domain.mainCategory.entity.MainCategory;
@@ -71,6 +72,7 @@ public class DonationService {
         .endDate(dto.getEndDate().atStartOfDay())
         .gitAddress(dto.getGitAddress())
         .deployAddress(dto.getDeployAddress())
+        .appStoreAddress(dto.getAppStoreAddress())
         .build();
 
     Donation savedDonation = donationRepository.save(donation);
@@ -120,13 +122,16 @@ public class DonationService {
 
     List<DonationRewardResponseDto> rewardDtos = detail.getDonationRewardList().stream()
         .map(DonationRewardResponseDto::new).toList();
+    List<DonationMilestoneResponseDto> milestoneDtos = detail.getDonationMilestoneList().stream()
+        .map(DonationMilestoneResponseDto::new).toList();
+
     User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
     Long projectCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(), Arrays.asList(
         ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
     Long followerCount = followService.countFollowers(user.getId());
 
     return new DonationProjectResponseDto(
-        project, detail, rewardDtos, projectCount, followerCount
+        project, detail, rewardDtos, milestoneDtos, projectCount, followerCount
     );
   }
 

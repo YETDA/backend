@@ -1,6 +1,7 @@
 package com.funding.backend.domain.project.dto.response;
 
 import com.funding.backend.domain.donation.entity.Donation;
+import com.funding.backend.domain.donationMilestone.dto.response.DonationMilestoneResponseDto;
 import com.funding.backend.domain.donationReward.dto.response.DonationRewardResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
@@ -28,7 +29,9 @@ public class DonationProjectResponseDto implements ProjectResponseDto {
     private LocalDateTime endDate;
     private String gitAddress;
     private String deployAddress;
+    private String appStoreAddress;
     private List<DonationRewardResponseDto> donationRewards;
+    private List<DonationMilestoneResponseDto> donationMilestones;
 
     private Long userId;
     private String name;
@@ -39,7 +42,7 @@ public class DonationProjectResponseDto implements ProjectResponseDto {
     private String email;
 
     public DonationProjectResponseDto(Project project, Donation donation, List<DonationRewardResponseDto> donationRewards,
-        Long projectCount, Long followerCount){
+        List<DonationMilestoneResponseDto> donationMilestones, Long projectCount, Long followerCount){
 
         this.projectId = project.getId();
         this.title = project.getTitle();
@@ -63,7 +66,9 @@ public class DonationProjectResponseDto implements ProjectResponseDto {
         this.endDate = donation.getEndDate();
         this.gitAddress = donation.getGitAddress();
         this.deployAddress = donation.getDeployAddress();
+        this.appStoreAddress = donation.getAppStoreAddress();
         this.donationRewards = donationRewards;
+        this.donationMilestones = donationMilestones;
 
         this.userId = project.getUser().getId();
         this.name=project.getUser().getName();
