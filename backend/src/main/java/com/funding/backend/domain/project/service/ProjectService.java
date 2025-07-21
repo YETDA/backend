@@ -108,11 +108,12 @@ public class ProjectService {
 
         // 프로젝트 상세 내용 업데이트
         project.setContent(purchaseUpdateRequestDto.getContent());
-
-        // 이미지 업데이트
-        List<ProjectImage> updatedImages = imageService.updateImageList
-                (project.getProjectImage(), purchaseUpdateRequestDto.getContentImage(), project);
-        project.setProjectImage(updatedImages);
+        if(purchaseUpdateRequestDto.getContentImage() != null && !purchaseUpdateRequestDto.getContentImage().isEmpty()){
+            // 이미지 업데이트
+            List<ProjectImage> updatedImages = imageService.updateImageList
+                    (project.getProjectImage(), purchaseUpdateRequestDto.getContentImage(), project);
+            project.setProjectImage(updatedImages);
+        }
         projectRepository.save(project);
         // Purchase 관련 필드 업데이트
         purchaseService.updatePurchase(project, purchaseUpdateRequestDto);
