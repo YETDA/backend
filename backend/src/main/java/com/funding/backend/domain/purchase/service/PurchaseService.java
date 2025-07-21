@@ -1,6 +1,8 @@
 package com.funding.backend.domain.purchase.service;
 
 import com.funding.backend.domain.follow.service.FollowService;
+import com.funding.backend.domain.order.service.OrderService;
+import com.funding.backend.domain.purchase.dto.response.PurchaseListResponseDto;
 import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionResponseDto;
 import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
 import com.funding.backend.domain.project.repository.ProjectRepository;
@@ -16,6 +18,7 @@ import com.funding.backend.domain.purchaseOption.service.PurchaseOptionService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.enums.ProjectStatus;
+import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.s3.ImageService;
@@ -25,6 +28,8 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +44,9 @@ public class PurchaseService {
     private final ImageService imageService;
     private final ProjectRepository projectRepository;
     private final PurchaseCategoryService purchaseCategoryService;
+
+
+    private final OrderService orderService;
     private final PurchaseOptionService purchaseOptionService;
     private final UserService userService;
     private final TokenService tokenService;
@@ -128,6 +136,19 @@ public class PurchaseService {
         return purchaseRepository.findByIdWithProjectAndUser(purchaseId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));
     }
+
+
+    public Page<PurchaseListResponseDto> getMyPurchaseProjectList(Pageable pageable){
+        User loginUser = userService.findUserById(tokenService.getUserIdFromAccessToken());
+        Page<Project> purchaseProjectList = projectRepository.findByUserIdAndProjectType(
+                loginUser.getId(), ProjectType.PURCHASE, pageable);
+
+        return purchaseProjectList.map(project -> {
+            Long sellCount = orderService.purchaseOrderCount(project);
+            return new PurchaseListResponseDto(project, sellCount);
+        });
+    }
+
 
 
 
