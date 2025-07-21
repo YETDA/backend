@@ -1,16 +1,22 @@
 package com.funding.backend.domain.purchase.controller;
 
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
+import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
 import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
+import com.funding.backend.domain.purchase.dto.response.PurchaseInfoResponseDto;
 import com.funding.backend.domain.purchase.dto.response.PurchaseListResponseDto;
 import com.funding.backend.domain.purchase.dto.response.PurchaseResponseDto;
 import com.funding.backend.domain.purchase.service.PurchaseService;
 import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionResponseDto;
+import com.funding.backend.enums.PopularProjectSortType;
+import com.funding.backend.enums.ProjectStatus;
+import com.funding.backend.enums.ProjectTypeFilter;
 import com.funding.backend.enums.ProvidingMethod;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -29,6 +35,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -99,6 +106,24 @@ public class PurchaseController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.of(HttpStatus.OK.value(), "내가 생성한 구매형 프로젝트 목록 조회 성공", projects));
+    }
+
+
+
+    @GetMapping("/category/{categoryId}")
+    @Operation(
+            summary = "카테고리별 구매 프로젝트 리스트 조회",
+            description = "카테고리별 구매 프로젝트 리스트 조회"
+    )
+    public ResponseEntity<ApiResponse<Page<PurchaseInfoResponseDto>>> getCategoryList(
+            @Parameter(description = "카테고리 ID") @PathVariable Long categoryId,
+            @RequestParam ProjectStatus projectStatus,
+            @ParameterObject Pageable pageable
+    ) {
+        Page<PurchaseInfoResponseDto> response = purchaseService.getPurchaseCategoryProjectList(categoryId, pageable, projectStatus);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "카테고리별 프로젝트 조회 성공", response));
     }
 
 }

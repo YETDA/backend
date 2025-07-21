@@ -30,7 +30,6 @@ import lombok.experimental.SuperBuilder;
 @ToString
 public class PurchaseCategory extends Auditable {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
