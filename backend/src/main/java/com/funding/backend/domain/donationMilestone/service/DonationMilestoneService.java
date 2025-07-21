@@ -88,6 +88,19 @@ public class DonationMilestoneService {
         donationMilestoneRepository.save(donationMilestone);
     }
 
+    @Transactional
+    public void deleteDonationMilestone(Long milestoneId) {
+        Donation donation = donationRepository.findByDonationMilestoneId(milestoneId)
+            .orElseThrow(() -> new BusinessLogicException(ExceptionCode.DONATION_NOT_FOUND));
+        User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
+            .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
+
+        validateProjectCreator(donation.getProject(),loginUser);
+        DonationMilestone donationMilestone = findDonationMilestoneById(milestoneId);
+
+        donationMilestoneRepository.delete(donationMilestone);
+    }
+
 
     public List<DonationMilestoneResponseDto> getDonationMilestoneByProject(Long projectId) {
         Donation donation = getVerifiedDonationByProjectId(projectId);

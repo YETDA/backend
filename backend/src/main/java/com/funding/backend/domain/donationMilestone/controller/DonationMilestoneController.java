@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -75,7 +76,21 @@ public class DonationMilestoneController {
         List<DonationMilestoneResponseDto> milestones = donationMilestoneService.getDonationMilestoneByProject(projectId);
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(ApiResponse.of(HttpStatus.OK.value(), "후원 마일스톤 조회 성공", milestones));
+            .body(ApiResponse.of(HttpStatus.OK.value(), "후원 로드맵 조회 성공", milestones));
+    }
+
+    @DeleteMapping("/{milestoneId}")
+    @Operation(
+        summary = "후원 마일스톤(로드맵) 삭제",
+        description = "후원 마일스톤 ID를 기반으로 해당 후원 로드맵(DonationMilestone)을 삭제합니다."
+    )
+    public  ResponseEntity<ApiResponse<Void>> deleteDonationMilestone(
+        @PathVariable("milestoneId") Long milestoneId
+    ) {
+        donationMilestoneService.deleteDonationMilestone(milestoneId);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ApiResponse.of(HttpStatus.OK.value(), "후원 마일스톤 삭제 성공"));
     }
 
 }
