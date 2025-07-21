@@ -55,7 +55,7 @@ public class Donation extends Auditable {
     @Column(name = "deploy_address", nullable = false)
     private String deployAddress;   //배포 링크
 
-    @Column(name = "app_store_address", nullable = false)
+    @Column(name = "app_store_address")
     private String appStoreAddress; //앱스토어 링크
 
     @OneToMany(mappedBy = "donation", cascade = CascadeType.ALL, orphanRemoval = true)

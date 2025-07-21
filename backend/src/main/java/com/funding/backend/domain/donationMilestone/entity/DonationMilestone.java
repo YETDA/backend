@@ -40,10 +40,7 @@ public class DonationMilestone {
     @Column(name = "content", length = 200, nullable = false)
     private String content;
 
-    @Column(name = "mile_start_date")
-    private LocalDateTime startDate;
-
-    @Column(name = "mile_end_date", nullable = false)
-    private LocalDateTime endDate;
+    @Column(name = "due_date", nullable = false)
+    private LocalDateTime dueDate;
 
 }

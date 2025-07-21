@@ -11,7 +11,6 @@ import com.funding.backend.domain.mainCategory.service.MainCategoryService;
 import com.funding.backend.domain.project.dto.response.DonationProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
-import com.funding.backend.domain.projectSubCategory.dto.request.ProjectSubRequestDto;
 import com.funding.backend.domain.projectSubCategory.entity.ProjectSubCategory;
 import com.funding.backend.domain.projectSubCategory.service.ProjectSubCategoryService;
 import com.funding.backend.domain.subjectCategory.entity.SubjectCategory;
@@ -26,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -67,6 +65,7 @@ public class DonationService {
         .endDate(dto.getEndDate().atStartOfDay())
         .gitAddress(dto.getGitAddress())
         .deployAddress(dto.getDeployAddress())
+        .appStoreAddress(dto.getAppStoreAddress())
         .build();
 
     Donation savedDonation = donationRepository.save(donation);
