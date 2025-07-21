@@ -29,5 +29,13 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     @Query("SELECT COUNT(o) FROM Order o WHERE o.project.id = :projectId AND o.orderStatus = 'DONE'")
     Long countDoneOrdersByProjectId(@Param("projectId") Long projectId);
 
+        @Query("""
+        SELECT o.project.id, COUNT(o)
+        FROM Order o
+        WHERE o.project.id IN :projectIds
+        GROUP BY o.project.id
+    """)
+        List<Object[]> countOrdersByProjectIds(@Param("projectIds") List<Long> projectIds);
+
 
 }

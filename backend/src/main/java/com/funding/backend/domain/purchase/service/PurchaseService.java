@@ -2,6 +2,8 @@ package com.funding.backend.domain.purchase.service;
 
 import com.funding.backend.domain.follow.service.FollowService;
 import com.funding.backend.domain.order.service.OrderService;
+import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
+import com.funding.backend.domain.purchase.dto.response.PurchaseInfoResponseDto;
 import com.funding.backend.domain.purchase.dto.response.PurchaseListResponseDto;
 import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionResponseDto;
 import com.funding.backend.domain.project.dto.response.PurchaseProjectResponseDto;
@@ -25,7 +27,9 @@ import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.security.jwt.TokenService;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -146,6 +150,36 @@ public class PurchaseService {
         return purchaseProjectList.map(project -> {
             Long sellCount = orderService.purchaseOrderCount(project);
             return new PurchaseListResponseDto(project, sellCount);
+        });
+    }
+
+
+    public Page<PurchaseInfoResponseDto> getPurchaseCategoryProjectList(
+            Long categoryId, Pageable pageable, ProjectStatus projectStatus) {
+
+        PurchaseCategory purchaseCategory = purchaseCategoryService.findPurchaseCategoryById(categoryId);
+
+        Page<Project> projectPage = projectRepository.findByPurchaseCategoryAndStatus(
+                purchaseCategory.getId(), projectStatus, pageable);
+
+        // 프로젝트 ID 리스트 추출
+        List<Long> projectIds = projectPage.stream()
+                .map(Project::getId)
+                .toList();
+
+        // ID별 판매 수량 Map 조회
+        List<Object[]> orderCounts = orderService.countOrdersByProjectIds(projectIds);
+
+        Map<Long, Long> projectIdToSellCount = orderCounts.stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> (Long) row[1]
+                ));
+
+        // DTO 변환
+        return projectPage.map(project -> {
+            Long sellCount = projectIdToSellCount.getOrDefault(project.getId(), 0L);
+            return new PurchaseInfoResponseDto(project, sellCount);
         });
     }
 
