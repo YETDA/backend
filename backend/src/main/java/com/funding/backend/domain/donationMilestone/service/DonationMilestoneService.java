@@ -4,6 +4,7 @@ import com.funding.backend.domain.donation.dto.request.DonationMilestoneRequestD
 import com.funding.backend.domain.donation.entity.Donation;
 import com.funding.backend.domain.donation.repository.DonationRepository;
 import com.funding.backend.domain.donationMilestone.dto.request.DonationMilestoneCreateDto;
+import com.funding.backend.domain.donationMilestone.dto.request.DonationMilestoneUpdateDto;
 import com.funding.backend.domain.donationMilestone.entity.DonationMilestone;
 import com.funding.backend.domain.donationMilestone.repository.DonationMilestoneRepository;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
@@ -15,6 +16,7 @@ import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.security.jwt.TokenService;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -62,6 +64,35 @@ public class DonationMilestoneService {
     }
 
 
+    @Transactional
+    public void updateDonationMilestone(Long milestoneId, DonationMilestoneUpdateDto requestDto) {
+        //수정하려는 사람이 해당 프로젝트를 생성한 사람인지 확인하는 로직
+        Donation donation = donationRepository.findByDonationMilestoneId(milestoneId)
+            .orElseThrow(() -> new BusinessLogicException(ExceptionCode.DONATION_NOT_FOUND));
+        User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
+            .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
+
+        validateProjectCreator(donation.getProject(), loginUser);
+        DonationMilestone donationMilestone = findDonationMilestoneById(milestoneId);
+
+        //공통 필드 업데이트
+        Optional.ofNullable(requestDto.getTitle())
+            .ifPresent(donationMilestone::setTitle);
+        Optional.ofNullable(requestDto.getContent())
+            .ifPresent(donationMilestone::setContent);
+        Optional.ofNullable(requestDto.getDueDate())
+            .ifPresent(donationMilestone::setDueDate);
+
+        donationMilestoneRepository.save(donationMilestone);
+    }
+
+
+    public DonationMilestone findDonationMilestoneById(Long milestoneId) {
+        return donationMilestoneRepository.findById(milestoneId)
+            .orElseThrow(() -> new BusinessLogicException(ExceptionCode.DONATION_MILESTONE_NOT_FOUND));
+    }
+
+
     //순환 참조 이슈로 따로 구현한 메서드
     private Donation getVerifiedDonationByProjectId(Long projectId) {
         Project project = projectRepository.findById(projectId)
@@ -82,7 +113,7 @@ public class DonationMilestoneService {
         DonationMilestone milestone = DonationMilestone.builder()
             .title(milestoneRequestDto.getTitle())
             .content(milestoneRequestDto.getContent())
-            .dueDate(milestoneRequestDto.getDueDate().atStartOfDay())
+            .dueDate(milestoneRequestDto.getDueDate())
             .donation(donation)
             .build();
         donationMilestoneRepository.save(milestone);
@@ -92,7 +123,7 @@ public class DonationMilestoneService {
         DonationMilestone milestone = DonationMilestone.builder()
             .title(requestDto.getTitle())
             .content(requestDto.getContent())
-            .dueDate(requestDto.getDueDate().atStartOfDay())
+            .dueDate(requestDto.getDueDate())
             .donation(donation)
             .build();
         donationMilestoneRepository.save(milestone);
