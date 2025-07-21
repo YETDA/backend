@@ -87,6 +87,7 @@ public enum ExceptionCode {
     SUBJECT_CATEGORY_NOT_FOUND(404, "존재하지 않는 후원 상세 카테고리 입니다. "),
     //후원 리워드 예외처리
     DONATION_REWARD_NOT_FOUND(404, "존재하지 않는 후원 리워드 입니다. "),
+    DONATION_MILESTONE_NOT_FOUND(404, "존재하지 않은 후원 로드맵(마일스톤)입니다."),
 
     //QnA 예외 처리
     QNA_NOT_FOUND(404, "존재하지 않는 QnA입니다."),

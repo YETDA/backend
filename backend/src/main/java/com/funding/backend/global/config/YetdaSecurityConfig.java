@@ -51,6 +51,7 @@ public class YetdaSecurityConfig {
 
                         //프로젝트 (검색 포함됨)
                         .requestMatchers(HttpMethod.GET, "/api/v1/project/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/project/purchase/category/**").permitAll()
 
                         //구매 프로젝트 CRUD
                         .requestMatchers(HttpMethod.GET, "/api/v1/project/purchase/**").permitAll()
@@ -81,6 +82,12 @@ public class YetdaSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/project/donation/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/project/donation/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/project/donation/**").hasAnyRole("ADMIN", "USER")
+
+                        //후원 로드맵(마일스톤)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/donationMilestone/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/donationMilestone/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/donationMilestone/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/donationMilestone/**").hasAnyRole("ADMIN", "USER")
 
                         //후원 리워드
                         .requestMatchers(HttpMethod.GET, "/api/v1/donationReward/**").permitAll()
