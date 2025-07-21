@@ -16,6 +16,11 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
   @Query("SELECT d FROM Donation d JOIN d.donationRewardList dr WHERE dr.id = :donationRewardId")
   Optional<Donation> findByDonationRewardId(@Param("donationRewardId") Long donationRewardId);
 
+  @Query("SELECT d FROM Donation d JOIN d.donationMilestoneList dm WHERE dm.id = :donationMilestoneId")
+  Optional<Donation> findByDonationMilestoneId(@Param("donationMilestoneId") Long donationMilestoneId);
+
+
   @Query("SELECT d FROM Donation d JOIN FETCH d.project pr JOIN FETCH pr.user u WHERE d.id = :donationId")
   Optional<Donation> findByIdWithProjectAndUser(@Param("donationId") Long donationId);
 }
+

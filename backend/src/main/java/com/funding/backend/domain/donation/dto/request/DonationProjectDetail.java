@@ -28,7 +28,11 @@ public class DonationProjectDetail {
     @NotBlank(message = "배포 주소는 필수입니다.")
     private String deployAddress;
 
+    private String appStoreAddress;
+
     private String gitAddress;
 
     private List<DonationRewardRequestDto> donationRewardList;
+
+    public List<DonationMilestoneRequestDto> donationMilestoneList;
 }

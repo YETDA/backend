@@ -1,6 +1,7 @@
 package com.funding.backend.domain.donation.controller;
 
 import com.funding.backend.domain.donation.dto.request.DonationUpdateRequestDto;
+import com.funding.backend.domain.donation.dto.response.DonationListResponseDto;
 import com.funding.backend.domain.donation.dto.response.DonationResponseDto;
 import com.funding.backend.domain.donation.service.DonationService;
 import com.funding.backend.domain.donation.service.DonationProjectService;
@@ -14,6 +15,9 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -91,5 +95,19 @@ public class DonationController {
             .status(HttpStatus.OK)
             .body(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 상세 조회 성공", response));
     }
+
+
+    @GetMapping("/me/list")
+    @Operation(
+        summary = "내가 생성한 후원형 프로젝트 목록 조회",
+        description = "현재 로그인한 사용자가 생성한 모든 후원형 프로젝트(Donation)를 최신순으로 조회합니다."
+    )
+    public ResponseEntity<ApiResponse<Page<DonationListResponseDto>>> getMyDonationProjects(@ParameterObject Pageable pageable) {
+        Page<DonationListResponseDto> projects = donationService.getMyDonationProjectList(pageable);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ApiResponse.of(HttpStatus.OK.value(), "내가 생성한 후원형 프로젝트 목록 조회 성공", projects));
+    }
+
 
 }

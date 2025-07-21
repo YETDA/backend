@@ -1,17 +1,19 @@
 package com.funding.backend.domain.donation.service;
 
 import com.funding.backend.domain.donation.dto.request.DonationUpdateRequestDto;
+import com.funding.backend.domain.donation.dto.response.DonationListResponseDto;
 import com.funding.backend.domain.donation.entity.Donation;
 import com.funding.backend.domain.donation.repository.DonationRepository;
 import com.funding.backend.domain.donation.dto.request.DonationProjectDetail;
+import com.funding.backend.domain.donationMilestone.dto.response.DonationMilestoneResponseDto;
 import com.funding.backend.domain.donationReward.dto.response.DonationRewardResponseDto;
 import com.funding.backend.domain.follow.service.FollowService;
 import com.funding.backend.domain.mainCategory.entity.MainCategory;
 import com.funding.backend.domain.mainCategory.service.MainCategoryService;
+import com.funding.backend.domain.order.service.OrderService;
 import com.funding.backend.domain.project.dto.response.DonationProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
-import com.funding.backend.domain.projectSubCategory.dto.request.ProjectSubRequestDto;
 import com.funding.backend.domain.projectSubCategory.entity.ProjectSubCategory;
 import com.funding.backend.domain.projectSubCategory.service.ProjectSubCategoryService;
 import com.funding.backend.domain.subjectCategory.entity.SubjectCategory;
@@ -19,6 +21,7 @@ import com.funding.backend.domain.subjectCategory.service.SubjectCategoryService
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.enums.ProjectStatus;
+import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.security.jwt.TokenService;
@@ -26,9 +29,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +51,7 @@ public class DonationService {
   private final UserService userService;
   private final TokenService tokenService;
   private final FollowService followService;
+  private final OrderService orderService;
 
   @Transactional
   public Donation createDonation(Project project, DonationProjectDetail dto) {
@@ -67,6 +72,7 @@ public class DonationService {
         .endDate(dto.getEndDate().atStartOfDay())
         .gitAddress(dto.getGitAddress())
         .deployAddress(dto.getDeployAddress())
+        .appStoreAddress(dto.getAppStoreAddress())
         .build();
 
     Donation savedDonation = donationRepository.save(donation);
@@ -116,14 +122,30 @@ public class DonationService {
 
     List<DonationRewardResponseDto> rewardDtos = detail.getDonationRewardList().stream()
         .map(DonationRewardResponseDto::new).toList();
+    List<DonationMilestoneResponseDto> milestoneDtos = detail.getDonationMilestoneList().stream()
+        .map(DonationMilestoneResponseDto::new).toList();
+
     User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
     Long projectCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(), Arrays.asList(
         ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
     Long followerCount = followService.countFollowers(user.getId());
 
     return new DonationProjectResponseDto(
-        project, detail, rewardDtos, projectCount, followerCount
+        project, detail, rewardDtos, milestoneDtos, projectCount, followerCount
     );
+  }
+
+
+  public Page<DonationListResponseDto> getMyDonationProjectList(Pageable pageable){
+    User loginUser = userService.findUserById(tokenService.getUserIdFromAccessToken());
+    Page<Project> donationProjectList = projectRepository.findByUserIdAndProjectTypeWithDonation(
+        loginUser.getId(), ProjectType.DONATION, pageable);
+
+    return donationProjectList.map(project -> {
+      //후원 정산 구현 완료되면 수정할 예정(지금은 임시로)
+      Long sellCount = orderService.donationOrderCount(project);
+      return new DonationListResponseDto(project, sellCount);
+    });
   }
 
 }
