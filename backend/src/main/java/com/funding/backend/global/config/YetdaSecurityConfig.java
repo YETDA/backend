@@ -49,6 +49,9 @@ public class YetdaSecurityConfig {
                                 "/login/**"
                         ).permitAll()
 
+                        //알림 요청
+                        .requestMatchers(HttpMethod.GET, "/api/v1/alarm/stream").hasAnyRole("ADMIN", "USER")
+
                         //프로젝트 (검색 포함됨)
                         .requestMatchers(HttpMethod.GET, "/api/v1/project/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/v1/project/purchase/category/**").permitAll()
