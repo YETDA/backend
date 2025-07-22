@@ -2,7 +2,6 @@ package com.funding.backend.domain.settlement.service;
 
 import com.funding.backend.domain.order.entity.Order;
 import com.funding.backend.domain.order.service.OrderService;
-import com.funding.backend.domain.pricingPlan.entity.PricingPlan;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.settlement.dto.response.SettlementDetailResponseDto;
@@ -17,13 +16,9 @@ import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.toss.enums.TossPaymentStatus;
 import com.funding.backend.security.jwt.TokenService;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,19 +32,18 @@ public class SettlementService {
 
     private final SettlementRepository settlementRepository;
     private final OrderService orderService;
-
     private final ProjectService projectService;
     private final UserService userService;
     private final TokenService tokenService;
 
 
     //프로젝트 아이디를 입력하면, 해당 프로젝트에 대한 정산 내역을 제공
-    public SettlementDetailResponseDto getLatestPurchaseSettlementDetail(Long projectId){
+    public SettlementDetailResponseDto getLatestPurchaseSettlementDetail(Long projectId) {
         Project project = projectService.findProjectById(projectId);
         User loginUser = userService.findUserById(tokenService.getUserIdFromAccessToken());
 
         //해당 메서드 사용하기 위한 유효성 검사 로직
-        validPurchaseSettlement(project,loginUser);
+        validPurchaseSettlement(project, loginUser);
         List<Settlement> settlementList = settlementRepository.findAllByProject(project);
 
         if (settlementList == null || settlementList.isEmpty()) {
@@ -75,22 +69,20 @@ public class SettlementService {
     private SettlementDetailResponseDto getFromLatestSettlement(Project project, List<Settlement> settlements) {
         //이전 정산내역의 마지막 정산 날짜를 계산하고
         Settlement latest = settlementRepository.findTopByProjectOrderByPeriodEndDesc(project)
-                .orElseThrow(()-> new BusinessLogicException(ExceptionCode.SETTLEMENT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.SETTLEMENT_NOT_FOUND));
 
         // 나노초 뒤 부터 주문 내역 계산
         LocalDateTime from = latest.getPeriodEnd().plusNanos(1);
         LocalDateTime to = LocalDateTime.now();
 
-        List<Order> orders = orderService.findByProjectAndCreatedAtBetween(project, from, to,TossPaymentStatus.DONE);
+        List<Order> orders = orderService.findByProjectAndCreatedAtBetween(project, from, to, TossPaymentStatus.DONE);
         return calculateSettlementDto(project, from, to, orders);
     }
 
 
-
-
-    public void validPurchaseSettlement(Project project, User loginUser){
+    public void validPurchaseSettlement(Project project, User loginUser) {
         //해당 프로젝트의 주인이 아니라면 정산 처리 못하는 예외 로직 추가
-        projectService.validProjectUser(project.getUser(),loginUser);
+        projectService.validProjectUser(project.getUser(), loginUser);
 
         //구매형 전용 예외 처리
         if (project.getProjectType() != ProjectType.PURCHASE) {
@@ -123,4 +115,8 @@ public class SettlementService {
                 .build();
     }
 
+    // 관리자용: 특정 사용자의 정산 요청(Settlement) 총 개수
+    public long countByUser(Long userId) {
+        return settlementRepository.countByUserId(userId);
+    }
 }
