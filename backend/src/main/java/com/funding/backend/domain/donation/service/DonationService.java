@@ -1,6 +1,7 @@
 package com.funding.backend.domain.donation.service;
 
 import com.funding.backend.domain.donation.dto.request.DonationUpdateRequestDto;
+import com.funding.backend.domain.donation.dto.response.DonationInfoResponseDto;
 import com.funding.backend.domain.donation.dto.response.DonationListResponseDto;
 import com.funding.backend.domain.donation.entity.Donation;
 import com.funding.backend.domain.donation.repository.DonationRepository;
@@ -28,7 +29,9 @@ import com.funding.backend.security.jwt.TokenService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -146,6 +149,33 @@ public class DonationService {
       Long sellCount = orderService.donationOrderCount(project);
       return new DonationListResponseDto(project, sellCount);
     });
+  }
+
+  public Page<DonationInfoResponseDto> getDonationMainCategoryList(
+      Long categoryId, Pageable pageable, ProjectStatus projectStatus) {
+
+    MainCategory mainCategory = mainCategoryService.findDonationCategoryById(categoryId);
+
+    Page<Project> projectPage = projectRepository.findByDonationCategoryAndStatus(
+        mainCategory.getId(), projectStatus, pageable);
+
+    // 프로젝트 ID 리스트 추출
+    List<Long> projectIds = projectPage.stream()
+        .map(Project::getId)
+        .toList();
+
+    // ID별 판매 수량 Map 조회
+    List<Object[]> orderCounts = orderService.countOrdersByProjectIds(projectIds);
+
+    Map<Long, Long> projectIdToSellCount = orderCounts.stream()
+        .collect(Collectors.toMap(
+            row -> (Long) row[0],
+            row -> (Long) row[1]
+        ));
+
+    // DTO 변환
+    //Long sellCount = projectIdToSellCount.getOrDefault(project.getId(), 0L);
+    return projectPage.map(DonationInfoResponseDto::new);
   }
 
 }
