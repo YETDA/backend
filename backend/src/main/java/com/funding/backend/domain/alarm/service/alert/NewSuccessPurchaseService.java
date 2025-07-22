@@ -8,12 +8,17 @@ import com.funding.backend.domain.alarm.event.context.NewSuccessPurchaseContext;
 import com.funding.backend.domain.alarm.service.AlarmService;
 import com.funding.backend.domain.alarm.strategy.AlarmStrategy;
 import com.funding.backend.domain.alarm.strategy.factory.AlarmStrategyFactory;
+import com.funding.backend.domain.order.entity.Order;
 import com.funding.backend.domain.pricingPlan.entity.PricingPlan;
+import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
+import com.funding.backend.global.toss.enums.TossPaymentStatus;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,15 +32,17 @@ public class NewSuccessPurchaseService {
     private final UserService userService;
 
     @Transactional
-    public void notifySuccessPurchase(Long userId, String title, ProjectStatus status, ProjectType type, PricingPlan pricingPlan) {
-        AlarmStrategy strategy = alarmStrategyFactory.getStrategy(AlarmType.PROJECT_PURCHASED);
+    public void notifySuccessPurchase(Long userId, String title, ProjectStatus projectStatus
+            ,TossPaymentStatus tossPaymentStatus,Long totalPaymentAmount, Long orderCount) {
 
+        AlarmStrategy strategy = alarmStrategyFactory.getStrategy(AlarmType.PROJECT_PURCHASED);
         NewSuccessPurchaseContext context = new NewSuccessPurchaseContext(
                 userId,
                 title,
-                status,
-                type,
-                pricingPlan
+                projectStatus,
+                tossPaymentStatus,
+                totalPaymentAmount,
+                orderCount
         );
 
         List<User> adminUserList = userService.findAllByAdmin();

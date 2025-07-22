@@ -135,9 +135,3 @@ springdoc:
   show-actuator: true
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
-
-alarm:
-  timeout: ${ALARM_TIMEOUT}
-
-settlement:
-  day: ${SETTLEMENT_DAY}

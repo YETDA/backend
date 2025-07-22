@@ -78,5 +78,10 @@ public class OrderService {
         return orderRepository.findByProjectAndCreatedAtBetweenAndOrderStatus(project,from,to,tossPaymentStatus);
     }
 
+    public Order findOrderById(Long id){
+        return orderRepository.findById(id)
+                .orElseThrow(()-> new BusinessLogicException(ExceptionCode.ORDER_NOT_FOUND));
+    }
+
 
 }
