@@ -2,6 +2,7 @@ package com.funding.backend.global.toss.controller;
 
 import com.funding.backend.domain.order.entity.Order;
 import com.funding.backend.domain.order.service.OrderService;
+import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.toss.dto.request.ConfirmPaymentRequestDto;
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.ui.Model;
@@ -54,6 +56,7 @@ public class TossController {
     public ResponseEntity<ApiResponse<Void>> confirmPayment(@RequestBody ConfirmPaymentRequestDto dto) {
         try {
             tossService.confirmAndProcessPayment(dto);
+
             return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "결제 성공", null));
         } catch (BusinessLogicException e) {
             // 결제 금액 불일치 등의 경우만 삭제 수행
@@ -78,6 +81,17 @@ public class TossController {
                     .body(ApiResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "서버 내부 오류", null));
         }
     }
+
+//    @PostMapping("/success/alarm/{orderId}")
+//    public ResponseEntity<ApiResponse<Void>> notifyPurchaseSuccess(@PathVariable String orderId) {
+//        tossService.alarmService(orderId);
+//
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .body(ApiResponse.of(HttpStatus.OK.value(), "알림 생성 완료", null));
+//    }
+
+
 
 
 //

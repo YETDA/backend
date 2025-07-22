@@ -35,6 +35,12 @@ public class OrderService {
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ORDER_NOT_FOUND));
     }
 
+    public Order findOrderByOrderIdWithOptions(String orderId) {
+        return orderRepository.findByOrderIdWithOptions(orderId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ORDER_NOT_FOUND));
+    }
+
+
     @Transactional
     public void saveOrder(Order order) {
         orderRepository.save(order);
@@ -78,6 +84,11 @@ public class OrderService {
     public List<Order> findByProjectAndCreatedAtBetween(Project project, LocalDateTime from, LocalDateTime to,
                                                         TossPaymentStatus tossPaymentStatus) {
         return orderRepository.findByProjectAndCreatedAtBetweenAndOrderStatus(project, from, to, tossPaymentStatus);
+    }
+
+    public Order findOrderById(Long id){
+        return orderRepository.findById(id)
+                .orElseThrow(()-> new BusinessLogicException(ExceptionCode.ORDER_NOT_FOUND));
     }
 
 
