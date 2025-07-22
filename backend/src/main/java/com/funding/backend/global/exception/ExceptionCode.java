@@ -27,6 +27,8 @@ public enum ExceptionCode {
     //유저 예외 처리
     BANK_NOT_FOUND(404, "은행이 존재하지 않습니다."),
     ACCOUNT_NOT_FOUND(404, "계좌가 존재하지 않습니다."),
+    ADMIN_NOT_FOUND(404, "Admin이 존재하지 않습니다."),
+
 
     //팔로우 예외 처리
     FOLLOW_NOT_FOUND(404, "팔로우 관계를 찾을 수 없습니다"),
@@ -105,7 +107,10 @@ public enum ExceptionCode {
     REVIEW_ALREADY_EXISTS(409, "이미 후기가 존재합니다."),
 
     //요금제 예외 처리
-    PRICING_PLAN_NOT_FOUND(404, "존재하지 않는 요금제 입니다");
+    PRICING_PLAN_NOT_FOUND(404, "존재하지 않는 요금제 입니다"),
+
+    //알림 예외 처리
+    ALARM_STRATEGY_NOT_FOUND(404, "해당 알림 유형에 대한 전략이 존재하지 않습니다");
 
     @Getter
     private final int status;

@@ -3,7 +3,12 @@ package com.funding.backend.domain.alarm.enums;
 public enum AlarmType {
 
     // 매니저 알림
-    PROJECT_REQUEST("프로젝트 승인 요청");
+    PURCHASE_PROJECT_REQUEST("구매 프로젝트 승인 요청"),
+
+
+    //회원 구매 알림
+    PROJECT_PURCHASED("누군가 프로젝트를 구매했습니다");
+
 
     private final String description;
 
