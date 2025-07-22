@@ -1,12 +1,18 @@
 package com.funding.backend.domain.admin.controller;
 
 import com.funding.backend.domain.admin.dto.response.UserCountDto;
+import com.funding.backend.domain.admin.dto.response.UserListDto;
 import com.funding.backend.domain.admin.service.AdminUserManagingService;
 import com.funding.backend.enums.UserActive;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +51,31 @@ public class AdminUserManagingController {
         UserCountDto counts = adminUserManagingService.getUserCounts();
         return ResponseEntity.ok(ApiResponse.of(
                 HttpStatus.OK.value(), "회원 수 조회 성공", counts
+        ));
+    }
+
+    @GetMapping("/users")
+    @Operation(
+            summary = "회원 목록 조회 (페이징 + 정렬)",
+            description = """
+                        기본값: page=0, size=3, sort=createdAt,DESC ▶ 쿼리파라미터로  
+                        • page (0부터 시작)  
+                        • size (한 페이지 당 개수)  
+                        • sort (필드명,정렬방향)  
+                        를 자유롭게 지정할 수 있습니다.
+                    """
+    )
+    public ResponseEntity<ApiResponse<Page<UserListDto>>> listUsers(
+            @ParameterObject
+            @PageableDefault(page = 0, size = 3,
+                    sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        Page<UserListDto> page = adminUserManagingService.getUserList(pageable);
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(),
+                "회원 목록 조회 성공",
+                page
         ));
     }
 }

@@ -1,6 +1,7 @@
 package com.funding.backend.domain.admin.service;
 
 import com.funding.backend.domain.admin.dto.response.UserCountDto;
+import com.funding.backend.domain.admin.dto.response.UserListDto;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.domain.user.service.UserService;
@@ -10,6 +11,8 @@ import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.security.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,5 +53,10 @@ public class AdminUserManagingService {
         long stopUsers = userRepository.countByRole_RoleAndUserActive(filterRole, UserActive.STOP);
 
         return new UserCountDto(totalUsers, activeUsers, stopUsers);
+    }
+
+    public Page<UserListDto> getUserList(Pageable pageable) {
+        validAdmin();
+        return userRepository.findByRoleWithStats(RoleType.USER, pageable);
     }
 }
