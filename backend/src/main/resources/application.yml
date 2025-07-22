@@ -127,7 +127,7 @@ springdoc:
   swagger-ui:
     oauth:
       client-id: ${OAUTH2_KAKAO_CLIENT_ID}
-#      client-secret: ${OAUTH2_KAKAO_CLIENT_SECRET}
+      #      client-secret: ${OAUTH2_KAKAO_CLIENT_SECRET}
       scopes:
         - profile_nickname
         - account_email

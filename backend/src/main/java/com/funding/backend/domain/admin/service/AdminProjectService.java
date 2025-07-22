@@ -2,12 +2,10 @@ package com.funding.backend.domain.admin.service;
 
 import com.funding.backend.domain.project.dto.response.AuditProjectResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
-import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
 import com.funding.backend.enums.RoleType;
-import com.funding.backend.enums.UserActive;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.security.jwt.TokenService;
@@ -20,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class AdminService {
+public class AdminProjectService {
 
     private final TokenService tokenService;
     private final UserService userService;
@@ -77,10 +75,4 @@ public class AdminService {
         projectService.updateAllProjectStatus(ProjectStatus.UNDER_AUDIT, ProjectStatus.REJECTED);
     }
 
-    @Transactional
-    public void changeUserStatus(Long targetUserId, UserActive newStatus) {
-        validAdmin();
-        User target = userService.findUserById(targetUserId);
-        target.setUserActive(newStatus);
-    }
 }
