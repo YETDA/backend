@@ -2,6 +2,7 @@ package com.funding.backend.domain.settlement.service;
 
 import com.funding.backend.domain.order.entity.Order;
 import com.funding.backend.domain.order.service.OrderService;
+import com.funding.backend.domain.pricingPlan.entity.PricingPlan;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.settlement.dto.response.SettlementDetailResponseDto;
@@ -55,7 +56,6 @@ public class SettlementService {
             //정산 내역이 존재하지 않는다면
             return getFromProjectCreation(project);
         } else {
-
             //정산 내역이 존재한다면
             return getFromLatestSettlement(project, settlementList);
         }
@@ -105,8 +105,11 @@ public class SettlementService {
             LocalDateTime to,
             List<Order> orders
     ) {
+        Long pricingPlan = project.getPricingPlan().getPaymentFee();
+
         long totalAmount = orders.stream().mapToLong(Order::getPaidAmount).sum();
-        long fee = (long) (totalAmount * 0.1);
+        double feeRate = pricingPlan / 100.0;
+        long fee = Math.round(totalAmount * feeRate);
         long payout = totalAmount - fee;
 
         return SettlementDetailResponseDto.builder()
@@ -119,7 +122,5 @@ public class SettlementService {
                 .settlementStatus(SettlementStatus.WAITING)
                 .build();
     }
-
-
 
 }

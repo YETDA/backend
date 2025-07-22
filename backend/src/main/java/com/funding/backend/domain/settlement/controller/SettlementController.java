@@ -43,5 +43,4 @@ public class SettlementController {
                 .body(ApiResponse.of(HttpStatus.OK.value(), "정산 상세 조회 성공", response));
     }
 
-
 }
