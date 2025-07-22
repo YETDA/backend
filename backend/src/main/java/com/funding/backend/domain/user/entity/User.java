@@ -3,6 +3,7 @@ package com.funding.backend.domain.user.entity;
 import com.funding.backend.domain.alarm.entity.Alarm;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.role.entity.Role;
+import com.funding.backend.domain.settlement.entity.Settlement;
 import com.funding.backend.enums.UserActive;
 import com.funding.backend.global.auditable.Auditable;
 import jakarta.persistence.CascadeType;
@@ -95,6 +96,9 @@ public class User extends Auditable { // Auditable 상속
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     List<Alarm> alarmList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    List<Settlement>  settlementList = new ArrayList<>();
 
 
 }
