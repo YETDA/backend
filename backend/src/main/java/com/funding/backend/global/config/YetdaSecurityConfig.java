@@ -148,6 +148,8 @@ public class YetdaSecurityConfig {
         config.addAllowedHeader("*");
         config.setAllowCredentials(true); // 💡 쿠키 포함 허용 필수
         config.setMaxAge(3600L);
+        // SSE를 위한 추가 헤더 설정
+        config.setExposedHeaders(List.of("Last-Event-ID", "Cache-Control", "Connection"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
