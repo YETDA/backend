@@ -1,11 +1,16 @@
 package com.funding.backend.domain.admin.service;
 
+import com.funding.backend.domain.admin.dto.response.UserActivityStatusDto;
 import com.funding.backend.domain.admin.dto.response.UserCountDto;
 import com.funding.backend.domain.admin.dto.response.UserInfoDto;
 import com.funding.backend.domain.admin.dto.response.UserListDto;
+import com.funding.backend.domain.order.service.OrderService;
+import com.funding.backend.domain.project.service.ProjectService;
+import com.funding.backend.domain.settlement.service.SettlementService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.domain.user.service.UserService;
+import com.funding.backend.enums.ProjectType;
 import com.funding.backend.enums.RoleType;
 import com.funding.backend.enums.UserActive;
 import com.funding.backend.global.exception.BusinessLogicException;
@@ -25,6 +30,9 @@ public class AdminUserManagingService {
     private final TokenService tokenService;
     private final UserService userService;
     private final UserRepository userRepository;
+    private final ProjectService projectService;
+    private final OrderService orderService;
+    private final SettlementService settlementService;
 
     public boolean validAdmin() {
         Long userId = tokenService.getUserIdFromAccessToken();
@@ -37,6 +45,7 @@ public class AdminUserManagingService {
 
         return true;
     }
+
 
     @Transactional
     public void changeUserStatus(Long targetUserId, UserActive newStatus) {
@@ -64,7 +73,7 @@ public class AdminUserManagingService {
     public UserInfoDto getUserInfoDetail(Long targetUserId) {
         validAdmin();
         User u = userService.findUserById(targetUserId);
-        
+
         return new UserInfoDto(
                 u.getId(),
                 u.getName(),
@@ -76,4 +85,26 @@ public class AdminUserManagingService {
                 u.getImage()
         );
     }
+
+    public UserActivityStatusDto getUserActivityStatus(Long targetUserId) {
+        validAdmin();
+
+        long createdProjectsCount = projectService.countProjectsByUser(targetUserId);
+        long donatedProjectsCount = orderService.countDistinctByUserAndType(targetUserId, ProjectType.DONATION);
+        long donatedTotalAmount = orderService.sumPaidByUserAndType(targetUserId, ProjectType.DONATION);
+        long purchasedProjectsCount = orderService.countDistinctByUserAndType(targetUserId, ProjectType.PURCHASE);
+        long purchasedTotalAmount = orderService.sumPaidByUserAndType(targetUserId, ProjectType.PURCHASE);
+        long settlementRequestCount = settlementService.countByUser(targetUserId);
+
+        return new UserActivityStatusDto(
+                createdProjectsCount,
+                donatedProjectsCount,
+                donatedTotalAmount,
+                purchasedProjectsCount,
+                purchasedTotalAmount,
+                settlementRequestCount
+        );
+    }
+
+
 }

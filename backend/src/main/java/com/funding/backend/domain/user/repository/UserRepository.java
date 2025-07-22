@@ -3,14 +3,14 @@ package com.funding.backend.domain.user.repository;
 import com.funding.backend.domain.admin.dto.response.UserListDto;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.enums.RoleType;
-import io.lettuce.core.dynamic.annotation.Param;
-import java.util.List;
 import com.funding.backend.enums.UserActive;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
