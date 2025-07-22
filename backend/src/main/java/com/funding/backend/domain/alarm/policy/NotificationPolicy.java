@@ -19,8 +19,8 @@ public class NotificationPolicy {
 
             );
             case USER -> Arrays.asList(
-                    AlarmType.PROJECT_PURCHASED
-
+                    AlarmType.PROJECT_PURCHASED,
+                    AlarmType.PROJECT_PURCHASE_SUCCESS
 
             );
             default -> Collections.emptyList();

@@ -109,6 +109,9 @@ public class YetdaSecurityConfig {
                         //Q&A
                         .requestMatchers(HttpMethod.GET, "/api/v1/reviews/**").permitAll()
 
+                        //구매 주문서 생성
+                        .requestMatchers(HttpMethod.POST,"/api/v1/order/purchase/**").hasAnyRole("ADMIN", "USER")
+
 
                         .anyRequest().authenticated()
                 )

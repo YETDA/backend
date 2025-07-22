@@ -9,10 +9,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class NewPurchaseProjectContext {
-    Long userId;
-    String title;
-    ProjectStatus projectStatus;
-    ProjectType projectType;
-    PricingPlan pricingPlan;
+    public Long userId;
+    public String title;
+    public ProjectStatus projectStatus;
+    public ProjectType projectType;
+    public PricingPlan pricingPlan;
 
 }

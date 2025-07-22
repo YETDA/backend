@@ -6,7 +6,6 @@ import com.funding.backend.domain.settlement.entity.Settlement;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.auditable.Auditable;
-import com.funding.backend.global.toss.enums.OrderStatus;
 import com.funding.backend.global.toss.enums.PayType;
 import com.funding.backend.global.toss.enums.TossPaymentStatus;
 import jakarta.persistence.Column;
