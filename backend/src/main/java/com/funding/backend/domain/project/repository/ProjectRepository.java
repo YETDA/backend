@@ -94,6 +94,32 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
     // 유저가 생성한 Donation, Project 프로젝트 수 (상태 제한 포함)
     Long countByUserIdAndProjectTypeAndProjectStatusIn(Long userId, ProjectType type, List<ProjectStatus> statuses);
 
+    @EntityGraph(attributePaths = "purchase")
+    Page<Project> findByUserIdAndProjectType(Long userId, ProjectType projectType, Pageable pageable);
+
+
+    @EntityGraph(attributePaths = "donation")
+    @Query("SELECT p FROM Project p WHERE p.user.id = :userId AND p.projectType = :projectType")
+    Page<Project> findByUserIdAndProjectTypeWithDonation(
+        @Param("userId") Long userId,
+        @Param("projectType") ProjectType projectType,
+        Pageable pageable
+    );
+           
+
+    @Query("""
+        SELECT p
+        FROM Project p
+        JOIN p.purchase pu
+        WHERE pu.purchaseCategory.id = :categoryId
+          AND p.projectStatus = :status
+    """)
+    Page<Project> findByPurchaseCategoryAndStatus(
+            @Param("categoryId") Long categoryId,
+            @Param("status") ProjectStatus status,
+            Pageable pageable
+    );
+
 
 
 }

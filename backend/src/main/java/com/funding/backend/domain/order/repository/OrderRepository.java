@@ -2,9 +2,12 @@ package com.funding.backend.domain.order.repository;
 
 
 import com.funding.backend.domain.order.entity.Order;
+import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.global.toss.enums.TossPaymentStatus;
 import io.lettuce.core.dynamic.annotation.Param;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,4 +27,25 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     );
 
 
+    //해당 프로젝트 구매 개수
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.project.id = :projectId AND o.orderStatus = 'DONE'")
+    Long countDoneOrdersByProjectId(@Param("projectId") Long projectId);
+
+        @Query("""
+        SELECT o.project.id, COUNT(o)
+        FROM Order o
+        WHERE o.project.id IN :projectIds
+        GROUP BY o.project.id
+    """)
+        List<Object[]> countOrdersByProjectIds(@Param("projectIds") List<Long> projectIds);
+
+
+
+    //정산에 포함되어야 할 주문은 '결제가 완료된 주문'만 포함
+    List<Order> findByProjectAndCreatedAtBetweenAndOrderStatus(
+            Project project,
+            LocalDateTime from,
+            LocalDateTime to,
+            TossPaymentStatus orderStatus
+    );
 }

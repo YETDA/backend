@@ -11,6 +11,7 @@ import com.funding.backend.domain.order.entity.Order;
 import com.funding.backend.domain.pricingPlan.entity.PricingPlan;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.domain.purchase.entity.Purchase;
+import com.funding.backend.domain.settlement.entity.Settlement;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
@@ -59,6 +60,7 @@ public class Project extends Auditable {
     private User user;
 
     @ManyToOne
+    //pricingPlan_id로 변경해야함
     @JoinColumn(name = "management_id")
     private PricingPlan pricingPlan;
 
@@ -93,5 +95,8 @@ public class Project extends Auditable {
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = false)
     List<Order> orderList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = false)
+    List<Settlement> settlementList = new ArrayList<>();
 
 }

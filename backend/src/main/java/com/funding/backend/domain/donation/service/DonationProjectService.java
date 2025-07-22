@@ -1,9 +1,12 @@
 package com.funding.backend.domain.donation.service;
 
 import com.funding.backend.domain.donation.dto.request.DonationUpdateRequestDto;
+import com.funding.backend.domain.donation.dto.response.DonationResponseDto;
 import com.funding.backend.domain.donation.entity.Donation;
-import com.funding.backend.domain.project.dto.request.DonationCreateRequestDto;
+import com.funding.backend.domain.donationMilestone.service.DonationMilestoneService;
+import com.funding.backend.domain.donationReward.service.DonationRewardService;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
+import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
@@ -11,6 +14,7 @@ import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.domain.purchase.service.PurchaseService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
+import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.exception.BusinessLogicException;
@@ -38,15 +42,19 @@ public class DonationProjectService {
     private final PricingService pricingService;
     private final DonationService donationService;
     private final PurchaseService purchaseService;
+    private final DonationRewardService donationRewardService;
+    private final DonationMilestoneService donationMilestoneService;
 
     private final TokenService tokenService;
+    private final UserService userService;
 
 
     @Transactional
-    public void createDonationProject(DonationCreateRequestDto dto){
+    public DonationResponseDto createDonationProject(ProjectCreateRequestDto dto){
 
         User loginUser = userRepository.findById(tokenService.getUserIdFromAccessToken())
             .orElseThrow(()->new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
+        validateBankAccountPresence(loginUser);
 
         Project project = Project.builder()
                 .introduce(dto.getIntroduce())
@@ -59,14 +67,29 @@ public class DonationProjectService {
                 .build();
         Project saveProject = projectRepository.save(project);
 
-        Donation savedDonation = donationService.createDonation(saveProject, dto.getDonationProjectDetail());
-        project.setDonation(savedDonation);
-
+        // 이미지 저장
         List<ProjectImage> projectImage = new ArrayList<>();
         if (dto.getContentImage() != null && !dto.getContentImage().isEmpty()) {
             projectImage = imageService.saveImageList(dto.getContentImage(), project);
         }
         project.setProjectImage(projectImage);
+
+        //후원 프로젝트 저장
+        Donation createDonation = donationService.createDonation(saveProject, dto.getDonationDetail());
+
+        //마일스톤 저장
+        if (dto.getDonationDetail().getDonationMilestoneList() != null &&
+            !dto.getDonationDetail().getDonationMilestoneList().isEmpty()) {
+            donationMilestoneService.createDonationMilestoneByProject(createDonation.getId(), dto);
+        }
+
+        // 리워드 저장
+        if (dto.getDonationDetail().getDonationRewardList() != null &&
+            !dto.getDonationDetail().getDonationRewardList().isEmpty()) {
+            donationRewardService.createDonationRewardForProject(createDonation.getId(), dto);
+        }
+
+        return new DonationResponseDto(saveProject.getId());
     }
 
 
@@ -129,6 +152,16 @@ public class DonationProjectService {
     public void validProjectUser(User projectUser, User loginUser){
         if (!projectUser.equals(loginUser)) {
             throw new BusinessLogicException(ExceptionCode.NOT_PROJECT_CREATOR);
+        }
+    }
+
+    private void validateBankAccountPresence(User user) {
+        if (user.getAccount() == null && user.getBank() == null) {
+            throw new BusinessLogicException(ExceptionCode.ACCOUNT_NOT_FOUND);
+        }
+
+        if (user.getAccount() == null || user.getBank() == null) {
+            throw new BusinessLogicException(ExceptionCode.BANK_NOT_FOUND);
         }
     }
 
