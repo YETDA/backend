@@ -1,8 +1,12 @@
 package com.funding.backend.domain.donation.dto.response;
 
+import com.funding.backend.domain.donation.entity.Donation;
 import com.funding.backend.domain.project.entity.Project;
+import com.funding.backend.domain.projectSubCategory.dto.request.ProjectSubRequestDto;
 import com.funding.backend.enums.ProjectType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Getter;
 
 @Getter
@@ -38,6 +42,9 @@ public class DonationInfoResponseDto {
     @Schema(description = "제작자 프로필 이미지 URL", example = "https://example.com/profile.jpg")
     private String hostProfileImageUrl;
 
+    @Schema(description = "프로젝트 서브카테고리", example = "AI / 자동화 도구")
+    private List<ProjectSubRequestDto> projectSubCategories;
+
     public DonationInfoResponseDto(Project project) {
         this.id = project.getId();
         this.title = project.getTitle();
@@ -49,6 +56,13 @@ public class DonationInfoResponseDto {
         this.hostId = project.getUser().getId();
         this.hostName = project.getUser().getName();
         this.hostProfileImageUrl = project.getUser().getImage();
+        Donation donation = project.getDonation();
+        this.projectSubCategories = donation.getProjectSubCategories().stream()
+            .map(psc -> new ProjectSubRequestDto(
+                psc.getSubjectCategory().getId(),
+                psc.getSubjectCategory().getName()
+            ))
+            .collect(Collectors.toList());
     }
 
 }
