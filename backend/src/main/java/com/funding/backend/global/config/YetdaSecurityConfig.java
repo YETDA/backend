@@ -49,6 +49,9 @@ public class YetdaSecurityConfig {
                                 "/login/**"
                         ).permitAll()
 
+                        //알림 요청
+                        .requestMatchers(HttpMethod.GET, "/api/v1/alarm/stream").hasAnyRole("ADMIN", "USER")
+
                         //프로젝트 (검색 포함됨)
                         .requestMatchers(HttpMethod.GET, "/api/v1/project/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/v1/project/purchase/category/**").permitAll()
@@ -148,6 +151,8 @@ public class YetdaSecurityConfig {
         config.addAllowedHeader("*");
         config.setAllowCredentials(true); // 💡 쿠키 포함 허용 필수
         config.setMaxAge(3600L);
+        // SSE를 위한 추가 헤더 설정
+        config.setExposedHeaders(List.of("Last-Event-ID", "Cache-Control", "Connection"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
