@@ -12,17 +12,17 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class NewSuccessPurchaseContext {
-    Long userId;
-    String title;
+    public Long userId;
+    public String title;
     //구매형, 후원형
-    ProjectStatus projectStatus;
+    public ProjectStatus projectStatus;
 
     //결제 완료 상태
-    TossPaymentStatus tossPaymentStatus;
+    public TossPaymentStatus tossPaymentStatus;
 
     //총 결제 금액
-    Long totalPaymentAmount;
+    public Long totalPaymentAmount;
 
     //해당 프로젝트에서 구매한 창작물 개수
-    Long orderCount;
+    public Long orderCount;
 }

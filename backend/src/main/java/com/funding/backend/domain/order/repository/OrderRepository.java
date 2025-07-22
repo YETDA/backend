@@ -26,6 +26,10 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
             Pageable pageable
     );
 
+    @Query("SELECT o FROM Order o JOIN FETCH o.orderOptionList WHERE o.orderId = :orderId")
+    Optional<Order> findByOrderIdWithOptions(String orderId);
+
+
 
     //해당 프로젝트 구매 개수
     @Query("SELECT COUNT(o) FROM Order o WHERE o.project.id = :projectId AND o.orderStatus = 'DONE'")

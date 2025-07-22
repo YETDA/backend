@@ -7,7 +7,8 @@ public enum AlarmType {
 
 
     //회원 구매 알림
-    PROJECT_PURCHASED("누군가 프로젝트를 구매했습니다");
+    PROJECT_PURCHASED("누군가 프로젝트를 구매했습니다"),
+    PROJECT_PURCHASE_SUCCESS("창작물 구매가 완료되었습니다.");
 
 
     private final String description;

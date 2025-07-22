@@ -4,6 +4,7 @@ package com.funding.backend.domain.alarm.strategy.factory;
 import com.funding.backend.domain.alarm.enums.AlarmType;
 import com.funding.backend.domain.alarm.strategy.AlarmStrategy;
 import com.funding.backend.domain.alarm.strategy.strategy.NewPurchaseProjectStrategy;
+import com.funding.backend.domain.alarm.strategy.strategy.NewPurchaseReceivedStrategy;
 import com.funding.backend.domain.alarm.strategy.strategy.NewSuccessPurchaseStrategy;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
@@ -23,7 +24,8 @@ public class AlarmStrategyFactory {
         strategyMap.put(AlarmType.PURCHASE_PROJECT_REQUEST, new NewPurchaseProjectStrategy());
 
         //회원
-        strategyMap.put(AlarmType.PROJECT_PURCHASED, new NewSuccessPurchaseStrategy());
+        strategyMap.put(AlarmType.PROJECT_PURCHASE_SUCCESS, new NewSuccessPurchaseStrategy());
+        strategyMap.put(AlarmType.PROJECT_PURCHASED, new NewPurchaseReceivedStrategy());
     }
 
     public AlarmStrategy getStrategy(AlarmType type) {

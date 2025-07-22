@@ -34,6 +34,12 @@ public class OrderService {
                 .orElseThrow(()->new BusinessLogicException(ExceptionCode.ORDER_NOT_FOUND));
     }
 
+    public Order findOrderByOrderIdWithOptions(String orderId) {
+        return orderRepository.findByOrderIdWithOptions(orderId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ORDER_NOT_FOUND));
+    }
+
+
     @Transactional
     public void saveOrder(Order order){
         orderRepository.save(order);

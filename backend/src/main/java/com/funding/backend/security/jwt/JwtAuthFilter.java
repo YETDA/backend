@@ -38,7 +38,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             Long userId = jwtTokenizer.getUserIdFromAccessToken(token);
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
-
+            log.info("JWT Role: {}", user.getRole().getRole().name());
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     user, null, List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().getRole().name()))
             );
