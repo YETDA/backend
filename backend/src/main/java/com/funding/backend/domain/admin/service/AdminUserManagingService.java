@@ -1,6 +1,7 @@
 package com.funding.backend.domain.admin.service;
 
 import com.funding.backend.domain.admin.dto.response.UserCountDto;
+import com.funding.backend.domain.admin.dto.response.UserInfoDto;
 import com.funding.backend.domain.admin.dto.response.UserListDto;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
@@ -58,5 +59,21 @@ public class AdminUserManagingService {
     public Page<UserListDto> getUserList(Pageable pageable) {
         validAdmin();
         return userRepository.findByRoleWithStats(RoleType.USER, pageable);
+    }
+
+    public UserInfoDto getUserInfoDetail(Long targetUserId) {
+        validAdmin();
+        User u = userService.findUserById(targetUserId);
+        
+        return new UserInfoDto(
+                u.getId(),
+                u.getName(),
+                u.getEmail(),
+                u.getSsoProvider(),
+                u.getCreatedAt(),
+                u.getApprovedReportCount(),
+                u.getUserActive(),
+                u.getImage()
+        );
     }
 }

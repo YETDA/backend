@@ -1,6 +1,7 @@
 package com.funding.backend.domain.admin.controller;
 
 import com.funding.backend.domain.admin.dto.response.UserCountDto;
+import com.funding.backend.domain.admin.dto.response.UserInfoDto;
 import com.funding.backend.domain.admin.dto.response.UserListDto;
 import com.funding.backend.domain.admin.service.AdminUserManagingService;
 import com.funding.backend.enums.UserActive;
@@ -73,9 +74,21 @@ public class AdminUserManagingController {
     ) {
         Page<UserListDto> page = adminUserManagingService.getUserList(pageable);
         return ResponseEntity.ok(ApiResponse.of(
-                HttpStatus.OK.value(),
-                "회원 목록 조회 성공",
-                page
+                HttpStatus.OK.value(), "회원 목록 조회 성공", page
+        ));
+    }
+
+    @GetMapping("/users/{userId}")
+    @Operation(
+            summary = "회원 상세 조회",
+            description = "회원의 기본 정보를 조회합니다."
+    )
+    public ResponseEntity<ApiResponse<UserInfoDto>> getUserDetail(
+            @PathVariable(name = "userId") Long userId
+    ) {
+        UserInfoDto dto = adminUserManagingService.getUserInfoDetail(userId);
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(), userId + "번 회원 상세 정보 조회 성공", dto
         ));
     }
 }
