@@ -22,6 +22,7 @@ public class AlarmStrategyFactory {
         strategyMap.put(AlarmType.PURCHASE_PROJECT_REQUEST, new NewPurchaseProjectStrategy());
 
         //회원
+        strategyMap.put(AlarmType.PROJECT_PURCHASED, new NewPurchaseProjectStrategy());
     }
 
     public AlarmStrategy getStrategy(AlarmType type) {

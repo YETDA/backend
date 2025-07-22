@@ -1,6 +1,7 @@
 package com.funding.backend.domain.alarm.event.listener;
 
 import com.funding.backend.domain.alarm.event.context.NewPurchaseProjectContext;
+import com.funding.backend.domain.alarm.event.context.NewSuccessPurchaseContext;
 import com.funding.backend.domain.alarm.service.alert.NewPurchaseProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -19,5 +20,11 @@ public class AlarmEventListener {
         ,event.getPricingPlan());
     }
 
-
+    // 구매 완료 알림 ( 창작물을 구매한 사람에게 )
+    @EventListener
+    public void handleNewPurchaseProjectCreated(NewSuccessPurchaseContext event) {
+        newPurchaseProjectService.notifyCreatePurchaseProject(event.getUserId(),
+                event.getTitle(), event.getProjectStatus(),event.getProjectType()
+                ,event.getPricingPlan());
+    }
 }
