@@ -15,7 +15,6 @@ import com.funding.backend.domain.purchaseCategory.service.PurchaseCategoryServi
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.purchase.entity.Purchase;
 import com.funding.backend.domain.purchase.repository.PurchaseRepository;
-import com.funding.backend.domain.purchaseOption.repository.PurchaseOptionRepository;
 import com.funding.backend.domain.purchaseOption.service.PurchaseOptionService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.service.UserService;
@@ -23,7 +22,6 @@ import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
-import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.security.jwt.TokenService;
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +30,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -44,17 +43,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class PurchaseService {
 
     private final PurchaseRepository purchaseRepository;
-    private final PurchaseOptionRepository purchaseOptionRepository;
-    private final ImageService imageService;
     private final ProjectRepository projectRepository;
     private final PurchaseCategoryService purchaseCategoryService;
-
 
     private final OrderService orderService;
     private final PurchaseOptionService purchaseOptionService;
     private final UserService userService;
     private final TokenService tokenService;
     private final FollowService followService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Purchase createPurchase(Project project, PurchaseProjectDetail dto){
@@ -127,6 +124,7 @@ public class PurchaseService {
         Long projectCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(), Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
         Long followerCount = followService.countFollowers(user.getId());
 
+        //구매 프로젝트 승인 알림 생성
         return new PurchaseProjectResponseDto(
                 project, detail, optionDtos , projectCount, followerCount
         );
