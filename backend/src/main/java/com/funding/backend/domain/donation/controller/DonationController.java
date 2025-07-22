@@ -1,6 +1,7 @@
 package com.funding.backend.domain.donation.controller;
 
 import com.funding.backend.domain.donation.dto.request.DonationUpdateRequestDto;
+import com.funding.backend.domain.donation.dto.response.DonationInfoResponseDto;
 import com.funding.backend.domain.donation.dto.response.DonationListResponseDto;
 import com.funding.backend.domain.donation.dto.response.DonationResponseDto;
 import com.funding.backend.domain.donation.service.DonationService;
@@ -8,8 +9,10 @@ import com.funding.backend.domain.donation.service.DonationProjectService;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
+import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -28,6 +31,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -107,6 +111,23 @@ public class DonationController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ApiResponse.of(HttpStatus.OK.value(), "내가 생성한 후원형 프로젝트 목록 조회 성공", projects));
+    }
+
+
+    @GetMapping("/category/{categoryId}")
+    @Operation(
+        summary = "후원 프로젝트 메인 카테고리별 리스트 조회",
+        description = "후원 프로젝트 메인 카테고리별 리스트 조회"
+    )
+    public ResponseEntity<ApiResponse<Page<DonationInfoResponseDto>>> getDonationMainCategoryList(
+        @Parameter(description = "카테고리 ID") @PathVariable Long categoryId,
+        @RequestParam ProjectStatus projectStatus,
+        @ParameterObject Pageable pageable
+    ) {
+        Page<DonationInfoResponseDto> response = donationService.getDonationMainCategoryList(categoryId, pageable, projectStatus);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ApiResponse.of(HttpStatus.OK.value(), "후원 프로젝트 메인 카테고리별 조회 성공", response));
     }
 
 

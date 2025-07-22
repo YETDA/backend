@@ -5,7 +5,6 @@ import com.funding.backend.domain.donationReward.entity.DonationReward;
 import com.funding.backend.domain.mainCategory.entity.MainCategory;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.projectSubCategory.entity.ProjectSubCategory;
-import com.funding.backend.domain.purchaseOption.entity.PurchaseOption;
 import com.funding.backend.global.auditable.Auditable;
 
 import jakarta.persistence.*;

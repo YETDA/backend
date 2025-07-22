@@ -122,5 +122,22 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     long countByUserId(Long userId);
 
+    @EntityGraph(attributePaths = "donation")
+    @Query("SELECT p FROM Project p WHERE p.user.id = :userId AND p.projectType = :projectType")
+    Page<Project> findByUserIdAndProjectTypeWithDonation(Long userId, ProjectType projectType, Pageable pageable);
+
+    @Query("""
+        SELECT p
+        FROM Project p
+        JOIN p.donation pd
+        WHERE pd.mainCategory.id = :categoryId
+          AND p.projectStatus = :status
+""")
+    Page<Project> findByDonationCategoryAndStatus(
+        @Param("categoryId") Long categoryId,
+        @Param("status") ProjectStatus status,
+        Pageable pageable
+    );
+
 
 }
