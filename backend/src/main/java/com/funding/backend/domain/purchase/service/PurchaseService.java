@@ -111,6 +111,7 @@ public class PurchaseService {
     public PurchaseProjectResponseDto createPurchaseProjectResponse(Project project) {
 
         if(project.getProjectStatus().equals(ProjectStatus.UNDER_AUDIT)){
+            log.info("심사중 프로젝트 진입");
             User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
             if(!project.getUser().equals(user)){
                 throw new BusinessLogicException(ExceptionCode.PROJECT_VIEW_FORBIDDEN_DURING_AUDIT);
@@ -120,7 +121,7 @@ public class PurchaseService {
 
         List<PurchaseOptionResponseDto> optionDtos = detail.getPurchaseOptionList().stream()
                 .map(PurchaseOptionResponseDto::new).toList();
-        User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
+        User user = userService.findUserById(project.getUser().getId());
         Long projectCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(), Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
         Long followerCount = followService.countFollowers(user.getId());
 
