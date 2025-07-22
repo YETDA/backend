@@ -2,6 +2,7 @@ package com.funding.backend.domain.order.entity;
 
 import com.funding.backend.domain.orderOption.entity.OrderOption;
 import com.funding.backend.domain.project.entity.Project;
+import com.funding.backend.domain.settlement.entity.Settlement;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.auditable.Auditable;
@@ -12,6 +13,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -86,5 +88,11 @@ public class Order extends Auditable {
 
 	@OneToMany(mappedBy = "order")
 	private List<OrderOption> orderOptionList = new ArrayList<>();
+
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "settlement_id")
+	private Settlement settlement;
+
 
 }

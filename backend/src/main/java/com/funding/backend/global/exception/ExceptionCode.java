@@ -57,6 +57,10 @@ public enum ExceptionCode {
     INVALID_PROVIDING_METHOD(400, "제공 방식이 유효하지 않습니다."),
     MISMATCHED_PAYMENT_AMOUNT(400, "결제 금액이 맞지 않습니다."),
 
+
+    //정산 예외처리
+    SETTLEMENT_NOT_FOUND(404, "정산 내역이 존재하지 않습니다."),
+
     //구매 카테고리 예외처리
     PURCHASE_CATEGORY_NOT_FOUND(404, "존재하지 않는 구매 프로젝트 카테고리 입니다. "),
 
