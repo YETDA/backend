@@ -1,6 +1,8 @@
 package com.funding.backend.domain.admin.service;
 
+import com.funding.backend.domain.admin.dto.response.UserCountDto;
 import com.funding.backend.domain.user.entity.User;
+import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.enums.RoleType;
 import com.funding.backend.enums.UserActive;
@@ -13,10 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AdminUserManagingService {
 
     private final TokenService tokenService;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     public boolean validAdmin() {
         Long userId = tokenService.getUserIdFromAccessToken();
@@ -35,5 +39,16 @@ public class AdminUserManagingService {
         validAdmin();
         User target = userService.findUserById(targetUserId);
         target.setUserActive(newStatus);
+    }
+
+    public UserCountDto getUserCounts() {
+        validAdmin();
+        RoleType filterRole = RoleType.USER;
+
+        long totalUsers = userRepository.countByRole_Role(filterRole);
+        long activeUsers = userRepository.countByRole_RoleAndUserActive(filterRole, UserActive.ACTIVE);
+        long stopUsers = userRepository.countByRole_RoleAndUserActive(filterRole, UserActive.STOP);
+
+        return new UserCountDto(totalUsers, activeUsers, stopUsers);
     }
 }
