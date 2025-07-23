@@ -1,6 +1,7 @@
 package com.funding.backend.domain.admin.service;
 
-import com.funding.backend.domain.admin.dto.response.UserActivityStatusDto;
+import com.funding.backend.domain.admin.dto.response.CreatorActivityStatusDto;
+import com.funding.backend.domain.admin.dto.response.ParticipationStatusDto;
 import com.funding.backend.domain.admin.dto.response.UserCountDto;
 import com.funding.backend.domain.admin.dto.response.UserInfoDto;
 import com.funding.backend.domain.admin.dto.response.UserListDto;
@@ -86,25 +87,34 @@ public class AdminUserManagingService {
         );
     }
 
-    public UserActivityStatusDto getUserActivityStatus(Long targetUserId) {
+    public CreatorActivityStatusDto getCreatorActivityStatus(Long userId) {
         validAdmin();
 
-        long createdProjectsCount = projectService.countProjectsByUser(targetUserId);
+        long donationProjectsCreated = projectService.countByUserIdAndType(userId, ProjectType.DONATION);
+        long donationSettlementRequests = settlementService.countSettlementRequestsByType(userId, ProjectType.DONATION);
+        long donationTotalPayout = settlementService.sumCompletedPayoutByType(userId, ProjectType.DONATION);
+        long purchaseProjectsCreated = projectService.countByUserIdAndType(userId, ProjectType.PURCHASE);
+        long purchaseSettlementRequests = settlementService.countSettlementRequestsByType(userId, ProjectType.PURCHASE);
+        long purchaseTotalPayout = settlementService.sumCompletedPayoutByType(userId, ProjectType.PURCHASE);
+
+        return new CreatorActivityStatusDto(
+                donationProjectsCreated, donationSettlementRequests, donationTotalPayout,
+                purchaseProjectsCreated, purchaseSettlementRequests, purchaseTotalPayout
+        );
+    }
+
+    public ParticipationStatusDto getParticipationStatus(Long targetUserId) {
+        validAdmin();
+
         long donatedProjectsCount = orderService.countDistinctByUserAndType(targetUserId, ProjectType.DONATION);
         long donatedTotalAmount = orderService.sumPaidByUserAndType(targetUserId, ProjectType.DONATION);
         long purchasedProjectsCount = orderService.countDistinctByUserAndType(targetUserId, ProjectType.PURCHASE);
         long purchasedTotalAmount = orderService.sumPaidByUserAndType(targetUserId, ProjectType.PURCHASE);
-        long settlementRequestCount = settlementService.countByUser(targetUserId);
 
-        return new UserActivityStatusDto(
-                createdProjectsCount,
-                donatedProjectsCount,
-                donatedTotalAmount,
-                purchasedProjectsCount,
-                purchasedTotalAmount,
-                settlementRequestCount
+        return new ParticipationStatusDto(
+                donatedProjectsCount, donatedTotalAmount,
+                purchasedProjectsCount, purchasedTotalAmount
         );
     }
-
 
 }

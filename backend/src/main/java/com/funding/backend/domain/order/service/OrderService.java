@@ -86,13 +86,12 @@ public class OrderService {
         return orderRepository.findByProjectAndCreatedAtBetweenAndOrderStatus(project, from, to, tossPaymentStatus);
     }
 
-    public Order findOrderById(Long id){
+    public Order findOrderById(Long id) {
         return orderRepository.findById(id)
-                .orElseThrow(()-> new BusinessLogicException(ExceptionCode.ORDER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ORDER_NOT_FOUND));
     }
 
-
-    // 관리자용: 사용자·타입(PURCHASE/DONATION)별 주문한 서로 다른 프로젝트 수
+    // 관리자용: 사용자·타입(PURCHASE/DONATION)별 주문한 프로젝트 수
     public long countDistinctByUserAndType(Long userId, ProjectType type) {
         return orderRepository.countDistinctByUser_IdAndProjectType(userId, type);
     }

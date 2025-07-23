@@ -259,9 +259,8 @@ public class ProjectService {
 
     }
 
-    // 관리자용: 특정 사용자가 개설한 프로젝트 수 조회
-    public long countProjectsByUser(Long userId) {
-        return projectRepository.countByUserId(userId);
+    public long countByUserIdAndType(Long userId, ProjectType type) {
+        return projectRepository.countByUserIdAndProjectType(userId, type);
     }
 
     public Page<Project> findByUserIdAndProjectTypeAndProjectStatusIn(Long userId, Pageable pageable
