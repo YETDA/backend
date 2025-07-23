@@ -1,6 +1,7 @@
 package com.funding.backend.domain.admin.controller;
 
-import com.funding.backend.domain.admin.dto.response.UserActivityStatusDto;
+import com.funding.backend.domain.admin.dto.response.CreatorActivityStatusDto;
+import com.funding.backend.domain.admin.dto.response.ParticipationStatusDto;
 import com.funding.backend.domain.admin.dto.response.UserCountDto;
 import com.funding.backend.domain.admin.dto.response.UserInfoDto;
 import com.funding.backend.domain.admin.dto.response.UserListDto;
@@ -93,19 +94,25 @@ public class AdminUserManagingController {
         ));
     }
 
-    @GetMapping("/users/{userId}/activity-status")
-    @Operation(
-            summary = "회원 활동 현황 조회",
-            description = "개설한 총 프로젝트 수, 후원한 프로젝트 수 & 총 후원 금액, 구매한 프로젝트 수 & 총 구매 금액, 정산 요청 횟수"
-    )
-    public ResponseEntity<ApiResponse<UserActivityStatusDto>> getActivityStatus(
+    @GetMapping("/users/{userId}/creator-activity")
+    @Operation(summary = "개설 활동 현황 조회")
+    public ResponseEntity<ApiResponse<CreatorActivityStatusDto>> getCreatorActivityStatus(
             @PathVariable(name = "userId") Long userId
     ) {
-        UserActivityStatusDto dto = adminUserManagingService.getUserActivityStatus(userId);
+        CreatorActivityStatusDto dto = adminUserManagingService.getCreatorActivityStatus(userId);
         return ResponseEntity.ok(ApiResponse.of(
-                HttpStatus.OK.value(), userId + "번 회원 활동 현황 조회 성공", dto
-        ));
+                HttpStatus.OK.value(), userId + "번 회원 개설 활동 현황 조회 성공", dto));
     }
 
+    @GetMapping("/users/{userId}/participation-status")
+    @Operation(summary = "참여 현황 조회")
+    public ResponseEntity<ApiResponse<ParticipationStatusDto>> getParticipationStatus(
+            @PathVariable(name = "userId") Long userId
+    ) {
+        ParticipationStatusDto dto = adminUserManagingService.getParticipationStatus(userId);
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(), userId + "번 회원 참여 현황 조회 성공", dto
+        ));
+    }
 
 }

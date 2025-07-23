@@ -46,7 +46,6 @@ public class SettlementService {
     private final SettlementDetailResponseMapper detailMapper;
     private final SettlementDetailListResponseMapper listMapper;
 
-
     //프로젝트 아이디를 입력하면, 해당 프로젝트에 대한 정산 내역을 제공
     public SettlementDetailResponseDto getLatestPurchaseSettlementDetail(Long projectId) {
         Project project = projectService.findProjectById(projectId);
@@ -84,9 +83,42 @@ public class SettlementService {
         }
     }
 
-    // 관리자용: 특정 사용자의 정산 요청(Settlement) 총 개수
-    public long countByUser(Long userId) {
-        return settlementRepository.countByUserId(userId);
+
+    private SettlementDetailResponseDto calculateSettlementDto(
+            Project project,
+            LocalDateTime from,
+            LocalDateTime to,
+            List<Order> orders
+    ) {
+        Long pricingPlan = project.getPricingPlan().getPaymentFee();
+
+        long totalAmount = orders.stream().mapToLong(Order::getPaidAmount).sum();
+        double feeRate = pricingPlan / 100.0;
+        long fee = Math.round(totalAmount * feeRate);
+        long payout = totalAmount - fee;
+
+        return SettlementDetailResponseDto.builder()
+                .projectTitle(project.getTitle())
+                .periodStart(from)
+                .periodEnd(to)
+                .totalOrderAmount(totalAmount)
+                .feeAmount(fee)
+                .payoutAmount(payout)
+                .settlementStatus(SettlementStatus.WAITING)
+                .build();
+    }
+
+    // 특정 사용자의, 특정 타입(기부형/구매형) 프로젝트에 대한 정산 “요청” 횟수(= Settlement 레코드 수) 조회
+    public long countSettlementRequestsByType(Long userId, ProjectType projectType) {
+        return settlementRepository
+                .countByUserIdAndProject_ProjectType(userId, projectType);
+    }
+
+    // 특정 사용자의, 특정 타입 프로젝트에 대한 완료된(SETTLEMENT_STATUS = COMPLETED) 정산 “수익” 총액 조회
+    public long sumCompletedPayoutByType(Long userId, ProjectType projectType) {
+        Long sum = settlementRepository
+                .sumPayoutByUserIdAndProjectType(userId, projectType);
+        return sum != null ? sum : 0L;
     }
 
     private <T> T getSettlementPeriodAndCalculate(Project project, List<Settlement> settlements,
