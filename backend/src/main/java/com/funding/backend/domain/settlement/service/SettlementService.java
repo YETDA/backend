@@ -114,9 +114,5 @@ public class SettlementService {
                 .settlementStatus(SettlementStatus.WAITING)
                 .build();
     }
-
-    // 관리자용: 특정 사용자의 정산 요청(Settlement) 총 개수
-    public long countByUser(Long userId) {
-        return settlementRepository.countByUserId(userId);
-    }
+    
 }

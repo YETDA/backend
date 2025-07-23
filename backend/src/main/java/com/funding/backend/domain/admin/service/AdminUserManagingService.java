@@ -1,6 +1,5 @@
 package com.funding.backend.domain.admin.service;
 
-import com.funding.backend.domain.admin.dto.response.UserActivityStatusDto;
 import com.funding.backend.domain.admin.dto.response.UserCountDto;
 import com.funding.backend.domain.admin.dto.response.UserInfoDto;
 import com.funding.backend.domain.admin.dto.response.UserListDto;
@@ -10,7 +9,6 @@ import com.funding.backend.domain.settlement.service.SettlementService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.domain.user.service.UserService;
-import com.funding.backend.enums.ProjectType;
 import com.funding.backend.enums.RoleType;
 import com.funding.backend.enums.UserActive;
 import com.funding.backend.global.exception.BusinessLogicException;
@@ -83,26 +81,6 @@ public class AdminUserManagingService {
                 u.getApprovedReportCount(),
                 u.getUserActive(),
                 u.getImage()
-        );
-    }
-
-    public UserActivityStatusDto getUserActivityStatus(Long targetUserId) {
-        validAdmin();
-
-        long createdProjectsCount = projectService.countProjectsByUser(targetUserId);
-        long donatedProjectsCount = orderService.countDistinctByUserAndType(targetUserId, ProjectType.DONATION);
-        long donatedTotalAmount = orderService.sumPaidByUserAndType(targetUserId, ProjectType.DONATION);
-        long purchasedProjectsCount = orderService.countDistinctByUserAndType(targetUserId, ProjectType.PURCHASE);
-        long purchasedTotalAmount = orderService.sumPaidByUserAndType(targetUserId, ProjectType.PURCHASE);
-        long settlementRequestCount = settlementService.countByUser(targetUserId);
-
-        return new UserActivityStatusDto(
-                createdProjectsCount,
-                donatedProjectsCount,
-                donatedTotalAmount,
-                purchasedProjectsCount,
-                purchasedTotalAmount,
-                settlementRequestCount
         );
     }
 

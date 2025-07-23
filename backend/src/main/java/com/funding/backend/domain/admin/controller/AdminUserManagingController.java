@@ -1,6 +1,5 @@
 package com.funding.backend.domain.admin.controller;
 
-import com.funding.backend.domain.admin.dto.response.UserActivityStatusDto;
 import com.funding.backend.domain.admin.dto.response.UserCountDto;
 import com.funding.backend.domain.admin.dto.response.UserInfoDto;
 import com.funding.backend.domain.admin.dto.response.UserListDto;
@@ -90,20 +89,6 @@ public class AdminUserManagingController {
         UserInfoDto dto = adminUserManagingService.getUserInfoDetail(userId);
         return ResponseEntity.ok(ApiResponse.of(
                 HttpStatus.OK.value(), userId + "번 회원 상세 정보 조회 성공", dto
-        ));
-    }
-
-    @GetMapping("/users/{userId}/activity-status")
-    @Operation(
-            summary = "회원 활동 현황 조회",
-            description = "개설한 총 프로젝트 수, 후원한 프로젝트 수 & 총 후원 금액, 구매한 프로젝트 수 & 총 구매 금액, 정산 요청 횟수"
-    )
-    public ResponseEntity<ApiResponse<UserActivityStatusDto>> getActivityStatus(
-            @PathVariable(name = "userId") Long userId
-    ) {
-        UserActivityStatusDto dto = adminUserManagingService.getUserActivityStatus(userId);
-        return ResponseEntity.ok(ApiResponse.of(
-                HttpStatus.OK.value(), userId + "번 회원 활동 현황 조회 성공", dto
         ));
     }
 
