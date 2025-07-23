@@ -114,5 +114,17 @@ public class SettlementService {
                 .settlementStatus(SettlementStatus.WAITING)
                 .build();
     }
-    
+
+    // 특정 사용자의, 특정 타입(기부형/구매형) 프로젝트에 대한 정산 “요청” 횟수(= Settlement 레코드 수) 조회
+    public long countSettlementRequestsByType(Long userId, ProjectType projectType) {
+        return settlementRepository
+                .countByUserIdAndProject_ProjectType(userId, projectType);
+    }
+
+    // 특정 사용자의, 특정 타입 프로젝트에 대한 완료된(SETTLEMENT_STATUS = COMPLETED) 정산 “수익” 총액 조회
+    public long sumCompletedPayoutByType(Long userId, ProjectType projectType) {
+        Long sum = settlementRepository
+                .sumPayoutByUserIdAndProjectType(userId, projectType);
+        return sum != null ? sum : 0L;
+    }
 }

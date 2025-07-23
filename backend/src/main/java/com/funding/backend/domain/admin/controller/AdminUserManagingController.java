@@ -1,5 +1,6 @@
 package com.funding.backend.domain.admin.controller;
 
+import com.funding.backend.domain.admin.dto.response.CreatorActivityStatusDto;
 import com.funding.backend.domain.admin.dto.response.UserCountDto;
 import com.funding.backend.domain.admin.dto.response.UserInfoDto;
 import com.funding.backend.domain.admin.dto.response.UserListDto;
@@ -92,5 +93,14 @@ public class AdminUserManagingController {
         ));
     }
 
+    @GetMapping("/users/{userId}/creator-activity")
+    @Operation(summary = "개설 활동 현황 조회")
+    public ResponseEntity<ApiResponse<CreatorActivityStatusDto>> getCreatorActivityStatus(
+            @PathVariable(name = "userId") Long userId
+    ) {
+        CreatorActivityStatusDto dto = adminUserManagingService.getCreatorActivityStatus(userId);
+        return ResponseEntity.ok(ApiResponse.of(
+                HttpStatus.OK.value(), userId + "번 회원 개설 활동 현황 조회 성공", dto));
+    }
 
 }

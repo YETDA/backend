@@ -259,5 +259,10 @@ public class ProjectService {
 
     }
 
+    public long countByUserIdAndType(Long userId, ProjectType type) {
+        return projectRepository.countByUserIdAndProjectType(userId, type);
+    }
+
+
 }
 

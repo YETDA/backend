@@ -1,5 +1,6 @@
 package com.funding.backend.domain.admin.service;
 
+import com.funding.backend.domain.admin.dto.response.CreatorActivityStatusDto;
 import com.funding.backend.domain.admin.dto.response.UserCountDto;
 import com.funding.backend.domain.admin.dto.response.UserInfoDto;
 import com.funding.backend.domain.admin.dto.response.UserListDto;
@@ -9,6 +10,7 @@ import com.funding.backend.domain.settlement.service.SettlementService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.domain.user.service.UserService;
+import com.funding.backend.enums.ProjectType;
 import com.funding.backend.enums.RoleType;
 import com.funding.backend.enums.UserActive;
 import com.funding.backend.global.exception.BusinessLogicException;
@@ -84,5 +86,20 @@ public class AdminUserManagingService {
         );
     }
 
+    public CreatorActivityStatusDto getCreatorActivityStatus(Long userId) {
+        validAdmin();
+
+        long donationProjectsCreated = projectService.countByUserIdAndType(userId, ProjectType.DONATION);
+        long donationSettlementRequests = settlementService.countSettlementRequestsByType(userId, ProjectType.DONATION);
+        long donationTotalPayout = settlementService.sumCompletedPayoutByType(userId, ProjectType.DONATION);
+        long purchaseProjectsCreated = projectService.countByUserIdAndType(userId, ProjectType.PURCHASE);
+        long purchaseSettlementRequests = settlementService.countSettlementRequestsByType(userId, ProjectType.PURCHASE);
+        long purchaseTotalPayout = settlementService.sumCompletedPayoutByType(userId, ProjectType.PURCHASE);
+
+        return new CreatorActivityStatusDto(
+                donationProjectsCreated, donationSettlementRequests, donationTotalPayout,
+                purchaseProjectsCreated, purchaseSettlementRequests, purchaseTotalPayout
+        );
+    }
 
 }
