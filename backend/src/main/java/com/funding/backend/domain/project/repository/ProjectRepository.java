@@ -131,4 +131,15 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     );
 
 
+    //프로젝트 타입, 프로젝트 상태에 따른 유저 프로젝트 조회
+    @EntityGraph(attributePaths = "purchase")
+    Page<Project> findByUserIdAndProjectTypeAndProjectStatusIn(
+            Long userId,
+            ProjectType projectType,
+            List<ProjectStatus> projectStatuses,
+            Pageable pageable
+    );
+
+
+
 }
