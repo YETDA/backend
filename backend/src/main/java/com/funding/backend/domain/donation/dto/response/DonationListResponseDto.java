@@ -14,6 +14,8 @@ public class DonationListResponseDto {
     private String introduce;
     private Long sellCount;
     private ProjectStatus projectStatus;
+    private String hostName;
+    private String projectImageUrl;
 
     public DonationListResponseDto(Project project, Long sellCount){
         this.projectId = project.getId();
@@ -21,6 +23,9 @@ public class DonationListResponseDto {
         this.introduce = project.getIntroduce();
         this.projectStatus = project.getProjectStatus();
         this.sellCount = sellCount;
+        this.hostName = project.getUser().getName();
+        this.projectImageUrl = project.getProjectImage().isEmpty() ? null :
+            project.getProjectImage().getFirst().getImageUrl();
     }
 
 }

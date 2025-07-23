@@ -6,11 +6,14 @@ import lombok.Getter;
 
 @Getter
 public class PurchaseListResponseDto {
+
     private Long projectId;
     private String title;
     private String introduce;
     private Long sellCount;
     private ProjectStatus projectStatus;
+    private String hostName;
+    private String projectImageUrl;
 
     public PurchaseListResponseDto(Project project, Long sellCount){
         this.title = project.getTitle();
@@ -18,6 +21,9 @@ public class PurchaseListResponseDto {
         this.introduce = project.getIntroduce();
         this.sellCount = sellCount;
         this.projectStatus = project.getProjectStatus();
+        this.hostName = project.getUser().getName();
+        this.projectImageUrl = project.getProjectImage().isEmpty() ? null :
+            project.getProjectImage().getFirst().getImageUrl();
     }
 
 
