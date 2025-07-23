@@ -1,6 +1,7 @@
 package com.funding.backend.domain.admin.service;
 
 import com.funding.backend.domain.admin.dto.response.CreatorActivityStatusDto;
+import com.funding.backend.domain.admin.dto.response.ParticipationStatusDto;
 import com.funding.backend.domain.admin.dto.response.UserCountDto;
 import com.funding.backend.domain.admin.dto.response.UserInfoDto;
 import com.funding.backend.domain.admin.dto.response.UserListDto;
@@ -99,6 +100,20 @@ public class AdminUserManagingService {
         return new CreatorActivityStatusDto(
                 donationProjectsCreated, donationSettlementRequests, donationTotalPayout,
                 purchaseProjectsCreated, purchaseSettlementRequests, purchaseTotalPayout
+        );
+    }
+
+    public ParticipationStatusDto getParticipationStatus(Long targetUserId) {
+        validAdmin();
+
+        long donatedProjectsCount = orderService.countDistinctByUserAndType(targetUserId, ProjectType.DONATION);
+        long donatedTotalAmount = orderService.sumPaidByUserAndType(targetUserId, ProjectType.DONATION);
+        long purchasedProjectsCount = orderService.countDistinctByUserAndType(targetUserId, ProjectType.PURCHASE);
+        long purchasedTotalAmount = orderService.sumPaidByUserAndType(targetUserId, ProjectType.PURCHASE);
+
+        return new ParticipationStatusDto(
+                donatedProjectsCount, donatedTotalAmount,
+                purchasedProjectsCount, purchasedTotalAmount
         );
     }
 
