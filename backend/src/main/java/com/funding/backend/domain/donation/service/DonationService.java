@@ -45,137 +45,137 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class DonationService {
 
-  private final ProjectRepository projectRepository;
-  private final DonationRepository donationRepository;
+    private final ProjectRepository projectRepository;
+    private final DonationRepository donationRepository;
 
-  private final MainCategoryService mainCategoryService;
-  private final SubjectCategoryService subjectCategoryService;
-  private final ProjectSubCategoryService projectSubCategoryService;
-  private final UserService userService;
-  private final TokenService tokenService;
-  private final FollowService followService;
-  private final OrderService orderService;
+    private final MainCategoryService mainCategoryService;
+    private final SubjectCategoryService subjectCategoryService;
+    private final ProjectSubCategoryService projectSubCategoryService;
+    private final UserService userService;
+    private final TokenService tokenService;
+    private final FollowService followService;
+    private final OrderService orderService;
 
-  @Transactional
-  public Donation createDonation(Project project, DonationProjectDetail dto) {
+    @Transactional
+    public Donation createDonation(Project project, DonationProjectDetail dto) {
 
-    MainCategory mainCategory = mainCategoryService.findDonationCategoryById(dto.getMainCategoryId());
+        MainCategory mainCategory = mainCategoryService.findDonationCategoryById(dto.getMainCategoryId());
 
-    List<Long> subCategoryIds = dto.getSubCategoryIds();
-    List<SubjectCategory> subjectCategories = new ArrayList<>();
+        List<Long> subCategoryIds = dto.getSubCategoryIds();
+        List<SubjectCategory> subjectCategories = new ArrayList<>();
 
-    if (subCategoryIds != null && !subCategoryIds.isEmpty()) {
-      subjectCategories = subjectCategoryService.findCategoriesByIds(subCategoryIds);
+        if (subCategoryIds != null && !subCategoryIds.isEmpty()) {
+          subjectCategories = subjectCategoryService.findCategoriesByIds(subCategoryIds);
+        }
+
+        Donation donation = Donation.builder()
+            .project(project)
+            .mainCategory(mainCategory)
+            .startDate(dto.getStartDate().atStartOfDay())
+            .endDate(dto.getEndDate().atStartOfDay())
+            .gitAddress(dto.getGitAddress())
+            .deployAddress(dto.getDeployAddress())
+            .appStoreAddress(dto.getAppStoreAddress())
+            .build();
+
+        Donation savedDonation = donationRepository.save(donation);
+
+        if (!subjectCategories.isEmpty()) {
+          List<ProjectSubCategory> projectSubCategories = projectSubCategoryService.createProjectSubCategories(subjectCategories, savedDonation);
+          savedDonation.setProjectSubCategories(projectSubCategories);
+        }
+
+        return savedDonation;
     }
 
-    Donation donation = Donation.builder()
-        .project(project)
-        .mainCategory(mainCategory)
-        .startDate(dto.getStartDate().atStartOfDay())
-        .endDate(dto.getEndDate().atStartOfDay())
-        .gitAddress(dto.getGitAddress())
-        .deployAddress(dto.getDeployAddress())
-        .appStoreAddress(dto.getAppStoreAddress())
-        .build();
+    @Transactional
+    public void updateDonation(Project project, DonationUpdateRequestDto dto) {
+        Donation donation = findByProject(project);
 
-    Donation savedDonation = donationRepository.save(donation);
+        if (dto.getMainCategoryId() != null) {
+          MainCategory mainCategory = mainCategoryService.findDonationCategoryById(dto.getMainCategoryId());
+          donation.setMainCategory(mainCategory);
+        }
+        Optional.ofNullable(dto.getGitAddress())
+            .ifPresent(donation::setGitAddress);
 
-    if (!subjectCategories.isEmpty()) {
-      List<ProjectSubCategory> projectSubCategories = projectSubCategoryService.createProjectSubCategories(subjectCategories, savedDonation);
-      savedDonation.setProjectSubCategories(projectSubCategories);
+        donationRepository.save(donation);
     }
 
-    return savedDonation;
-  }
+    @Transactional
+    public void deleteDonation(Long projectId){
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(()->new BusinessLogicException(ExceptionCode.PROJECT_NOT_FOUND));
 
-  @Transactional
-  public void updateDonation(Project project, DonationUpdateRequestDto dto) {
-    Donation donation = findByProject(project);
+        Donation donation = donationRepository.findById(findByProject(project).getId())
+            .orElseThrow(()->new BusinessLogicException(ExceptionCode.DONATION_NOT_FOUND));
 
-    if (dto.getMainCategoryId() != null) {
-      MainCategory mainCategory = mainCategoryService.findDonationCategoryById(dto.getMainCategoryId());
-      donation.setMainCategory(mainCategory);
+        donationRepository.delete(donation);
+        projectRepository.delete(project);
     }
-    Optional.ofNullable(dto.getGitAddress())
-        .ifPresent(donation::setGitAddress);
 
-    donationRepository.save(donation);
-  }
-
-  @Transactional
-  public void deleteDonation(Long projectId){
-    Project project = projectRepository.findById(projectId)
-        .orElseThrow(()->new BusinessLogicException(ExceptionCode.PROJECT_NOT_FOUND));
-
-    Donation donation = donationRepository.findById(findByProject(project).getId())
-        .orElseThrow(()->new BusinessLogicException(ExceptionCode.PURCHASE_NOT_FOUND));
-
-    donationRepository.delete(donation);
-    projectRepository.delete(project);
-  }
-
-  public Donation findByProject(Project project){
-    return donationRepository.findByProject(project)
-        .orElseThrow(() -> new BusinessLogicException(ExceptionCode.DONATION_NOT_FOUND));
-  }
+    public Donation findByProject(Project project){
+        return donationRepository.findByProject(project)
+            .orElseThrow(() -> new BusinessLogicException(ExceptionCode.DONATION_NOT_FOUND));
+    }
 
 
-  public DonationProjectResponseDto createDonationProjectResponse(Project project) {
-    Donation detail = findByProject(project);
+    public DonationProjectResponseDto createDonationProjectResponse(Project project) {
+        Donation detail = findByProject(project);
 
-    List<DonationRewardResponseDto> rewardDtos = detail.getDonationRewardList().stream()
-        .map(DonationRewardResponseDto::new).toList();
-    List<DonationMilestoneResponseDto> milestoneDtos = detail.getDonationMilestoneList().stream()
-        .map(DonationMilestoneResponseDto::new).toList();
+        List<DonationRewardResponseDto> rewardDtos = detail.getDonationRewardList().stream()
+            .map(DonationRewardResponseDto::new).toList();
+        List<DonationMilestoneResponseDto> milestoneDtos = detail.getDonationMilestoneList().stream()
+            .map(DonationMilestoneResponseDto::new).toList();
 
-    User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
-    Long projectCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(), Arrays.asList(
-        ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
-    Long followerCount = followService.countFollowers(user.getId());
+        User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
+        Long projectCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(), Arrays.asList(
+            ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
+        Long followerCount = followService.countFollowers(user.getId());
 
-    return new DonationProjectResponseDto(
-        project, detail, rewardDtos, milestoneDtos, projectCount, followerCount
-    );
-  }
+        return new DonationProjectResponseDto(
+            project, detail, rewardDtos, milestoneDtos, projectCount, followerCount
+        );
+    }
 
 
-  public Page<DonationListResponseDto> getMyDonationProjectList(Pageable pageable){
-    User loginUser = userService.findUserById(tokenService.getUserIdFromAccessToken());
-    Page<Project> donationProjectList = projectRepository.findByUserIdAndProjectTypeWithDonation(
-        loginUser.getId(), ProjectType.DONATION, pageable);
+    public Page<DonationListResponseDto> getMyDonationProjectList(Pageable pageable){
+        User loginUser = userService.findUserById(tokenService.getUserIdFromAccessToken());
+        Page<Project> donationProjectList = projectRepository.findByUserIdAndProjectTypeWithDonation(
+            loginUser.getId(), ProjectType.DONATION, pageable);
 
-    return donationProjectList.map(project -> {
-      //후원 정산 구현 완료되면 수정할 예정(지금은 임시로)
-      Long sellCount = orderService.donationOrderCount(project);
-      return new DonationListResponseDto(project, sellCount);
-    });
-  }
+        return donationProjectList.map(project -> {
+          //후원 정산 구현 완료되면 수정할 예정(지금은 임시로)
+          Long sellCount = orderService.donationOrderCount(project);
+          return new DonationListResponseDto(project, sellCount);
+        });
+    }
 
-  public Page<DonationInfoResponseDto> getDonationMainCategoryList(
-      Long categoryId, Pageable pageable, ProjectStatus projectStatus) {
+    public Page<DonationInfoResponseDto> getDonationMainCategoryList(
+        Long categoryId, Pageable pageable, ProjectStatus projectStatus) {
 
-    MainCategory mainCategory = mainCategoryService.findDonationCategoryById(categoryId);
+        MainCategory mainCategory = mainCategoryService.findDonationCategoryById(categoryId);
 
-    Page<Project> projectPage = projectRepository.findByDonationCategoryAndStatus(
-        mainCategory.getId(), projectStatus, pageable);
+        Page<Project> projectPage = projectRepository.findByDonationCategoryAndStatus(
+            mainCategory.getId(), projectStatus, pageable);
 
-    // 프로젝트 ID 리스트 추출
-    List<Long> projectIds = projectPage.stream()
-        .map(Project::getId)
-        .toList();
+        // 프로젝트 ID 리스트 추출
+        List<Long> projectIds = projectPage.stream()
+            .map(Project::getId)
+            .toList();
 
-    // ID별 판매 수량 Map 조회
-    List<Object[]> orderCounts = orderService.countOrdersByProjectIds(projectIds);
+        // ID별 판매 수량 Map 조회
+        List<Object[]> orderCounts = orderService.countOrdersByProjectIds(projectIds);
 
-    Map<Long, Long> projectIdToSellCount = orderCounts.stream()
-        .collect(Collectors.toMap(
-            row -> (Long) row[0],
-            row -> (Long) row[1]
-        ));
+        Map<Long, Long> projectIdToSellCount = orderCounts.stream()
+            .collect(Collectors.toMap(
+                row -> (Long) row[0],
+                row -> (Long) row[1]
+            ));
 
-    // DTO 변환
-    //Long sellCount = projectIdToSellCount.getOrDefault(project.getId(), 0L);
-    return projectPage.map(DonationInfoResponseDto::new);
-  }
+        // DTO 변환
+        //Long sellCount = projectIdToSellCount.getOrDefault(project.getId(), 0L);
+        return projectPage.map(DonationInfoResponseDto::new);
+      }
 
 }
