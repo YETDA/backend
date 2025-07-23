@@ -263,6 +263,16 @@ public class ProjectService {
         return projectRepository.countByUserIdAndProjectType(userId, type);
     }
 
+    public Page<Project> findByUserIdAndProjectTypeAndProjectStatusIn(Long userId, Pageable pageable
+            ,ProjectType projectType,List<ProjectStatus> projectStatuses){
+        return projectRepository.findByUserIdAndProjectTypeAndProjectStatusIn(
+                userId,
+                projectType,
+                projectStatuses,
+                pageable
+        );
+    }
+
 
 }
 
