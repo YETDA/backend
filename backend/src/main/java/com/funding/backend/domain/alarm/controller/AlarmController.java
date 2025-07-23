@@ -36,5 +36,4 @@ public class AlarmController {
         return alarmService.createSseConnection();
     }
 
-
 }

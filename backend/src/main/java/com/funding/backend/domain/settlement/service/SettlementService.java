@@ -4,11 +4,16 @@ import com.funding.backend.domain.order.entity.Order;
 import com.funding.backend.domain.order.service.OrderService;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.service.ProjectService;
+import com.funding.backend.domain.settlement.dto.response.SettlementDetailListResponseDto;
 import com.funding.backend.domain.settlement.dto.response.SettlementDetailResponseDto;
 import com.funding.backend.domain.settlement.entity.Settlement;
+import com.funding.backend.domain.settlement.mapper.SettlementDetailListResponseMapper;
+import com.funding.backend.domain.settlement.mapper.SettlementDetailResponseMapper;
+import com.funding.backend.domain.settlement.mapper.SettlementDtoMapper;
 import com.funding.backend.domain.settlement.repository.SettlementRepository;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.service.UserService;
+import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
 import com.funding.backend.enums.SettlementStatus;
 import com.funding.backend.global.exception.BusinessLogicException;
@@ -19,6 +24,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,47 +43,34 @@ public class SettlementService {
     private final UserService userService;
     private final TokenService tokenService;
 
+    private final SettlementDetailResponseMapper detailMapper;
+    private final SettlementDetailListResponseMapper listMapper;
+
 
     //프로젝트 아이디를 입력하면, 해당 프로젝트에 대한 정산 내역을 제공
     public SettlementDetailResponseDto getLatestPurchaseSettlementDetail(Long projectId) {
         Project project = projectService.findProjectById(projectId);
-        User loginUser = userService.findUserById(tokenService.getUserIdFromAccessToken());
+        User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
+        validPurchaseSettlement(project, user);
+        List<Settlement> settlements = settlementRepository.findAllByProject(project);
 
-        //해당 메서드 사용하기 위한 유효성 검사 로직
-        validPurchaseSettlement(project, loginUser);
-        List<Settlement> settlementList = settlementRepository.findAllByProject(project);
-
-        if (settlementList == null || settlementList.isEmpty()) {
-            //정산 내역이 존재하지 않는다면
-            return getFromProjectCreation(project);
-        } else {
-            //정산 내역이 존재한다면
-            return getFromLatestSettlement(project, settlementList);
-        }
+        return getSettlementPeriodAndCalculate(project, settlements, detailMapper);
     }
 
+    //사용자의 구매형 프로젝트 정산 리스트 조회
+    public Page<SettlementDetailListResponseDto> getPurchaseSettlementDetailsListByUser(Pageable pageable) {
+        User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
 
-    //정산 내역이 존재하지 않는다면 -> 프로젝트 생성일 기준, 현재 날짜 기준으로 제공
-    private SettlementDetailResponseDto getFromProjectCreation(Project project) {
-        LocalDateTime from = project.getCreatedAt();
-        LocalDateTime to = LocalDateTime.now();
+        Page<Project> projects = projectService.findByUserIdAndProjectTypeAndProjectStatusIn(
+                user.getId(), pageable, ProjectType.PURCHASE,
+                List.of(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED)
+        );
 
-        List<Order> orders = orderService.findByProjectAndCreatedAtBetween(project, from, to, TossPaymentStatus.DONE);
-        return calculateSettlementDto(project, from, to, orders); // isPreview = true
-    }
-
-    //정산 내역이 존재한다면
-    private SettlementDetailResponseDto getFromLatestSettlement(Project project, List<Settlement> settlements) {
-        //이전 정산내역의 마지막 정산 날짜를 계산하고
-        Settlement latest = settlementRepository.findTopByProjectOrderByPeriodEndDesc(project)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.SETTLEMENT_NOT_FOUND));
-
-        // 나노초 뒤 부터 주문 내역 계산
-        LocalDateTime from = latest.getPeriodEnd().plusNanos(1);
-        LocalDateTime to = LocalDateTime.now();
-
-        List<Order> orders = orderService.findByProjectAndCreatedAtBetween(project, from, to, TossPaymentStatus.DONE);
-        return calculateSettlementDto(project, from, to, orders);
+        return projects.map(project -> {
+            validPurchaseSettlement(project, user);
+            List<Settlement> settlements = settlementRepository.findAllByProject(project);
+            return getSettlementPeriodAndCalculate(project, settlements, listMapper);
+        });
     }
 
 
@@ -90,33 +84,27 @@ public class SettlementService {
         }
     }
 
-
-    private SettlementDetailResponseDto calculateSettlementDto(
-            Project project,
-            LocalDateTime from,
-            LocalDateTime to,
-            List<Order> orders
-    ) {
-        Long pricingPlan = project.getPricingPlan().getPaymentFee();
-
-        long totalAmount = orders.stream().mapToLong(Order::getPaidAmount).sum();
-        double feeRate = pricingPlan / 100.0;
-        long fee = Math.round(totalAmount * feeRate);
-        long payout = totalAmount - fee;
-
-        return SettlementDetailResponseDto.builder()
-                .projectTitle(project.getTitle())
-                .periodStart(from)
-                .periodEnd(to)
-                .totalOrderAmount(totalAmount)
-                .feeAmount(fee)
-                .payoutAmount(payout)
-                .settlementStatus(SettlementStatus.WAITING)
-                .build();
-    }
-
     // 관리자용: 특정 사용자의 정산 요청(Settlement) 총 개수
     public long countByUser(Long userId) {
         return settlementRepository.countByUserId(userId);
+    }
+
+    private <T> T getSettlementPeriodAndCalculate(Project project, List<Settlement> settlements,
+                                                  SettlementDtoMapper<T> mapper) {
+        LocalDateTime from = (settlements == null || settlements.isEmpty())
+                ? project.getCreatedAt()
+                : settlementRepository.findTopByProjectOrderByPeriodEndDesc(project)
+                        .orElseThrow(() -> new BusinessLogicException(ExceptionCode.SETTLEMENT_NOT_FOUND))
+                        .getPeriodEnd().plusNanos(1);
+
+        LocalDateTime to = LocalDateTime.now();
+        List<Order> orders = orderService.findByProjectAndCreatedAtBetween(project, from, to, TossPaymentStatus.DONE);
+
+        long totalAmount = orders.stream().mapToLong(Order::getPaidAmount).sum();
+        double feeRate = project.getPricingPlan().getPaymentFee() / 100.0;
+        long fee = Math.round(totalAmount * feeRate);
+        long payout = totalAmount - fee;
+
+        return mapper.map(project, from, to, totalAmount, fee, payout);
     }
 }
