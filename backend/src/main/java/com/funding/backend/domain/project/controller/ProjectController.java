@@ -5,6 +5,7 @@ import com.funding.backend.domain.project.dto.response.ProjectCountResponseDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
+import com.funding.backend.domain.project.service.ProjectViewCountService;
 import com.funding.backend.enums.PopularProjectSortType;
 import com.funding.backend.enums.ProjectTypeFilter;
 import com.funding.backend.global.utils.ApiResponse;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final ProjectViewCountService projectViewCountService;
 
     @GetMapping("/{projectId}")
     @Operation(
@@ -91,6 +93,17 @@ public class ProjectController {
                 .status(HttpStatus.OK)
                 .body(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 검색 성공", response));
     }
+
+
+    @Operation(summary = "프로젝트 조회수 조회", description = "해당 프로젝트의 조회수를 반환합니다.")
+    @GetMapping("/{projectId}/view-count")
+    public ResponseEntity<ApiResponse<Void>> getProjectViewCount(@PathVariable Long projectId) {
+        projectViewCountService.viewCountProject(projectId);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 조회수 조회 성공"));
+    }
+
 
 
 

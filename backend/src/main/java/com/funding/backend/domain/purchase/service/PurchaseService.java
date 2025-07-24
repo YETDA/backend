@@ -3,6 +3,8 @@ package com.funding.backend.domain.purchase.service;
 import com.funding.backend.domain.follow.service.FollowService;
 import com.funding.backend.domain.order.service.OrderService;
 import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
+import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
+import com.funding.backend.domain.project.service.ProjectViewCountService;
 import com.funding.backend.domain.purchase.dto.response.PurchaseInfoResponseDto;
 import com.funding.backend.domain.purchase.dto.response.PurchaseListResponseDto;
 import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionResponseDto;
@@ -47,11 +49,10 @@ public class PurchaseService {
     private final PurchaseCategoryService purchaseCategoryService;
 
     private final OrderService orderService;
-    private final PurchaseOptionService purchaseOptionService;
     private final UserService userService;
     private final TokenService tokenService;
     private final FollowService followService;
-    private final ApplicationEventPublisher eventPublisher;
+    private final ProjectViewCountService projectViewCountService;
 
     @Transactional
     public Purchase createPurchase(Project project, PurchaseProjectDetail dto){
@@ -124,10 +125,11 @@ public class PurchaseService {
         User user = userService.findUserById(project.getUser().getId());
         Long projectCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(), Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
         Long followerCount = followService.countFollowers(user.getId());
+        Long viewCount = projectViewCountService.viewCountProject(project.getId());
 
         //구매 프로젝트 승인 알림 생성
         return new PurchaseProjectResponseDto(
-                project, detail, optionDtos , projectCount, followerCount
+                project, detail, optionDtos , projectCount, followerCount, viewCount
         );
 
     }

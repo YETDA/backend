@@ -13,7 +13,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class DonationProjectResponseDto implements ProjectResponseDto {
+public class DonationProjectResponseDto extends ProjectResponseDto {
     private Long projectId;
     private String title;
     private String introduce;
@@ -32,12 +32,14 @@ public class DonationProjectResponseDto implements ProjectResponseDto {
     private Long userId;
     private String name;
     private String userProfileImage;
+    private Long viewCount;
     private Long projectCount;
     private Long followerCount;
     private String userIntroduce;
     private String email;
 
-    public DonationProjectResponseDto(Project project, Donation donation, Long projectCount, Long followerCount){
+    public DonationProjectResponseDto(Project project, Donation donation,
+        Long projectCount, Long followerCount, Long viewCount){
 
         this.projectId = project.getId();
         this.title = project.getTitle();
@@ -70,6 +72,7 @@ public class DonationProjectResponseDto implements ProjectResponseDto {
         this.email = project.getUser().getEmail();
         this.projectCount = projectCount;
         this.followerCount= followerCount;
+        this.viewCount = viewCount;
 
     }
 }

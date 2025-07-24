@@ -11,8 +11,10 @@ import com.funding.backend.domain.mainCategory.entity.MainCategory;
 import com.funding.backend.domain.mainCategory.service.MainCategoryService;
 import com.funding.backend.domain.order.service.OrderService;
 import com.funding.backend.domain.project.dto.response.DonationProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
+import com.funding.backend.domain.project.service.ProjectViewCountService;
 import com.funding.backend.domain.projectSubCategory.entity.ProjectSubCategory;
 import com.funding.backend.domain.projectSubCategory.service.ProjectSubCategoryService;
 import com.funding.backend.domain.subjectCategory.entity.SubjectCategory;
@@ -53,6 +55,7 @@ public class DonationService {
     private final TokenService tokenService;
     private final FollowService followService;
     private final OrderService orderService;
+    private final ProjectViewCountService projectViewCountService;
 
     @Transactional
     public Donation createDonation(Project project, DonationProjectDetail dto) {
@@ -127,9 +130,10 @@ public class DonationService {
         Long projectCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(), Arrays.asList(
             ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
         Long followerCount = followService.countFollowers(user.getId());
+        Long viewCount = projectViewCountService.viewCountProject(project.getId());
 
         return new DonationProjectResponseDto(
-            project, detail, projectCount, followerCount
+            project, detail, projectCount, followerCount, viewCount
         );
     }
 
