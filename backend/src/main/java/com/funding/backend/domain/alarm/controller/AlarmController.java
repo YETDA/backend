@@ -127,7 +127,7 @@ public class AlarmController {
     }
 
 
-    @DeleteMapping("/user")
+    @DeleteMapping("/user/status")
     @Operation(
             summary = "읽음 상태(readStatus)에 따른 알림 삭제",
             description = """
