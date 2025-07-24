@@ -1,5 +1,7 @@
 package com.funding.backend.domain.donation.dto.request;
 
+import com.funding.backend.domain.projectSubCategory.entity.ProjectSubCategory;
+import com.funding.backend.domain.subjectCategory.entity.SubjectCategory;
 import com.funding.backend.enums.ProjectType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -54,6 +56,8 @@ public class DonationUpdateRequestDto {
   private String deployAddress;
 
   private String gitAddress;
+
+  private String appStoreAddress;
 
 
 }
