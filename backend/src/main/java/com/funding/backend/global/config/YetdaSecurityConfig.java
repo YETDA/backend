@@ -150,7 +150,8 @@ public class YetdaSecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:3000", "https://yetda.kro.kr"
                 ,"https://yetdatest.kro.kr","https://yetdatest.kro.kr:3000", "https://localhost:3000"
-                ,"https://www.yetda.booktri.site", "https://www.yetfront.booktri.site"));
+                ,"https://www.yetda.booktri.site", "https://www.yetfront.booktri.site",
+                "https://port-next-frontend-m61t9knhb5c1f236.sel4.cloudtype.app"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.addAllowedHeader("*");
         config.setAllowCredentials(true); // 💡 쿠키 포함 허용 필수
