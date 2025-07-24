@@ -3,8 +3,6 @@ package com.funding.backend.domain.donation.service;
 import com.funding.backend.domain.donation.dto.request.DonationUpdateRequestDto;
 import com.funding.backend.domain.donation.dto.response.DonationResponseDto;
 import com.funding.backend.domain.donation.entity.Donation;
-import com.funding.backend.domain.donationMilestone.service.DonationMilestoneService;
-import com.funding.backend.domain.donationReward.service.DonationRewardService;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
@@ -42,8 +40,6 @@ public class DonationProjectService {
     private final PricingService pricingService;
     private final DonationService donationService;
     private final PurchaseService purchaseService;
-    private final DonationRewardService donationRewardService;
-    private final DonationMilestoneService donationMilestoneService;
 
     private final TokenService tokenService;
     private final UserService userService;
@@ -76,18 +72,6 @@ public class DonationProjectService {
 
         //후원 프로젝트 저장
         Donation createDonation = donationService.createDonation(saveProject, dto.getDonationDetail());
-
-        //마일스톤 저장
-        if (dto.getDonationDetail().getDonationMilestoneList() != null &&
-            !dto.getDonationDetail().getDonationMilestoneList().isEmpty()) {
-            donationMilestoneService.createDonationMilestoneByProject(createDonation.getId(), dto);
-        }
-
-        // 리워드 저장
-        if (dto.getDonationDetail().getDonationRewardList() != null &&
-            !dto.getDonationDetail().getDonationRewardList().isEmpty()) {
-            donationRewardService.createDonationRewardForProject(createDonation.getId(), dto);
-        }
 
         return new DonationResponseDto(saveProject.getId());
     }

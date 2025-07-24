@@ -1,5 +1,7 @@
 package com.funding.backend.domain.donation.dto.request;
 
+import com.funding.backend.domain.projectSubCategory.entity.ProjectSubCategory;
+import com.funding.backend.domain.subjectCategory.entity.SubjectCategory;
 import com.funding.backend.enums.ProjectType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -39,7 +41,7 @@ public class DonationUpdateRequestDto {
   private Long mainCategoryId;
 
   @Size(max = 2, message = "상세 카테고리는 최대 2개까지 선택 가능합니다.")
-  private List<Long> subCategoryIds;
+  private List<SubjectCategory> subCategoryIds;
 
   @NotNull(message = "목표 금액은 필수입니다.")
   private Long priceGoal;
@@ -54,6 +56,8 @@ public class DonationUpdateRequestDto {
   private String deployAddress;
 
   private String gitAddress;
+
+  private String appStoreAddress;
 
 
 }
