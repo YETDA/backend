@@ -1,24 +1,16 @@
 package com.funding.backend.domain.alarm.service.alert;
 
 
-import com.funding.backend.domain.alarm.dto.request.AlarmDto;
+import com.funding.backend.domain.alarm.dto.response.AlarmDto;
 import com.funding.backend.domain.alarm.enums.AlarmType;
-import com.funding.backend.domain.alarm.event.context.NewPurchaseProjectContext;
 import com.funding.backend.domain.alarm.event.context.NewSuccessPurchaseContext;
 import com.funding.backend.domain.alarm.service.AlarmService;
 import com.funding.backend.domain.alarm.strategy.AlarmStrategy;
 import com.funding.backend.domain.alarm.strategy.factory.AlarmStrategyFactory;
-import com.funding.backend.domain.order.entity.Order;
-import com.funding.backend.domain.pricingPlan.entity.PricingPlan;
-import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.enums.ProjectStatus;
-import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.toss.enums.TossPaymentStatus;
-import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
