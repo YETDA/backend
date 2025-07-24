@@ -106,6 +106,13 @@ public enum ExceptionCode {
     REVIEW_ACCESS_DENIED(403, "접근 권한이 없습니다."),
     REVIEW_ALREADY_EXISTS(409, "이미 후기가 존재합니다."),
 
+    //신고 예외 처리
+    REPORT_NOT_FOUND(404, "존재하지 않는 신고 내역입니다."),
+    ALREADY_REPORTED(400, "해당 프로젝트는 이미 신고하셨습니다."),
+    ALREADY_APPROVED(400, "이미 승인 처리된 신고입니다."),
+    REPORT_ACCESS_DENIED(403, "해당 신고에 대한 접근 권한이 없습니다."),
+    REPORT_APPROVE_LIMIT_EXCEEDED(403, "신고 누적으로 사용자가 정지되었습니다."),
+
     //요금제 예외 처리
     PRICING_PLAN_NOT_FOUND(404, "존재하지 않는 요금제 입니다"),
 
