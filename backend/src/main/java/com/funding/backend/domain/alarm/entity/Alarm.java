@@ -7,6 +7,8 @@ import com.funding.backend.global.auditable.Auditable;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "alarms")
@@ -25,7 +27,7 @@ public class Alarm extends Auditable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "alarm_type", nullable = false, length = 30)
-    private AlarmType alarmType; // 승인 상태
+    private AlarmType alarmType;
 
     @Column(name = "message", columnDefinition = "TEXT", nullable = false)
     private String message;
@@ -36,6 +38,7 @@ public class Alarm extends Auditable {
 
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id")
     private User user;
 

@@ -38,6 +38,8 @@ public class TokenService {
             for (Cookie cookie : request.getCookies()) {
                 if ("accessToken".equals(cookie.getName())) {
                     return cookie.getValue();
+                }else if("refreshToken".equals(cookie.getName())){
+                    return cookie.getValue();
                 }
             }
         }
@@ -52,6 +54,11 @@ public class TokenService {
 
     // 요청에서 RefreshToken을 추출
     public String getRefreshToken() {
+        String authorization = request.getHeader("Authorization");
+        if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
+            return authorization.substring(7); // "Bearer " 뒤의 토큰 값 추출
+        }
+
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("refreshToken".equals(cookie.getName())) {

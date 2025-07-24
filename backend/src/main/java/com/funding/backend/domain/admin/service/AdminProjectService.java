@@ -9,18 +9,16 @@ import com.funding.backend.enums.RoleType;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.security.jwt.TokenService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class AdminService {
+public class AdminProjectService {
 
     private final TokenService tokenService;
     private final UserService userService;
@@ -38,7 +36,8 @@ public class AdminService {
         return true;
     }
 
-    public Page<AuditProjectResponseDto> getAllProjectsByTypsAndStatus(ProjectType type, List<ProjectStatus> statuses, Pageable pageable) {
+    public Page<AuditProjectResponseDto> getAllProjectsByTypsAndStatus(ProjectType type, List<ProjectStatus> statuses,
+                                                                       Pageable pageable) {
         validAdmin();
 
         return projectService.findProjectsByTypeAndStatus(type, statuses, pageable);
@@ -75,4 +74,5 @@ public class AdminService {
         validAdmin();
         projectService.updateAllProjectStatus(ProjectStatus.UNDER_AUDIT, ProjectStatus.REJECTED);
     }
+
 }

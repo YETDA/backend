@@ -1,15 +1,16 @@
 package com.funding.backend.domain.project.service;
 
+import com.funding.backend.domain.alarm.event.context.NewPurchaseProjectContext;
 import com.funding.backend.domain.donation.service.DonationProjectService;
 import com.funding.backend.domain.donation.service.DonationService;
 import com.funding.backend.domain.pricingPlan.repository.PricingRepository;
 import com.funding.backend.domain.pricingPlan.service.PricingService;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
-import com.funding.backend.domain.project.dto.response.ProjectCountResponseDto;
-import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.AuditProjectResponseDto;
-import com.funding.backend.domain.project.entity.Project;
+import com.funding.backend.domain.project.dto.response.ProjectCountResponseDto;
 import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
+import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
+import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.domain.purchase.dto.request.PurchaseUpdateRequestDto;
@@ -20,22 +21,24 @@ import com.funding.backend.domain.purchaseOption.service.PurchaseOptionService;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.domain.user.service.UserService;
-import com.funding.backend.enums.*;
+import com.funding.backend.enums.PopularProjectSortType;
 import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
+import com.funding.backend.enums.ProjectTypeFilter;
 import com.funding.backend.global.exception.BusinessLogicException;
 import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.utils.s3.ImageService;
 import com.funding.backend.security.jwt.TokenService;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.*;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +56,7 @@ public class ProjectService {
     private final UserRepository userRepository;
     private final PurchaseOptionService purchaseOptionService;
     private final DonationProjectService donationProjectService;
+    private final ApplicationEventPublisher eventPublisher;
 
     private final TokenService tokenService;
     private final UserService userService;
@@ -81,13 +85,17 @@ public class ProjectService {
         }
         project.setProjectImage(projectImage);
 
-
         //구매 프로젝트 정보 저장
         Purchase createPurchase = purchaseService.createPurchase(saveProject, dto.getPurchaseDetail());
         // 옵션 저장
-        if (dto.getPurchaseDetail().getPurchaseOptionList() != null && !dto.getPurchaseDetail().getPurchaseOptionList().isEmpty()) {
+        if (dto.getPurchaseDetail().getPurchaseOptionList() != null && !dto.getPurchaseDetail().getPurchaseOptionList()
+                .isEmpty()) {
             purchaseOptionService.createPurchaseOptionForProject(createPurchase.getId(), dto);
         }
+
+        //알림 생성
+        eventPublisher.publishEvent(new NewPurchaseProjectContext(loginUser.getId(), project.getTitle()
+                , project.getProjectStatus(), project.getProjectType(), project.getPricingPlan()));
 
         return new PurchaseResponseDto(saveProject.getId());
     }
@@ -108,11 +116,13 @@ public class ProjectService {
 
         // 프로젝트 상세 내용 업데이트
         project.setContent(purchaseUpdateRequestDto.getContent());
-
-        // 이미지 업데이트
-        List<ProjectImage> updatedImages = imageService.updateImageList
-                (project.getProjectImage(), purchaseUpdateRequestDto.getContentImage(), project);
-        project.setProjectImage(updatedImages);
+        if (purchaseUpdateRequestDto.getContentImage() != null && !purchaseUpdateRequestDto.getContentImage()
+                .isEmpty()) {
+            // 이미지 업데이트
+            List<ProjectImage> updatedImages = imageService.updateImageList
+                    (project.getProjectImage(), purchaseUpdateRequestDto.getContentImage(), project);
+            project.setProjectImage(updatedImages);
+        }
         projectRepository.save(project);
         // Purchase 관련 필드 업데이트
         purchaseService.updatePurchase(project, purchaseUpdateRequestDto);
@@ -154,7 +164,8 @@ public class ProjectService {
         projectRepository.delete(project);
     }
 
-    public Page<ProjectInfoResponseDto> getPopularProjects(ProjectTypeFilter requestProjectType, PopularProjectSortType requestSortType, Pageable pageable) {
+    public Page<ProjectInfoResponseDto> getPopularProjects(ProjectTypeFilter requestProjectType,
+                                                           PopularProjectSortType requestSortType, Pageable pageable) {
         Page<Project> projects;
 
         if (requestSortType == PopularProjectSortType.LIKE) {
@@ -177,8 +188,7 @@ public class ProjectService {
             } else {
                 throw new BusinessLogicException(ExceptionCode.INVALID_PROJECT_SEARCH_TYPE);
             }
-        }
-        else {
+        } else {
             // 다른 정렬 타입이 추가될 경우를 대비한 확장 지점
             throw new BusinessLogicException(ExceptionCode.INVALID_PROJECT_SEARCH_TYPE);
         }
@@ -186,7 +196,8 @@ public class ProjectService {
         return projects.map(ProjectInfoResponseDto::new);
     }
 
-    public Page<AuditProjectResponseDto> findProjectsByTypeAndStatus(ProjectType type, List<ProjectStatus> statuses, Pageable pageable) {
+    public Page<AuditProjectResponseDto> findProjectsByTypeAndStatus(ProjectType type, List<ProjectStatus> statuses,
+                                                                     Pageable pageable) {
         return projectRepository.findByTypeAndStatuses(type, statuses, pageable).map(AuditProjectResponseDto::new);
     }
 
@@ -234,17 +245,32 @@ public class ProjectService {
         return projectRepository.countByUserIdAndProjectStatusIn(userId, statuses);
     }
 
-    public ProjectCountResponseDto countProject(){
-       User user =  userService.findUserById(tokenService.getUserIdFromAccessToken());
-       Long allCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(),
-               Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
-       Long projectCount =projectRepository.countByUserIdAndProjectTypeAndProjectStatusIn(user.getId(),
-               ProjectType.PURCHASE,Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
-        Long donationCount =projectRepository.countByUserIdAndProjectTypeAndProjectStatusIn(user.getId(),
-                ProjectType.DONATION,Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
+    public ProjectCountResponseDto countProject() {
+        User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
+        Long allCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(),
+                Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
 
-        return new ProjectCountResponseDto(allCount,donationCount,projectCount);
+        Long projectCount = projectRepository.countByUserIdAndProjectTypeAndProjectStatusIn(user.getId(),
+                ProjectType.PURCHASE, Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
 
+        Long donationCount = projectRepository.countByUserIdAndProjectTypeAndProjectStatusIn(user.getId(),
+                ProjectType.DONATION, Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
+        return new ProjectCountResponseDto(allCount, donationCount, projectCount);
+
+    }
+
+    public long countByUserIdAndType(Long userId, ProjectType type) {
+        return projectRepository.countByUserIdAndProjectType(userId, type);
+    }
+
+    public Page<Project> findByUserIdAndProjectTypeAndProjectStatusIn(Long userId, Pageable pageable
+            ,ProjectType projectType,List<ProjectStatus> projectStatuses){
+        return projectRepository.findByUserIdAndProjectTypeAndProjectStatusIn(
+                userId,
+                projectType,
+                projectStatuses,
+                pageable
+        );
     }
 
 
