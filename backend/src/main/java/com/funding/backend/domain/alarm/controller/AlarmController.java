@@ -127,6 +127,27 @@ public class AlarmController {
     }
 
 
+    @DeleteMapping("/user")
+    @Operation(
+            summary = "읽음 상태(readStatus)에 따른 알림 삭제",
+            description = """
+            로그인한 사용자의 알림 중, readStatus 조건에 따라 알림을 삭제합니다.
+            - readStatus = true  → 읽은 알림만 삭제
+            - readStatus = false → 읽지 않은 알림만 삭제
+            - readStatus 생략 시 삭제되지 않음 (400 Bad Request 응답 예상)
+        """
+    )
+    public ResponseEntity<ApiResponse<Void>> deleteAlarmsByReadStatus(
+            @RequestParam Boolean readStatus
+    ) {
+        alarmService.deleteAlarmsByReadStatus(readStatus);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "조건부 알림 삭제 성공"));
+    }
+
+
+
 
 
 }

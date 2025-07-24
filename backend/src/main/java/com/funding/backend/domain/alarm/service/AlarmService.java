@@ -125,16 +125,24 @@ public class AlarmService {
         }
 
     }
-
+    @Transactional
     public void deleteAlarm(Long alarmId){
         Alarm alarm = findAlarmById(alarmId);
         validUser(alarm);
         alarmRepository.delete(alarm);
     }
 
+    @Transactional
     public void deleteAllUserAlarms(){
         User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
         alarmRepository.deleteAlarmByUser(user);
+    }
+
+    @Transactional
+    public void deleteAlarmsByReadStatus(boolean readStatus){
+        User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
+        alarmRepository.deleteAlarmByUserAndReadStatus(user, readStatus);
+
     }
 
 
