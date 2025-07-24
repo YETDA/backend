@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/project")
 @Validated
 @AllArgsConstructor
-@Tag(name = "구매 주문 API", description = "구매형 프로젝트의 주문/결제 요청을 처리합니다.")
+@Tag(name = "전체 프로젝트 관리 API", description = "전체 프로젝트의 조회 및 검색을 처리합니다.")
 @Slf4j
 public class ProjectController {
 

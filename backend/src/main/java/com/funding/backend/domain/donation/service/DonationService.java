@@ -124,18 +124,44 @@ public class DonationService {
 
 
     public DonationProjectResponseDto createDonationProjectResponse(Project project) {
+        if (project.getProjectStatus().equals(ProjectStatus.UNDER_AUDIT)) {
+            log.info("심사중 프로젝트 진입");
+            User currentUser = null;
+            try {
+                Long currentUserId = tokenService.getUserIdFromAccessToken();
+                currentUser = userService.findUserById(currentUserId);
+            } catch (Exception e) {
+                throw new BusinessLogicException(ExceptionCode.PROJECT_VIEW_FORBIDDEN_DURING_AUDIT);
+            }
+            if (!project.getUser().equals(currentUser)) {
+                throw new BusinessLogicException(ExceptionCode.PROJECT_VIEW_FORBIDDEN_DURING_AUDIT);
+            }
+        }
+
         Donation detail = findByProject(project);
 
-        User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
-        Long projectCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(), Arrays.asList(
-            ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
-        Long followerCount = followService.countFollowers(user.getId());
+        // 프로젝트 소유자 기준으로 user 조회
+        User projectOwner = userService.findUserById(project.getUser().getId());
+
+        Long projectCount = 0L;
+        Long followerCount = 0L;
+        try {
+            Long currentUserId = tokenService.getUserIdFromAccessToken();
+            User currentUser = userService.findUserById(currentUserId);
+            projectCount = projectRepository.countByUserIdAndProjectStatusIn(currentUser.getId(),
+                Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
+            followerCount = followService.countFollowers(currentUser.getId());
+        } catch (Exception e) {
+            // 비로그인 상태일 경우 기본값 유지 (0)
+        }
+
         Long viewCount = projectViewCountService.viewCountProject(project.getId());
 
         return new DonationProjectResponseDto(
             project, detail, projectCount, followerCount, viewCount
         );
     }
+
 
 
     public Page<DonationListResponseDto> getMyDonationProjectList(Pageable pageable){
