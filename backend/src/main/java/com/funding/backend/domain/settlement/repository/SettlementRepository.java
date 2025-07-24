@@ -2,7 +2,9 @@ package com.funding.backend.domain.settlement.repository;
 
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.settlement.entity.Settlement;
+import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.enums.ProjectType;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,6 +38,11 @@ public interface SettlementRepository extends JpaRepository<Settlement, Long> {
             @Param("userId") Long userId,
             @Param("projectType") ProjectType projectType
     );
+
+    List<Settlement> findAllByUserAndSettledAtBetween(User user, LocalDateTime start, LocalDateTime end);
+
+
+
 
 
 }

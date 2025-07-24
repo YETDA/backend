@@ -104,7 +104,7 @@ public class DonationController {
     @GetMapping("/me/list")
     @Operation(
         summary = "내가 생성한 후원형 프로젝트 목록 조회",
-        description = "현재 로그인한 사용자가 생성한 모든 후원형 프로젝트(Donation)를 최신순으로 조회합니다."
+        description = "현재 로그한 사용자가 생성한 모든 후원형 프로젝트(Donation)를 최신순으로 조회합니다."
     )
     public ResponseEntity<ApiResponse<Page<DonationListResponseDto>>> getMyDonationProjects(@ParameterObject Pageable pageable) {
         Page<DonationListResponseDto> projects = donationService.getMyDonationProjectList(pageable);

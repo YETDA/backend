@@ -20,5 +20,6 @@ public class SettlementDetailListResponseDto {
     private SettlementStatus settlementStatus;
     private ProjectStatus projectStatus;
     private String projectImageUrl;
+    private Long projectId;
 
 }

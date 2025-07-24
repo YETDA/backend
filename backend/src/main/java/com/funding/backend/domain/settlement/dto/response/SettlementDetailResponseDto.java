@@ -20,5 +20,6 @@ public class SettlementDetailResponseDto {
     private Long feeAmount;
     private Long payoutAmount;
     private SettlementStatus settlementStatus;
+    private Long projectId;
 
 }

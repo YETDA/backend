@@ -6,6 +6,7 @@ import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.settlement.dto.response.SettlementDetailListResponseDto;
 import com.funding.backend.domain.settlement.dto.response.SettlementDetailResponseDto;
+import com.funding.backend.domain.settlement.dto.response.SettlementMonthlyTotalResponseDto;
 import com.funding.backend.domain.settlement.entity.Settlement;
 import com.funding.backend.domain.settlement.mapper.SettlementDetailListResponseMapper;
 import com.funding.backend.domain.settlement.mapper.SettlementDetailResponseMapper;
@@ -21,6 +22,7 @@ import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.global.toss.enums.TossPaymentStatus;
 import com.funding.backend.security.jwt.TokenService;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -139,4 +141,48 @@ public class SettlementService {
 
         return mapper.map(project, from, to, totalAmount, fee, payout);
     }
+
+
+    //월 별 정산 금액
+    public SettlementMonthlyTotalResponseDto getPurchaseSettlementTotalByMonth(YearMonth yearMonth){
+        User user  = userService.findUserById(tokenService.getUserIdFromAccessToken());
+
+        // 1. yearMonth 이전 달 계산
+        YearMonth prevMonth = yearMonth.minusMonths(1);
+
+
+        // 2. 시작: 이전 달의 20일 15시
+        LocalDateTime start = prevMonth.atDay(20).atTime(15, 0);
+
+        // 3. 끝: 해당 월의 20일 15시
+        LocalDateTime end = yearMonth.atDay(20).atTime(15, 0);
+
+        List<Settlement> data =  settlementRepository.findAllByUserAndSettledAtBetween(user, start, end);
+
+        return aggregateMonthlySettlement(data,yearMonth);
+    }
+
+    private SettlementMonthlyTotalResponseDto aggregateMonthlySettlement(List<Settlement> settlements, YearMonth yearMonth) {
+        long totalOrderAmount = 0L;
+        long feeAmount = 0L;
+        long payoutAmount = 0L;
+
+        for (Settlement settlement : settlements) {
+            totalOrderAmount += (settlement.getTotalOrderAmount() != null) ? settlement.getTotalOrderAmount() : 0L;
+            feeAmount += (settlement.getFeeAmount() != null) ? settlement.getFeeAmount() : 0L;
+            payoutAmount += (settlement.getPayoutAmount() != null) ? settlement.getPayoutAmount() : 0L;
+        }
+
+        return new SettlementMonthlyTotalResponseDto(
+                yearMonth.getYear(),
+                yearMonth.getMonthValue(),
+                totalOrderAmount,
+                feeAmount,
+                payoutAmount
+        );
+    }
+
+
+
+
 }
