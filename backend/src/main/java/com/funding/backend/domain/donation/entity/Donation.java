@@ -60,10 +60,4 @@ public class Donation extends Auditable {
     @OneToMany(mappedBy = "donation", cascade = CascadeType.ALL, orphanRemoval = true)
     List<ProjectSubCategory> projectSubCategories = new ArrayList<>();
 
-    @OneToMany(mappedBy = "donation", cascade = CascadeType.REMOVE, orphanRemoval = false)
-    List<DonationReward> donationRewardList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "donation", cascade = CascadeType.REMOVE, orphanRemoval = false)
-    List<DonationMilestone> donationMilestoneList = new ArrayList<>();
-
 }
