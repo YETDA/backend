@@ -16,6 +16,8 @@ public interface AlarmRepository extends JpaRepository<Alarm, Long> {
 
     List<Alarm> findByUserAndReadStatus(User user, boolean readStatus);
 
+    void deleteAlarmByUser(User user);
+
 
 
 }

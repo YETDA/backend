@@ -132,6 +132,11 @@ public class AlarmService {
         alarmRepository.delete(alarm);
     }
 
+    public void deleteAllUserAlarms(){
+        User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
+        alarmRepository.deleteAlarmByUser(user);
+    }
+
 
 
     public void validUser(Alarm alarm){

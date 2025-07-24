@@ -110,6 +110,23 @@ public class AlarmController {
                 .body(ApiResponse.of(HttpStatus.OK.value(), "알림 삭제 성공"));
     }
 
+    @DeleteMapping("/user")
+    @Operation(
+            summary = "사용자의 모든 알림 삭제",
+            description = """
+            로그인한 사용자의 모든 알림을 삭제합니다.
+            - 읽음 여부와 관계없이 전체 알림이 삭제됩니다.
+            - 사용자의 알림만 삭제되며, 다른 사용자의 알림에는 영향을 주지 않습니다.
+        """
+    )
+    public ResponseEntity<ApiResponse<Void>> deleteAllUserAlarms() {
+        alarmService.deleteAllUserAlarms();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "전체 알림 삭제 성공"));
+    }
+
+
 
 
 }
