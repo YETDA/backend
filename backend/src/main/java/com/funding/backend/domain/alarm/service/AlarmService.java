@@ -104,8 +104,7 @@ public class AlarmService {
 
     @Transactional
     public void readAlarm(Long alarmId) {
-        Alarm alarm = alarmRepository.findById(alarmId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ALARM_NOT_FOUND));
+        Alarm alarm = findAlarmById(alarmId);
         //유저 식별 검사
         validUser(alarm);
 
@@ -127,6 +126,12 @@ public class AlarmService {
 
     }
 
+    public void deleteAlarm(Long alarmId){
+        Alarm alarm = findAlarmById(alarmId);
+        validUser(alarm);
+        alarmRepository.delete(alarm);
+    }
+
 
 
     public void validUser(Alarm alarm){
@@ -135,6 +140,13 @@ public class AlarmService {
             throw new BusinessLogicException(ExceptionCode.ALARM_FORBIDDEN);
         }
     }
+
+    public Alarm findAlarmById(Long alarmId){
+        return alarmRepository.findById(alarmId)
+                .orElseThrow(()-> new BusinessLogicException(ExceptionCode.ALARM_NOT_FOUND));
+    }
+
+
 
 
 

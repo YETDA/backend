@@ -98,7 +98,17 @@ public class AlarmController {
                 .body(ApiResponse.of(HttpStatus.OK.value(), "사용자 전체 알림 읽음 처리 성공"));
     }
 
-
+    @DeleteMapping("/{alarmId}")
+    @Operation(
+            summary = "단일 알림 삭제",
+            description = "알림 ID에 해당하는 단일 알림을 삭제합니다. 사용자는 본인에게 전달된 알림만 삭제할 수 있습니다."
+    )
+    public ResponseEntity<ApiResponse<Void>> deleteAlarm(@PathVariable Long alarmId) {
+        alarmService.deleteAlarm(alarmId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "알림 삭제 성공"));
+    }
 
 
 
