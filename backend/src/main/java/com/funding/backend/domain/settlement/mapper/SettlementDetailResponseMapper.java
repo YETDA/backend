@@ -16,6 +16,7 @@ public class SettlementDetailResponseMapper implements SettlementDtoMapper<Settl
                 .projectTitle(project.getTitle())
                 .periodStart(from)
                 .periodEnd(to)
+                .projectId(project.getId())
                 .totalOrderAmount(totalAmount)
                 .feeAmount(fee)
                 .payoutAmount(payout)
