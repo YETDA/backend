@@ -8,8 +8,11 @@ import com.funding.backend.domain.alarm.repository.AlarmRepository;
 import com.funding.backend.domain.alarm.repository.EmitterRepository;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.service.UserService;
+import com.funding.backend.global.exception.BusinessLogicException;
+import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.security.jwt.TokenService;
 import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -96,8 +99,46 @@ public class AlarmService {
             return alarmRepository.findByUserAndReadStatus(user, readStatus, pageable)
                     .map(AlarmListResponseDto::from);
         }
+    }
+
+
+    @Transactional
+    public void readAlarm(Long alarmId) {
+        Alarm alarm = alarmRepository.findById(alarmId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ALARM_NOT_FOUND));
+        //유저 식별 검사
+        validUser(alarm);
+
+        //알람이 읽음 처리가 아닌 경우에만 변경
+        if (!alarm.isReadStatus()) {
+           alarm.setReadStatus(true);
+        }
+    }
+
+
+    @Transactional
+    public void readAllUserAlarms(){
+        User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
+        List<Alarm> alarmList = alarmRepository.findByUserAndReadStatus(user, false);
+
+        for (Alarm alarm : alarmList) {
+            alarm.setReadStatus(true);
+        }
 
     }
+
+
+
+    public void validUser(Alarm alarm){
+        User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
+        if(!alarm.getUser().equals(user)){
+            throw new BusinessLogicException(ExceptionCode.ALARM_FORBIDDEN);
+        }
+    }
+
+
+
+
 
 
 
