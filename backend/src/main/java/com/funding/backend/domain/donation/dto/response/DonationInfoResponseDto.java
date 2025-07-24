@@ -30,6 +30,9 @@ public class DonationInfoResponseDto {
     @Schema(description = "프로젝트 좋아요 수", example = "150")
     private int projectLikeCount;
 
+    @Schema(description = "후원 프로젝트 조회수", example = "150")
+    private Long projectViewCount;
+
     @Schema(description = "후원 프로젝트의 후원 수", example = "200")
     private Long sellingAmount;
 
@@ -52,6 +55,7 @@ public class DonationInfoResponseDto {
         this.projectFirstImage = project.getProjectImage().isEmpty() ? null : project.getProjectImage().getFirst().getImageUrl();
         this.projectType = project.getProjectType();
         this.projectLikeCount = project.getLikeList() != null ? project.getLikeList().size() : 0;
+        this.projectViewCount = project.getViewCount();
         this.sellingAmount = sellingAmount;
         this.hostId = project.getUser().getId();
         this.hostName = project.getUser().getName();

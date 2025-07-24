@@ -11,8 +11,10 @@ import com.funding.backend.domain.mainCategory.entity.MainCategory;
 import com.funding.backend.domain.mainCategory.service.MainCategoryService;
 import com.funding.backend.domain.order.service.OrderService;
 import com.funding.backend.domain.project.dto.response.DonationProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
+import com.funding.backend.domain.project.service.ProjectViewCountService;
 import com.funding.backend.domain.projectSubCategory.entity.ProjectSubCategory;
 import com.funding.backend.domain.projectSubCategory.service.ProjectSubCategoryService;
 import com.funding.backend.domain.subjectCategory.entity.SubjectCategory;
@@ -53,6 +55,7 @@ public class DonationService {
     private final TokenService tokenService;
     private final FollowService followService;
     private final OrderService orderService;
+    private final ProjectViewCountService projectViewCountService;
 
     @Transactional
     public Donation createDonation(Project project, DonationProjectDetail dto) {
@@ -121,17 +124,44 @@ public class DonationService {
 
 
     public DonationProjectResponseDto createDonationProjectResponse(Project project) {
+        if (project.getProjectStatus().equals(ProjectStatus.UNDER_AUDIT)) {
+            log.info("심사중 프로젝트 진입");
+            User currentUser = null;
+            try {
+                Long currentUserId = tokenService.getUserIdFromAccessToken();
+                currentUser = userService.findUserById(currentUserId);
+            } catch (Exception e) {
+                throw new BusinessLogicException(ExceptionCode.PROJECT_VIEW_FORBIDDEN_DURING_AUDIT);
+            }
+            if (!project.getUser().equals(currentUser)) {
+                throw new BusinessLogicException(ExceptionCode.PROJECT_VIEW_FORBIDDEN_DURING_AUDIT);
+            }
+        }
+
         Donation detail = findByProject(project);
 
-        User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
-        Long projectCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(), Arrays.asList(
-            ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
-        Long followerCount = followService.countFollowers(user.getId());
+        // 프로젝트 소유자 기준으로 user 조회
+        User projectOwner = userService.findUserById(project.getUser().getId());
+
+        Long projectCount = 0L;
+        Long followerCount = 0L;
+        try {
+            Long currentUserId = tokenService.getUserIdFromAccessToken();
+            User currentUser = userService.findUserById(currentUserId);
+            projectCount = projectRepository.countByUserIdAndProjectStatusIn(currentUser.getId(),
+                Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
+            followerCount = followService.countFollowers(currentUser.getId());
+        } catch (Exception e) {
+            // 비로그인 상태일 경우 기본값 유지 (0)
+        }
+
+        Long viewCount = projectViewCountService.viewCountProject(project.getId());
 
         return new DonationProjectResponseDto(
-            project, detail, projectCount, followerCount
+            project, detail, projectCount, followerCount, viewCount
         );
     }
+
 
 
     public Page<DonationListResponseDto> getMyDonationProjectList(Pageable pageable){

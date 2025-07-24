@@ -5,6 +5,7 @@ import com.funding.backend.domain.project.dto.response.ProjectCountResponseDto;
 import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
+import com.funding.backend.domain.project.service.ProjectViewCountService;
 import com.funding.backend.enums.PopularProjectSortType;
 import com.funding.backend.enums.ProjectTypeFilter;
 import com.funding.backend.global.utils.ApiResponse;
@@ -25,11 +26,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/project")
 @Validated
 @AllArgsConstructor
-@Tag(name = "구매 주문 API", description = "구매형 프로젝트의 주문/결제 요청을 처리합니다.")
+@Tag(name = "전체 프로젝트 관리 API", description = "전체 프로젝트의 조회 및 검색을 처리합니다.")
 @Slf4j
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final ProjectViewCountService projectViewCountService;
 
     @GetMapping("/{projectId}")
     @Operation(
@@ -91,6 +93,17 @@ public class ProjectController {
                 .status(HttpStatus.OK)
                 .body(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 검색 성공", response));
     }
+
+
+    @Operation(summary = "프로젝트 조회수 조회", description = "해당 프로젝트의 조회수를 반환합니다.")
+    @GetMapping("/{projectId}/view-count")
+    public ResponseEntity<ApiResponse<Void>> getProjectViewCount(@PathVariable Long projectId) {
+        projectViewCountService.viewCountProject(projectId);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 조회수 조회 성공"));
+    }
+
 
 
 

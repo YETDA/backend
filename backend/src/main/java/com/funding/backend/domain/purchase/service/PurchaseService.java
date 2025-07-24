@@ -3,6 +3,8 @@ package com.funding.backend.domain.purchase.service;
 import com.funding.backend.domain.follow.service.FollowService;
 import com.funding.backend.domain.order.service.OrderService;
 import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
+import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
+import com.funding.backend.domain.project.service.ProjectViewCountService;
 import com.funding.backend.domain.purchase.dto.response.PurchaseInfoResponseDto;
 import com.funding.backend.domain.purchase.dto.response.PurchaseListResponseDto;
 import com.funding.backend.domain.purchaseOption.dto.response.PurchaseOptionResponseDto;
@@ -47,11 +49,10 @@ public class PurchaseService {
     private final PurchaseCategoryService purchaseCategoryService;
 
     private final OrderService orderService;
-    private final PurchaseOptionService purchaseOptionService;
     private final UserService userService;
     private final TokenService tokenService;
     private final FollowService followService;
-    private final ApplicationEventPublisher eventPublisher;
+    private final ProjectViewCountService projectViewCountService;
 
     @Transactional
     public Purchase createPurchase(Project project, PurchaseProjectDetail dto){
@@ -107,30 +108,49 @@ public class PurchaseService {
     }
 
 
-
     public PurchaseProjectResponseDto createPurchaseProjectResponse(Project project) {
 
-        if(project.getProjectStatus().equals(ProjectStatus.UNDER_AUDIT)){
+        if (project.getProjectStatus().equals(ProjectStatus.UNDER_AUDIT)) {
             log.info("심사중 프로젝트 진입");
-            User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
-            if(!project.getUser().equals(user)){
+            User currentUser = null;
+            try {
+                Long currentUserId = tokenService.getUserIdFromAccessToken();
+                currentUser = userService.findUserById(currentUserId);
+            } catch (Exception e) {
+                throw new BusinessLogicException(ExceptionCode.PROJECT_VIEW_FORBIDDEN_DURING_AUDIT);
+            }
+            if (!project.getUser().equals(currentUser)) {
                 throw new BusinessLogicException(ExceptionCode.PROJECT_VIEW_FORBIDDEN_DURING_AUDIT);
             }
         }
+
         Purchase detail = findByProject(project);
 
         List<PurchaseOptionResponseDto> optionDtos = detail.getPurchaseOptionList().stream()
-                .map(PurchaseOptionResponseDto::new).toList();
-        User user = userService.findUserById(project.getUser().getId());
-        Long projectCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(), Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
-        Long followerCount = followService.countFollowers(user.getId());
+            .map(PurchaseOptionResponseDto::new).toList();
 
-        //구매 프로젝트 승인 알림 생성
+        // 프로젝트 소유자 기준으로 user 조회
+        User projectOwner = userService.findUserById(project.getUser().getId());
+
+        Long projectCount = 0L;
+        Long followerCount = 0L;
+        try {
+            Long currentUserId = tokenService.getUserIdFromAccessToken();
+            User currentUser = userService.findUserById(currentUserId);
+            projectCount = projectRepository.countByUserIdAndProjectStatusIn(currentUser.getId(),
+                Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
+            followerCount = followService.countFollowers(currentUser.getId());
+        } catch (Exception e) {
+            // 비로그인 상태일 경우 기본값 유지 (0)
+        }
+
+        Long viewCount = projectViewCountService.viewCountProject(project.getId());
+
         return new PurchaseProjectResponseDto(
-                project, detail, optionDtos , projectCount, followerCount
+            project, detail, optionDtos, projectCount, followerCount, viewCount
         );
-
     }
+
 
 
 
