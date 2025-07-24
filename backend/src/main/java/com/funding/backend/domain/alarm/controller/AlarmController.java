@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -145,9 +146,6 @@ public class AlarmController {
                 .status(HttpStatus.OK)
                 .body(ApiResponse.of(HttpStatus.OK.value(), "조건부 알림 삭제 성공"));
     }
-
-
-
 
 
 }
