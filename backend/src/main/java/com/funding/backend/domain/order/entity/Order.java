@@ -20,6 +20,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedDate;
 
 @Entity
 @Table(name = "orders")
@@ -64,6 +66,10 @@ public class Order extends Auditable {
 
 	@Column(nullable = false)
 	private String customerName;
+
+
+	@Column(name = "purchase_success_time", updatable = false)
+	private LocalDateTime purchaseSuccessTime;
 
 	@Column(nullable = false)
 	private String orderName;

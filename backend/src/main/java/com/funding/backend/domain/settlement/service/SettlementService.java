@@ -8,6 +8,9 @@ import com.funding.backend.domain.settlement.dto.response.SettlementDetailListRe
 import com.funding.backend.domain.settlement.dto.response.SettlementDetailResponseDto;
 import com.funding.backend.domain.settlement.dto.response.SettlementMonthlyTotalResponseDto;
 import com.funding.backend.domain.settlement.entity.Settlement;
+import com.funding.backend.domain.settlement.factory.SettlementPeriod;
+import com.funding.backend.domain.settlement.factory.SettlementFactory;
+import com.funding.backend.domain.settlement.factory.SettlementPeriodFactory;
 import com.funding.backend.domain.settlement.mapper.SettlementDetailListResponseMapper;
 import com.funding.backend.domain.settlement.mapper.SettlementDetailResponseMapper;
 import com.funding.backend.domain.settlement.mapper.SettlementDtoMapper;
@@ -24,7 +27,10 @@ import com.funding.backend.security.jwt.TokenService;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,19 +40,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class SettlementService {
 
-    @Value("${settlement.day}")
-    private Long settlementDay;
 
     private final SettlementRepository settlementRepository;
+    private final SettlementFactory settlementFactory;
     private final OrderService orderService;
     private final ProjectService projectService;
     private final UserService userService;
     private final TokenService tokenService;
 
+
     private final SettlementDetailResponseMapper detailMapper;
     private final SettlementDetailListResponseMapper listMapper;
+    private final SettlementPeriodFactory settlementPeriodFactory;
 
     //프로젝트 아이디를 입력하면, 해당 프로젝트에 대한 정산 내역을 제공
     public SettlementDetailResponseDto getLatestPurchaseSettlementDetail(Long projectId) {
@@ -92,7 +100,7 @@ public class SettlementService {
             LocalDateTime to,
             List<Order> orders
     ) {
-        Long pricingPlan = project.getPricingPlan().getPaymentFee();
+        Long pricingPlan = project.getPricingPlan().getPlatformFee();
 
         long totalAmount = orders.stream().mapToLong(Order::getPaidAmount).sum();
         double feeRate = pricingPlan / 100.0;
@@ -135,7 +143,7 @@ public class SettlementService {
         List<Order> orders = orderService.findByProjectAndCreatedAtBetween(project, from, to, TossPaymentStatus.DONE);
 
         long totalAmount = orders.stream().mapToLong(Order::getPaidAmount).sum();
-        double feeRate = project.getPricingPlan().getPaymentFee() / 100.0;
+        double feeRate = project.getPricingPlan().getPlatformFee() / 100.0;
         long fee = Math.round(totalAmount * feeRate);
         long payout = totalAmount - fee;
 
@@ -181,6 +189,42 @@ public class SettlementService {
                 payoutAmount
         );
     }
+
+
+
+    //구매
+    @Transactional
+    public void executeMonthlyPurchaseSettlement() {
+        YearMonth currentMonth = YearMonth.now();
+
+        SettlementPeriod period = settlementPeriodFactory.create(currentMonth); // ⬅️ 정산 기간 계산 추상화
+        log.info("[정산 기간] yearMonth={}, start={}, end={}",
+                period.getYearMonth(),
+                period.getStart(),
+                period.getEnd()
+        );
+
+        List<Order> orders = orderService.findBySettlementPeriod(period,ProjectType.PURCHASE,TossPaymentStatus.DONE);
+        log.info("orders" + "여기!!!!" + orders.get(0).getOrderName());
+
+        Map<Project, List<Order>> ordersByProject = orders.stream()
+                .collect(Collectors.groupingBy(Order::getProject));
+
+        for (Map.Entry<Project, List<Order>> entry : ordersByProject.entrySet()) {
+            Project project = entry.getKey();
+            List<Order> projectOrders = entry.getValue();
+
+            Settlement settlement = settlementFactory.create(project, projectOrders, period);
+            log.info("settlement" + "여기!!!!" + settlement.getPayoutAmount());
+            settlementRepository.save(settlement);
+
+            projectOrders.forEach(order -> order.setSettlement(settlement));
+            orderService.saveOrderList(projectOrders);
+        }
+    }
+
+
+
 
 
 

@@ -56,7 +56,6 @@ public class TossController {
     public ResponseEntity<ApiResponse<Void>> confirmPayment(@RequestBody ConfirmPaymentRequestDto dto) {
         try {
             tossService.confirmAndProcessPayment(dto);
-
             return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "결제 성공", null));
         } catch (BusinessLogicException e) {
             // 결제 금액 불일치 등의 경우만 삭제 수행
