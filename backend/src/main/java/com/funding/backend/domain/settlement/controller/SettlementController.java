@@ -3,11 +3,13 @@ package com.funding.backend.domain.settlement.controller;
 
 import com.funding.backend.domain.settlement.dto.response.SettlementDetailListResponseDto;
 import com.funding.backend.domain.settlement.dto.response.SettlementDetailResponseDto;
+import com.funding.backend.domain.settlement.dto.response.SettlementMonthlyTotalResponseDto;
 import com.funding.backend.domain.settlement.service.SettlementService;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +63,22 @@ public class SettlementController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.of(HttpStatus.OK.value(), "정산 리스트 조회 성공", response));
     }
+
+
+    @GetMapping("/purchase/total")
+    @Operation(
+            summary = "사용자의 특정 월 구매형 프로젝트 정산 금액 조회",
+            description = "사용자가 해당 연/월에 정산된 구매형 프로젝트 총 금액을 조회합니다. 후원형은 제외됩니다."
+    )
+    public ResponseEntity<ApiResponse<SettlementMonthlyTotalResponseDto>> getMyMonthlyPurchaseSettlementTotal(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth
+    ) {
+        SettlementMonthlyTotalResponseDto response = settlementService.getPurchaseSettlementTotalByMonth(yearMonth);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "월별 정산 금액 조회 성공", response));
+    }
+
+
 
 
 }
