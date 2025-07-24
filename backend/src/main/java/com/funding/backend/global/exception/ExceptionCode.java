@@ -110,7 +110,10 @@ public enum ExceptionCode {
     PRICING_PLAN_NOT_FOUND(404, "존재하지 않는 요금제 입니다"),
 
     //알림 예외 처리
-    ALARM_STRATEGY_NOT_FOUND(404, "해당 알림 유형에 대한 전략이 존재하지 않습니다");
+    ALARM_STRATEGY_NOT_FOUND(404, "해당 알림 유형에 대한 전략이 존재하지 않습니다"),
+    ALARM_NOT_FOUND(404, "존재하지 않는 알림입니다."),
+    ALARM_FORBIDDEN(403, "해당 알림에 접근할 권한이 없습니다.");
+
 
     @Getter
     private final int status;
