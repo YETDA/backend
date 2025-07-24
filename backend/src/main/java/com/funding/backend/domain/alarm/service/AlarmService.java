@@ -1,21 +1,20 @@
 package com.funding.backend.domain.alarm.service;
 
-import com.funding.backend.domain.alarm.dto.request.AlarmDto;
-import com.funding.backend.domain.alarm.dto.request.AlarmRequestDto;
+import com.funding.backend.domain.alarm.dto.response.AlarmDto;
+import com.funding.backend.domain.alarm.dto.response.AlarmResponseDto;
+import com.funding.backend.domain.alarm.dto.response.AlarmListResponseDto;
 import com.funding.backend.domain.alarm.entity.Alarm;
 import com.funding.backend.domain.alarm.repository.AlarmRepository;
 import com.funding.backend.domain.alarm.repository.EmitterRepository;
 import com.funding.backend.domain.user.entity.User;
-import com.funding.backend.domain.user.repository.UserRepository;
 import com.funding.backend.domain.user.service.UserService;
-import com.funding.backend.global.exception.BusinessLogicException;
-import com.funding.backend.global.exception.ExceptionCode;
 import com.funding.backend.security.jwt.TokenService;
 import java.io.IOException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -75,7 +74,7 @@ public class AlarmService {
             try {
                 emitter.send(SseEmitter.event()
                         .name("alarm")  // 이벤트 이름 지정
-                        .data(AlarmRequestDto.from(saved)));
+                        .data(AlarmResponseDto.from(saved)));
                 log.info("1111✅ 알림 저장 시도: userId={}, msg={}", user.getId(), finalMessage);
             } catch (IOException e) {
                 emitterRepository.delete(user.getId());
@@ -86,4 +85,20 @@ public class AlarmService {
 
         return saved;
     }
+
+    public Page<AlarmListResponseDto> getUserAlarmList(Boolean readStatus, Pageable pageable){
+        User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
+
+        if (readStatus == null) {
+            return alarmRepository.findAllByUser(user, pageable)
+                    .map(AlarmListResponseDto::from);
+        } else {
+            return alarmRepository.findByUserAndReadStatus(user, readStatus, pageable)
+                    .map(AlarmListResponseDto::from);
+        }
+
+    }
+
+
+
 }
