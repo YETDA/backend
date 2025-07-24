@@ -14,6 +14,8 @@ public interface AlarmRepository extends JpaRepository<Alarm, Long> {
 
     Page<Alarm> findAllByUser(User user, Pageable pageable);
 
+    List<Alarm> findByUserAndReadStatus(User user, boolean readStatus);
+
 
 
 }
