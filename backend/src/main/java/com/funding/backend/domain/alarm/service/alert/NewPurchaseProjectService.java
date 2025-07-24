@@ -1,6 +1,6 @@
 package com.funding.backend.domain.alarm.service.alert;
 
-import com.funding.backend.domain.alarm.dto.request.AlarmDto;
+import com.funding.backend.domain.alarm.dto.response.AlarmDto;
 import com.funding.backend.domain.alarm.enums.AlarmType;
 import com.funding.backend.domain.alarm.event.context.NewPurchaseProjectContext;
 import com.funding.backend.domain.alarm.service.AlarmService;
