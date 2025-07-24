@@ -104,8 +104,7 @@ public class AlarmService {
 
     @Transactional
     public void readAlarm(Long alarmId) {
-        Alarm alarm = alarmRepository.findById(alarmId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ALARM_NOT_FOUND));
+        Alarm alarm = findAlarmById(alarmId);
         //유저 식별 검사
         validUser(alarm);
 
@@ -126,6 +125,25 @@ public class AlarmService {
         }
 
     }
+    @Transactional
+    public void deleteAlarm(Long alarmId){
+        Alarm alarm = findAlarmById(alarmId);
+        validUser(alarm);
+        alarmRepository.delete(alarm);
+    }
+
+    @Transactional
+    public void deleteAllUserAlarms(){
+        User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
+        alarmRepository.deleteAlarmByUser(user);
+    }
+
+    @Transactional
+    public void deleteAlarmsByReadStatus(boolean readStatus){
+        User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
+        alarmRepository.deleteAlarmByUserAndReadStatus(user, readStatus);
+
+    }
 
 
 
@@ -135,6 +153,13 @@ public class AlarmService {
             throw new BusinessLogicException(ExceptionCode.ALARM_FORBIDDEN);
         }
     }
+
+    public Alarm findAlarmById(Long alarmId){
+        return alarmRepository.findById(alarmId)
+                .orElseThrow(()-> new BusinessLogicException(ExceptionCode.ALARM_NOT_FOUND));
+    }
+
+
 
 
 
