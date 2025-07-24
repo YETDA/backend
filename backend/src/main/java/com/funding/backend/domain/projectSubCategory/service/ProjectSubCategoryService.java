@@ -32,17 +32,4 @@ public class ProjectSubCategoryService {
     return projectSubRepository.saveAll(subCategories);
   }
 
-  @Transactional
-  public List<ProjectSubCategory> updateProjectSubCategories(List<SubjectCategory> subjectCategories, Donation donation) {
-
-    List<ProjectSubCategory> subCategories = subjectCategories.stream()
-        .map(subjectCategory -> ProjectSubCategory.builder()
-            .subjectCategory(subjectCategory)
-            .donation(donation)
-            .build())
-        .collect(Collectors.toList());
-
-    return projectSubRepository.saveAll(subCategories);
-  }
-
 }

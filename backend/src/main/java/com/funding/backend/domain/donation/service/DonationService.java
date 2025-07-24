@@ -94,10 +94,6 @@ public class DonationService {
           MainCategory mainCategory = mainCategoryService.findDonationCategoryById(dto.getMainCategoryId());
           donation.setMainCategory(mainCategory);
         }
-        if (dto.getSubCategoryIds() != null) {
-            List<ProjectSubCategory> projectSubCategories = projectSubCategoryService.updateProjectSubCategories(dto.getSubCategoryIds(), donation);
-            donation.setProjectSubCategories(projectSubCategories);
-        }
         Optional.ofNullable(dto.getGitAddress())
             .ifPresent(donation::setGitAddress);
         Optional.ofNullable(dto.getAppStoreAddress())

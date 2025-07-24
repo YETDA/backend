@@ -41,7 +41,7 @@ public class DonationUpdateRequestDto {
   private Long mainCategoryId;
 
   @Size(max = 2, message = "상세 카테고리는 최대 2개까지 선택 가능합니다.")
-  private List<SubjectCategory> subCategoryIds;
+  private List<Long> subCategoryIds;
 
   @NotNull(message = "목표 금액은 필수입니다.")
   private Long priceGoal;
