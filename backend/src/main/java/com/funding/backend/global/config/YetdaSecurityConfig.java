@@ -34,6 +34,24 @@ public class YetdaSecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .formLogin(form -> form.disable())
+
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/oauth2/authorization/**")
+                        .authorizationEndpoint(endpoint ->
+                                endpoint.authorizationRequestResolver(customAuthorizationRequestResolver)
+                        )
+                        .successHandler(oAuth2LoginSuccessHandler)
+                        .failureHandler((req, res, ex) -> {
+                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            res.setContentType("application/json;charset=UTF-8");
+                            res.getWriter().write("{\"message\":\"" + ex.getMessage() + "\"}");
+                        })
+                )
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/swagger-ui/**",
@@ -54,8 +72,8 @@ public class YetdaSecurityConfig {
 
                         //프로젝트 (검색 포함됨)
                         .requestMatchers(HttpMethod.GET, "/api/v1/project/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/project/purchase/category/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/project/donation/category/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/project/purchase/category/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/project/donation/category/**").permitAll()
 
                         //알림
                         .requestMatchers(HttpMethod.POST, "/api/v1/alarm/**").hasAnyRole("ADMIN", "USER")
@@ -75,9 +93,9 @@ public class YetdaSecurityConfig {
 
                         //유저
                         .requestMatchers(HttpMethod.PUT, "/api/v1/user/mypage/account/** ").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.POST, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN","USER")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN","USER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN","USER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/purchaseOption/**").hasAnyRole("ADMIN", "USER")
 
                         //공지사항
                         .requestMatchers(HttpMethod.GET, "/api/v1/notice/project/**").permitAll()
@@ -91,6 +109,18 @@ public class YetdaSecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/v1/project/donation/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/project/donation/**").hasAnyRole("ADMIN", "USER")
 
+                        //후원 로드맵(마일스톤)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/donationMilestone/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/donationMilestone/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/donationMilestone/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/donationMilestone/**").hasAnyRole("ADMIN", "USER")
+
+                        //후원 리워드
+                        .requestMatchers(HttpMethod.GET, "/api/v1/donationReward/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/donationReward/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/donationReward/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/donationReward/**").hasAnyRole("ADMIN", "USER")
+
                         //리뷰
                         .requestMatchers(HttpMethod.GET, "/api/v1/reviews/**").permitAll()
 
@@ -98,29 +128,11 @@ public class YetdaSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/reviews/**").permitAll()
 
                         //구매 주문서 생성
-                        .requestMatchers(HttpMethod.POST,"/api/v1/order/purchase/**").hasAnyRole("ADMIN", "USER")
-
+                        .requestMatchers(HttpMethod.POST, "/api/v1/order/purchase/**").hasAnyRole("ADMIN", "USER")
 
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 
-                .csrf(csrf -> csrf.disable())
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/oauth2/authorization/**")
-                        .authorizationEndpoint(endpoint ->
-                                endpoint.authorizationRequestResolver(customAuthorizationRequestResolver)
-                        )
-                        .successHandler(oAuth2LoginSuccessHandler)
-                        .failureHandler((req, res, ex) -> {
-                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            res.setContentType("application/json;charset=UTF-8");
-                            res.getWriter().write("{\"message\":\"" + ex.getMessage() + "\"}");
-                        })
-                )
-
-                .formLogin(form -> form.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
@@ -137,8 +149,8 @@ public class YetdaSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:3000", "https://yetda.kro.kr"
-                ,"https://yetdatest.kro.kr","https://yetdatest.kro.kr:3000", "https://localhost:3000"
-                ,"https://www.yetda.booktri.site", "https://www.yetfront.booktri.site",
+                , "https://yetdatest.kro.kr", "https://yetdatest.kro.kr:3000", "https://localhost:3000"
+                , "https://www.yetda.booktri.site", "https://www.yetfront.booktri.site",
                 "https://port-next-frontend-m61t9knhb5c1f236.sel4.cloudtype.app"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.addAllowedHeader("*");
