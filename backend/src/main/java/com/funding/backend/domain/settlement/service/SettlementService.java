@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -194,7 +193,7 @@ public class SettlementService {
 
     //구매
     @Transactional
-    public void executeMonthlyPurchaseSettlement() {
+    public void executeMonthlySettlement(ProjectType projectType) {
         YearMonth currentMonth = YearMonth.now();
 
         SettlementPeriod period = settlementPeriodFactory.create(currentMonth); // ⬅️ 정산 기간 계산 추상화
@@ -204,7 +203,7 @@ public class SettlementService {
                 period.getEnd()
         );
 
-        List<Order> orders = orderService.findBySettlementPeriod(period,ProjectType.PURCHASE,TossPaymentStatus.DONE);
+        List<Order> orders = orderService.findBySettlementPeriod(period,projectType,TossPaymentStatus.DONE);
         log.info("orders" + "여기!!!!" + orders.get(0).getOrderName());
 
         Map<Project, List<Order>> ordersByProject = orders.stream()
