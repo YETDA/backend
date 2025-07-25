@@ -6,7 +6,6 @@ import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.toss.enums.TossPaymentStatus;
-import io.lettuce.core.dynamic.annotation.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;

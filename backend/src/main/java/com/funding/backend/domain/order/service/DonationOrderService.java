@@ -4,6 +4,7 @@ import com.funding.backend.domain.order.dto.request.DonationOrderRequestDto;
 import com.funding.backend.domain.order.dto.response.DonationOrderResponseDto;
 import com.funding.backend.domain.order.entity.Order;
 import com.funding.backend.domain.order.repository.OrderRepository;
+import com.funding.backend.domain.project.dto.response.ProjectInfoResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.user.entity.User;
@@ -15,6 +16,8 @@ import com.funding.backend.global.toss.enums.TossPaymentStatus;
 import com.funding.backend.global.utils.OrderUtils;
 import com.funding.backend.security.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,5 +76,15 @@ public class DonationOrderService {
 
     public List<Order> getSettlementOrders() {
         return orderRepository.findByProject_Donation_EndDateBefore(LocalDateTime.now().minusDays(1));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProjectInfoResponseDto> getDonationProjectList(Pageable pageable) {
+        Page<Order> orderPage = orderService.getUserOrderList(pageable);
+
+        return orderPage.map(order -> {
+            Project project = projectService.findProjectById(order.getProject().getId());
+            return new ProjectInfoResponseDto(project);
+        });
     }
 }
