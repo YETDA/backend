@@ -1,8 +1,6 @@
 package com.funding.backend.domain.project.dto.response;
 
 import com.funding.backend.domain.donation.entity.Donation;
-import com.funding.backend.domain.donationMilestone.dto.response.DonationMilestoneResponseDto;
-import com.funding.backend.domain.donationReward.dto.response.DonationRewardResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.projectImage.entity.ProjectImage;
 import com.funding.backend.domain.projectSubCategory.dto.request.ProjectSubRequestDto;
@@ -15,7 +13,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class DonationProjectResponseDto implements ProjectResponseDto {
+public class DonationProjectResponseDto extends ProjectResponseDto {
     private Long projectId;
     private String title;
     private String introduce;
@@ -30,19 +28,18 @@ public class DonationProjectResponseDto implements ProjectResponseDto {
     private String gitAddress;
     private String deployAddress;
     private String appStoreAddress;
-    private List<DonationRewardResponseDto> donationRewards;
-    private List<DonationMilestoneResponseDto> donationMilestones;
 
     private Long userId;
     private String name;
     private String userProfileImage;
+    private Long viewCount;
     private Long projectCount;
     private Long followerCount;
     private String userIntroduce;
     private String email;
 
-    public DonationProjectResponseDto(Project project, Donation donation, List<DonationRewardResponseDto> donationRewards,
-        List<DonationMilestoneResponseDto> donationMilestones, Long projectCount, Long followerCount){
+    public DonationProjectResponseDto(Project project, Donation donation,
+        Long projectCount, Long followerCount, Long viewCount){
 
         this.projectId = project.getId();
         this.title = project.getTitle();
@@ -67,8 +64,6 @@ public class DonationProjectResponseDto implements ProjectResponseDto {
         this.gitAddress = donation.getGitAddress();
         this.deployAddress = donation.getDeployAddress();
         this.appStoreAddress = donation.getAppStoreAddress();
-        this.donationRewards = donationRewards;
-        this.donationMilestones = donationMilestones;
 
         this.userId = project.getUser().getId();
         this.name=project.getUser().getName();
@@ -77,6 +72,7 @@ public class DonationProjectResponseDto implements ProjectResponseDto {
         this.email = project.getUser().getEmail();
         this.projectCount = projectCount;
         this.followerCount= followerCount;
+        this.viewCount = viewCount;
 
     }
 }

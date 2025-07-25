@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -98,8 +99,53 @@ public class AlarmController {
                 .body(ApiResponse.of(HttpStatus.OK.value(), "사용자 전체 알림 읽음 처리 성공"));
     }
 
+    @DeleteMapping("/{alarmId}")
+    @Operation(
+            summary = "단일 알림 삭제",
+            description = "알림 ID에 해당하는 단일 알림을 삭제합니다. 사용자는 본인에게 전달된 알림만 삭제할 수 있습니다."
+    )
+    public ResponseEntity<ApiResponse<Void>> deleteAlarm(@PathVariable Long alarmId) {
+        alarmService.deleteAlarm(alarmId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "알림 삭제 성공"));
+    }
+
+    @DeleteMapping("/user")
+    @Operation(
+            summary = "사용자의 모든 알림 삭제",
+            description = """
+            로그인한 사용자의 모든 알림을 삭제합니다.
+            - 읽음 여부와 관계없이 전체 알림이 삭제됩니다.
+            - 사용자의 알림만 삭제되며, 다른 사용자의 알림에는 영향을 주지 않습니다.
+        """
+    )
+    public ResponseEntity<ApiResponse<Void>> deleteAllUserAlarms() {
+        alarmService.deleteAllUserAlarms();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "전체 알림 삭제 성공"));
+    }
 
 
+    @DeleteMapping("/user/status")
+    @Operation(
+            summary = "읽음 상태(readStatus)에 따른 알림 삭제",
+            description = """
+            로그인한 사용자의 알림 중, readStatus 조건에 따라 알림을 삭제합니다.
+            - readStatus = true  → 읽은 알림만 삭제
+            - readStatus = false → 읽지 않은 알림만 삭제
+            - readStatus 생략 시 삭제되지 않음 (400 Bad Request 응답 예상)
+        """
+    )
+    public ResponseEntity<ApiResponse<Void>> deleteAlarmsByReadStatus(
+            @RequestParam Boolean readStatus
+    ) {
+        alarmService.deleteAlarmsByReadStatus(readStatus);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "조건부 알림 삭제 성공"));
+    }
 
 
 }

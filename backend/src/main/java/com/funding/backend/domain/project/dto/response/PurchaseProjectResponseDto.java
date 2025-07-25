@@ -11,7 +11,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class PurchaseProjectResponseDto implements ProjectResponseDto {
+public class PurchaseProjectResponseDto extends ProjectResponseDto {
     private Long projectId;
     private String title;
     private String introduce;
@@ -26,13 +26,14 @@ public class PurchaseProjectResponseDto implements ProjectResponseDto {
     private String userProfileImage;
     private Long projectCount;
     private Long followerCount;
+    private Long viewCount;
     private String userIntroduce;
     private String email;
     private List<PurchaseOptionResponseDto> purchaseOptions;
 
 
     public PurchaseProjectResponseDto(Project project, Purchase purchase, List<PurchaseOptionResponseDto> purchaseOptions
-    ,Long projectCount, Long followerCount) {
+    ,Long projectCount, Long followerCount, Long viewCount) {
         this.projectId = project.getId();
         this.title = project.getTitle();
         this.introduce = project.getIntroduce();
@@ -56,6 +57,7 @@ public class PurchaseProjectResponseDto implements ProjectResponseDto {
         this.email = project.getUser().getEmail();
         this.projectCount = projectCount;
         this.followerCount= followerCount;
+        this.viewCount = viewCount;
 
     }
 

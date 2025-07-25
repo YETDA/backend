@@ -5,6 +5,7 @@ import com.funding.backend.domain.order.dto.response.OrderResponseDto;
 import com.funding.backend.domain.order.entity.Order;
 import com.funding.backend.domain.order.repository.OrderRepository;
 import com.funding.backend.domain.project.entity.Project;
+import com.funding.backend.domain.settlement.factory.SettlementPeriod;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.domain.user.service.UserService;
 import com.funding.backend.enums.ProjectType;
@@ -91,6 +92,18 @@ public class OrderService {
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ORDER_NOT_FOUND));
     }
 
+
+    public List<Order> findBySettlementPeriod(SettlementPeriod period, ProjectType projectType,TossPaymentStatus tossPaymentStatus) {
+        return orderRepository.findByPurchaseSuccessTimeBetweenAndOrderStatusAndProjectTypeAndSettlementIsNull(
+                period.getStart(),
+                period.getEnd(),
+                tossPaymentStatus,
+                projectType
+        );
+    }
+
+
+
     // 관리자용: 사용자·타입(PURCHASE/DONATION)별 주문한 프로젝트 수
     public long countDistinctByUserAndType(Long userId, ProjectType type) {
         return orderRepository.countDistinctByUser_IdAndProjectType(userId, type);
@@ -100,5 +113,10 @@ public class OrderService {
     public long sumPaidByUserAndType(Long userId, ProjectType type) {
         Long sum = orderRepository.sumPaidAmountByUserIdAndProjectType(userId, type);
         return (sum != null ? sum : 0L);
+    }
+
+    @Transactional
+    public void saveOrderList(List<Order> orderList){
+        orderRepository.saveAll(orderList);
     }
 }

@@ -6,15 +6,15 @@ import com.funding.backend.domain.donation.dto.response.DonationListResponseDto;
 import com.funding.backend.domain.donation.entity.Donation;
 import com.funding.backend.domain.donation.repository.DonationRepository;
 import com.funding.backend.domain.donation.dto.request.DonationProjectDetail;
-import com.funding.backend.domain.donationMilestone.dto.response.DonationMilestoneResponseDto;
-import com.funding.backend.domain.donationReward.dto.response.DonationRewardResponseDto;
 import com.funding.backend.domain.follow.service.FollowService;
 import com.funding.backend.domain.mainCategory.entity.MainCategory;
 import com.funding.backend.domain.mainCategory.service.MainCategoryService;
 import com.funding.backend.domain.order.service.OrderService;
 import com.funding.backend.domain.project.dto.response.DonationProjectResponseDto;
+import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.repository.ProjectRepository;
+import com.funding.backend.domain.project.service.ProjectViewCountService;
 import com.funding.backend.domain.projectSubCategory.entity.ProjectSubCategory;
 import com.funding.backend.domain.projectSubCategory.service.ProjectSubCategoryService;
 import com.funding.backend.domain.subjectCategory.entity.SubjectCategory;
@@ -55,6 +55,7 @@ public class DonationService {
     private final TokenService tokenService;
     private final FollowService followService;
     private final OrderService orderService;
+    private final ProjectViewCountService projectViewCountService;
 
     @Transactional
     public Donation createDonation(Project project, DonationProjectDetail dto) {
@@ -98,6 +99,8 @@ public class DonationService {
         }
         Optional.ofNullable(dto.getGitAddress())
             .ifPresent(donation::setGitAddress);
+        Optional.ofNullable(dto.getAppStoreAddress())
+            .ifPresent(donation::setAppStoreAddress);
 
         donationRepository.save(donation);
     }
@@ -121,22 +124,44 @@ public class DonationService {
 
 
     public DonationProjectResponseDto createDonationProjectResponse(Project project) {
+        if (project.getProjectStatus().equals(ProjectStatus.UNDER_AUDIT)) {
+            log.info("심사중 프로젝트 진입");
+            User currentUser = null;
+            try {
+                Long currentUserId = tokenService.getUserIdFromAccessToken();
+                currentUser = userService.findUserById(currentUserId);
+            } catch (Exception e) {
+                throw new BusinessLogicException(ExceptionCode.PROJECT_VIEW_FORBIDDEN_DURING_AUDIT);
+            }
+            if (!project.getUser().equals(currentUser)) {
+                throw new BusinessLogicException(ExceptionCode.PROJECT_VIEW_FORBIDDEN_DURING_AUDIT);
+            }
+        }
+
         Donation detail = findByProject(project);
 
-        List<DonationRewardResponseDto> rewardDtos = detail.getDonationRewardList().stream()
-            .map(DonationRewardResponseDto::new).toList();
-        List<DonationMilestoneResponseDto> milestoneDtos = detail.getDonationMilestoneList().stream()
-            .map(DonationMilestoneResponseDto::new).toList();
+        // 프로젝트 소유자 기준으로 user 조회
+        User projectOwner = userService.findUserById(project.getUser().getId());
 
-        User user = userService.findUserById(tokenService.getUserIdFromAccessToken());
-        Long projectCount = projectRepository.countByUserIdAndProjectStatusIn(user.getId(), Arrays.asList(
-            ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
-        Long followerCount = followService.countFollowers(user.getId());
+        Long projectCount = 0L;
+        Long followerCount = 0L;
+        try {
+            Long currentUserId = tokenService.getUserIdFromAccessToken();
+            User currentUser = userService.findUserById(currentUserId);
+            projectCount = projectRepository.countByUserIdAndProjectStatusIn(currentUser.getId(),
+                Arrays.asList(ProjectStatus.RECRUITING, ProjectStatus.COMPLETED));
+            followerCount = followService.countFollowers(currentUser.getId());
+        } catch (Exception e) {
+            // 비로그인 상태일 경우 기본값 유지 (0)
+        }
+
+        Long viewCount = projectViewCountService.viewCountProject(project.getId());
 
         return new DonationProjectResponseDto(
-            project, detail, rewardDtos, milestoneDtos, projectCount, followerCount
+            project, detail, projectCount, followerCount, viewCount
         );
     }
+
 
 
     public Page<DonationListResponseDto> getMyDonationProjectList(Pageable pageable){

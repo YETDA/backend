@@ -91,18 +91,6 @@ public class YetdaSecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/v1/project/donation/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/project/donation/**").hasAnyRole("ADMIN", "USER")
 
-                        //후원 로드맵(마일스톤)
-                        .requestMatchers(HttpMethod.GET, "/api/v1/donationMilestone/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/donationMilestone/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/donationMilestone/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/donationMilestone/**").hasAnyRole("ADMIN", "USER")
-
-                        //후원 리워드
-                        .requestMatchers(HttpMethod.GET, "/api/v1/donationReward/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/donationReward/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/donationReward/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/donationReward/**").hasAnyRole("ADMIN", "USER")
-
                         //리뷰
                         .requestMatchers(HttpMethod.GET, "/api/v1/reviews/**").permitAll()
 
@@ -150,7 +138,8 @@ public class YetdaSecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:3000", "https://yetda.kro.kr"
                 ,"https://yetdatest.kro.kr","https://yetdatest.kro.kr:3000", "https://localhost:3000"
-                ,"https://www.yetda.booktri.site", "https://www.yetfront.booktri.site"));
+                ,"https://www.yetda.booktri.site", "https://www.yetfront.booktri.site",
+                "https://port-next-frontend-m61t9knhb5c1f236.sel4.cloudtype.app"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.addAllowedHeader("*");
         config.setAllowCredentials(true); // 💡 쿠키 포함 허용 필수

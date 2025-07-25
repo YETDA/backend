@@ -18,6 +18,7 @@ import com.funding.backend.global.toss.dto.response.TossPaymentsResponseDto;
 import com.funding.backend.global.toss.enums.TossPaymentStatus;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -97,6 +98,7 @@ public class TossService {
             order.setPayType(tossRes.getMethod());
             order.setOrderStatus(tossRes.getStatus());
             order.setPaymentKey(dto.getPaymentKey());
+            order.setPurchaseSuccessTime(LocalDateTime.now());
             orderService.saveOrder(order); // 영속성 보장 확인
             alarmService(order.getOrderId());
 

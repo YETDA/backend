@@ -1,7 +1,5 @@
 package com.funding.backend.domain.donation.entity;
 
-import com.funding.backend.domain.donationMilestone.entity.DonationMilestone;
-import com.funding.backend.domain.donationReward.entity.DonationReward;
 import com.funding.backend.domain.mainCategory.entity.MainCategory;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.projectSubCategory.entity.ProjectSubCategory;
@@ -59,11 +57,5 @@ public class Donation extends Auditable {
 
     @OneToMany(mappedBy = "donation", cascade = CascadeType.ALL, orphanRemoval = true)
     List<ProjectSubCategory> projectSubCategories = new ArrayList<>();
-
-    @OneToMany(mappedBy = "donation", cascade = CascadeType.REMOVE, orphanRemoval = false)
-    List<DonationReward> donationRewardList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "donation", cascade = CascadeType.REMOVE, orphanRemoval = false)
-    List<DonationMilestone> donationMilestoneList = new ArrayList<>();
 
 }

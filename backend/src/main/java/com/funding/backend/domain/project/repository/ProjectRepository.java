@@ -1,9 +1,11 @@
 package com.funding.backend.domain.project.repository;
 
+import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.enums.ProjectType;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -139,6 +141,10 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             List<ProjectStatus> projectStatuses,
             Pageable pageable
     );
+
+
+    @Query("SELECT p.viewCount FROM Project p WHERE p.id = :projectId")
+    Optional<Long> findViewCountByProjectId(@Param("projectId") Long projectId);
 
 
 
