@@ -6,6 +6,7 @@ import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.user.entity.User;
 import com.funding.backend.enums.ProjectType;
 import com.funding.backend.global.toss.enums.TossPaymentStatus;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -83,4 +84,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             @Param("userId") Long userId,
             @Param("projectType") ProjectType projectType
     );
+    List<Order> findByProject_Donation_EndDateBefore(LocalDateTime now);
 }
