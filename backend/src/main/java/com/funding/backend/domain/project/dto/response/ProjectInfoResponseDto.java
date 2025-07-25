@@ -68,9 +68,9 @@ public class ProjectInfoResponseDto {
             this.achievementRate = 0;
         } else if (project.getProjectType() == ProjectType.DONATION && project.getDonation() != null) {
             this.projectEndDate = project.getDonation().getEndDate();
-            this.achievementRate = totalAmount > 0 && project.getDonation().getPriceGoal() > 0
-                    ? (double) totalAmount / project.getDonation().getPriceGoal() * 100
-                    : 0;
+            this.achievementRate = (project.getDonation().getEndDate() == null || project.getDonation().getPriceGoal() == null || project.getDonation().getPriceGoal() <= 0 || totalAmount <= 0)
+                    ? 0
+                    : (double) totalAmount / project.getDonation().getPriceGoal() * 100;
         } else {
             this.projectEndDate = null;
             this.achievementRate = 0;
