@@ -1,10 +1,6 @@
 package com.funding.backend.domain.project.entity;
 
 import com.funding.backend.domain.donation.entity.Donation;
-
-import com.funding.backend.domain.mainCategory.entity.MainCategory;
-import com.funding.backend.domain.purchaseCategory.entity.PurchaseCategory;
-
 import com.funding.backend.domain.like.entity.Like;
 import com.funding.backend.domain.notice.entity.Notice;
 import com.funding.backend.domain.order.entity.Order;
@@ -77,6 +73,8 @@ public class Project extends Auditable {
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "view_count")
+    private Long viewCount = 0L;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = false)
     List<ProjectImage> projectImage = new ArrayList<>();

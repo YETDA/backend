@@ -91,18 +91,6 @@ public class YetdaSecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/v1/project/donation/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/project/donation/**").hasAnyRole("ADMIN", "USER")
 
-                        //후원 로드맵(마일스톤)
-                        .requestMatchers(HttpMethod.GET, "/api/v1/donationMilestone/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/donationMilestone/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/donationMilestone/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/donationMilestone/**").hasAnyRole("ADMIN", "USER")
-
-                        //후원 리워드
-                        .requestMatchers(HttpMethod.GET, "/api/v1/donationReward/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/donationReward/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/donationReward/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/donationReward/**").hasAnyRole("ADMIN", "USER")
-
                         //리뷰
                         .requestMatchers(HttpMethod.GET, "/api/v1/reviews/**").permitAll()
 

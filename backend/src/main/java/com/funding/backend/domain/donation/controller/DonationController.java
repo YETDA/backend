@@ -7,7 +7,6 @@ import com.funding.backend.domain.donation.dto.response.DonationResponseDto;
 import com.funding.backend.domain.donation.service.DonationService;
 import com.funding.backend.domain.donation.service.DonationProjectService;
 import com.funding.backend.domain.project.dto.request.ProjectCreateRequestDto;
-import com.funding.backend.domain.project.dto.response.ProjectResponseDto;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.enums.ProjectStatus;
 import com.funding.backend.global.utils.ApiResponse;
@@ -86,18 +85,6 @@ public class DonationController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 삭제 성공"));
-    }
-
-    @GetMapping("/{projectId}")
-    @Operation(
-        summary = "프로젝트 상세 조회",
-        description = "구매용, 후원용에 따라 응답 형식이 달라집니다."
-    )
-    public ResponseEntity<ApiResponse<ProjectResponseDto>> getProjectDetail(@PathVariable Long projectId) {
-        ProjectResponseDto response = projectService.getProjectDetail(projectId);
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(ApiResponse.of(HttpStatus.OK.value(), "프로젝트 상세 조회 성공", response));
     }
 
 

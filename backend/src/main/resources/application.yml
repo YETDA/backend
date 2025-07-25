@@ -141,3 +141,5 @@ alarm:
 
 settlement:
   day: ${SETTLEMENT_DAY}
+  hour: ${SETTLEMENT_HOUR}
+  minute: ${SETTLEMENT_MINUTE}
