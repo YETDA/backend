@@ -3,6 +3,7 @@ package com.funding.backend.domain.report.controller;
 
 import com.funding.backend.domain.report.dto.request.ReportRequestDto;
 import com.funding.backend.domain.report.dto.response.ReportResponseDto;
+import com.funding.backend.domain.report.dto.response.ReportStatsResponseDto;
 import com.funding.backend.domain.report.service.ReportService;
 import com.funding.backend.enums.ReportStatus;
 import com.funding.backend.global.utils.ApiResponse;
@@ -114,6 +115,16 @@ public class ReportController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.of(HttpStatus.OK.value(), "신고 반려 성공"));
+    }
+
+    @Operation(summary = "신고 통계", description = "관리자용 신고 통계 조회")
+    @GetMapping("/admin/statistics")
+    public ResponseEntity<ApiResponse<ReportStatsResponseDto>> getReportStats(){
+        ReportStatsResponseDto response = reportService.getReportStats();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of(HttpStatus.OK.value(), "신고 통계 조회 성공", response));
     }
 
 }

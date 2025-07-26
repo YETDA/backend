@@ -5,6 +5,7 @@ import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.report.dto.request.ReportRequestDto;
 import com.funding.backend.domain.report.dto.response.ReportResponseDto;
+import com.funding.backend.domain.report.dto.response.ReportStatsResponseDto;
 import com.funding.backend.domain.report.entity.Report;
 import com.funding.backend.domain.report.repository.ReportRepository;
 import com.funding.backend.domain.user.entity.User;
@@ -213,5 +214,16 @@ public class ReportService {
 
         report.setReportStatus(ReportStatus.REJECTED);
     }
+
+    //신고 통계
+    public ReportStatsResponseDto getReportStats(){
+        long totalCount = reportRepository.count();
+        long pendingCount = reportRepository.countByReportStatus(ReportStatus.PENDING);
+        long approvedCount = reportRepository.countByReportStatus(ReportStatus.APPROVED);
+        long rejectedCount = reportRepository.countByReportStatus(ReportStatus.REJECTED);
+
+        return new ReportStatsResponseDto(totalCount, pendingCount, approvedCount, rejectedCount);
+    }
+
 
 }
