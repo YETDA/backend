@@ -68,7 +68,7 @@ public class Order extends Auditable {
 	private String customerName;
 
 
-	@Column(name = "purchase_success_time", updatable = false)
+	@Column(name = "purchase_success_time")
 	private LocalDateTime purchaseSuccessTime;
 
 	@Column(nullable = false)
