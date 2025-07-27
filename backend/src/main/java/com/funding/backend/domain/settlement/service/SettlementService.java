@@ -6,6 +6,7 @@ import com.funding.backend.domain.project.entity.Project;
 import com.funding.backend.domain.project.service.ProjectService;
 import com.funding.backend.domain.settlement.dto.response.SettlementDetailListResponseDto;
 import com.funding.backend.domain.settlement.dto.response.SettlementDetailResponseDto;
+import com.funding.backend.domain.settlement.dto.response.SettlementMonthlyTotalAdminResponseDto;
 import com.funding.backend.domain.settlement.dto.response.SettlementMonthlyTotalResponseDto;
 import com.funding.backend.domain.settlement.entity.Settlement;
 import com.funding.backend.domain.settlement.factory.SettlementPeriod;
@@ -221,6 +222,56 @@ public class SettlementService {
             projectOrders.forEach(order -> order.setSettlement(settlement));
             orderService.saveOrderList(projectOrders);
         }
+    }
+
+    public SettlementMonthlyTotalAdminResponseDto getMonthlyPurchaseSettlementSummary(YearMonth yearMonth) {
+        YearMonth currentMonth = yearMonth;
+
+        SettlementPeriod period = settlementPeriodFactory.create(currentMonth);
+        List<Order> orders = orderService.findBySettlementPeriod(
+                period, ProjectType.PURCHASE, TossPaymentStatus.DONE
+        );
+
+        if (orders.isEmpty()) {
+            return new SettlementMonthlyTotalAdminResponseDto(
+                    yearMonth.getYear(),
+                    yearMonth.getMonthValue(),
+                    0L,  // totalOrderAmount
+                    0L,  // feeAmount
+                    0L,  // payoutAmount
+                    0L   // projectCount
+            );
+        }
+
+
+        Map<Project, List<Order>> ordersByProject = orders.stream()
+                .collect(Collectors.groupingBy(Order::getProject));
+
+        Long totalOrderAmount = 0L;
+        Long feeAmount = 0L;
+        Long projectCount=0L;
+
+        for (Map.Entry<Project, List<Order>> entry : ordersByProject.entrySet()) {
+            Project project = entry.getKey();
+            List<Order> projectOrders = entry.getValue();
+
+            Settlement settlement = settlementFactory.create(project, projectOrders, period);
+            totalOrderAmount += settlement.getTotalOrderAmount();
+            feeAmount += settlement.getFeeAmount();
+            projectCount++;
+        }
+
+        Long payoutAmount = totalOrderAmount - feeAmount;
+
+        return new SettlementMonthlyTotalAdminResponseDto(
+                yearMonth.getYear(),
+                yearMonth.getMonthValue(),
+                totalOrderAmount,
+                feeAmount,
+                payoutAmount,
+                projectCount
+
+        );
     }
 
 
