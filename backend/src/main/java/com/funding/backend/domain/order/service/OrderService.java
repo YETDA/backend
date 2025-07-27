@@ -84,7 +84,7 @@ public class OrderService {
     //프로젝트 당 특정 기간동안 생성된 주문 확인 ( 주문 완료 된 것만)
     public List<Order> findByProjectAndCreatedAtBetween(Project project, LocalDateTime from, LocalDateTime to,
                                                         TossPaymentStatus tossPaymentStatus) {
-        return orderRepository.findByProjectAndCreatedAtBetweenAndOrderStatus(project, from, to, tossPaymentStatus);
+        return orderRepository.findByProjectAndPurchaseSuccessTimeBetweenAndOrderStatusAndSettlementIsNull(project, from, to, tossPaymentStatus);
     }
 
     public Order findOrderById(Long id) {
@@ -101,6 +101,10 @@ public class OrderService {
                 projectType
         );
     }
+
+
+
+
 
 
 

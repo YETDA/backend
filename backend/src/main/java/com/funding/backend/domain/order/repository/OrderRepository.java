@@ -67,6 +67,26 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             ProjectType projectType
     );
 
+    Page<Order> findByPurchaseSuccessTimeBetweenAndOrderStatusAndProjectTypeAndSettlementIsNull(
+            LocalDateTime start,
+            LocalDateTime end,
+            TossPaymentStatus orderStatus,
+            ProjectType projectType,
+            Pageable pageable
+    );
+
+
+    List<Order> findByProjectAndPurchaseSuccessTimeBetweenAndOrderStatusAndSettlementIsNull(
+            Project project,
+            LocalDateTime start,
+            LocalDateTime end,
+            TossPaymentStatus status
+    );
+
+
+
+
+
 
 
     long countDistinctByUser_IdAndProjectType(

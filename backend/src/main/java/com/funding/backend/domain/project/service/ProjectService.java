@@ -201,6 +201,12 @@ public class ProjectService {
         return projectRepository.findByTypeAndStatuses(type, statuses, pageable).map(AuditProjectResponseDto::new);
     }
 
+    public Page<Project> findProjectsByTypeAndStatusPage(ProjectType type, List<ProjectStatus> statuses,
+                                                                     Pageable pageable) {
+        return projectRepository.findByTypeAndStatuses(type, statuses, pageable);
+    }
+
+
     @Transactional
     public AuditProjectResponseDto updateProjectStatus(Long projectId, ProjectStatus status) {
         Project project = findProjectById(projectId);
