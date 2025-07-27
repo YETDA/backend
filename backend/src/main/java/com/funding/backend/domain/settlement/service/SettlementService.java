@@ -8,6 +8,7 @@ import com.funding.backend.domain.settlement.dto.response.SettlementDetailListRe
 import com.funding.backend.domain.settlement.dto.response.SettlementDetailResponseDto;
 import com.funding.backend.domain.settlement.dto.response.SettlementMonthlyTotalAdminResponseDto;
 import com.funding.backend.domain.settlement.dto.response.SettlementMonthlyTotalResponseDto;
+import com.funding.backend.domain.settlement.dto.response.SettlementProjectSummaryAdminResponseDto;
 import com.funding.backend.domain.settlement.entity.Settlement;
 import com.funding.backend.domain.settlement.factory.SettlementPeriod;
 import com.funding.backend.domain.settlement.factory.SettlementFactory;
@@ -27,12 +28,15 @@ import com.funding.backend.global.toss.enums.TossPaymentStatus;
 import com.funding.backend.security.jwt.TokenService;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -272,6 +276,61 @@ public class SettlementService {
 
         );
     }
+
+    public Page<SettlementProjectSummaryAdminResponseDto> getMonthlyPurchaseSettlementSummaryListForAdmin(YearMonth yearMonth, Pageable pageable) {
+        SettlementPeriod period = settlementPeriodFactory.create(yearMonth);
+        log.info("first " + period.getStart());
+        log.info("end" + period.getEnd());
+
+        List<ProjectStatus> statuses = List.of(ProjectStatus.RECRUITING);
+        // 1. 조건에 맞는 모든 구매형 프로젝트 조회 (Page<Project>)
+        Page<Project> projectPage = projectService.findProjectsByTypeAndStatusPage(
+                ProjectType.PURCHASE,
+                statuses, // or RECRUIT_COMPLETE 등
+                pageable
+        );
+
+        List<SettlementProjectSummaryAdminResponseDto> dtoList = new ArrayList<>();
+
+        for (Project project : projectPage.getContent()) {
+            // 2. 해당 프로젝트에 대한 주문 내역 조회
+            List<Order> projectOrders = orderService.findByProjectAndCreatedAtBetween(
+                    project, period.getStart(),period.getEnd(),TossPaymentStatus.DONE
+            );
+            log.info("프로젝트 ID: " + project.getId() + "의 주문 수 = " + projectOrders.size());
+
+
+            // 주문이 없는 프로젝트는 스킵 (선택사항)
+            if (projectOrders.isEmpty()) continue;
+
+            // 3. 정산 금액 계산
+            Settlement settlement = settlementFactory.create(project, projectOrders, period);
+
+            log.info("전체 정산 금액 확인!!!!"+settlement.getPayoutAmount());
+
+            User creator = project.getUser();
+            String bankAccount = creator.getAccount();
+
+            SettlementProjectSummaryAdminResponseDto dto = SettlementProjectSummaryAdminResponseDto.builder()
+                    .creatorName(creator.getName())
+                    .projectCreatedAt(project.getCreatedAt())
+                    .userCreatedAt(creator.getCreatedAt())
+                    .projectTitle(project.getTitle())
+                    .projectDescription(project.getIntroduce())
+                    .totalOrderAmount(settlement.getTotalOrderAmount())
+                    .feeAmount(settlement.getFeeAmount())
+                    .payoutAmount(settlement.getPayoutAmount())
+                    .accountNumber(bankAccount)
+                    .build();
+
+            dtoList.add(dto);
+        }
+
+        return new PageImpl<>(dtoList, pageable, dtoList.size());
+
+
+    }
+
 
 
 
