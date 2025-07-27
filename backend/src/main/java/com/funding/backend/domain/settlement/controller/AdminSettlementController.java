@@ -1,11 +1,9 @@
 package com.funding.backend.domain.settlement.controller;
 
 
-import com.funding.backend.domain.settlement.dto.response.SettlementDetailListResponseDto;
 import com.funding.backend.domain.settlement.dto.response.SettlementMonthlyTotalAdminResponseDto;
-import com.funding.backend.domain.settlement.dto.response.SettlementMonthlyTotalResponseDto;
+import com.funding.backend.domain.settlement.dto.response.SettlementProjectSummaryAdminResponseDto;
 import com.funding.backend.domain.settlement.service.SettlementService;
-import com.funding.backend.enums.SettlementStatus;
 import com.funding.backend.global.utils.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,6 +50,24 @@ public class AdminSettlementController {
 
 
     //전체 프로젝트 정산 현황
+//    @GetMapping("/purchase/summary/list")
+//    @Operation(
+//            summary = "모든 구매형 프로젝트 정산 현황 목록 조회 (관리자)",
+//            description = "관리자가 특정 연월에 대해 창작자별 프로젝트 정산 현황 리스트를 조회합니다."
+//    )
+//    @PreAuthorize("hasAnyRole('ADMIN')")
+//    public ResponseEntity<ApiResponse<Page<SettlementProjectSummaryAdminResponseDto>>> getMonthlyPurchaseSettlementSummaryList(
+//            @RequestParam("yearMonth") @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth,
+//            @ParameterObject Pageable pageable
+//    ) {
+//        Page<SettlementProjectSummaryAdminResponseDto> response = settlementService.getMonthlyPurchaseSettlementSummaryList(yearMonth, pageable);
+//        return ResponseEntity.status(HttpStatus.OK)
+//                .body(ApiResponse.of(HttpStatus.OK.value(), "정산 현황 리스트 조회 성공", response));
+//    }
+//
+
+
+
 
 
 

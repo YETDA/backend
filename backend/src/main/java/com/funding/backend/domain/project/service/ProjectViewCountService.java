@@ -60,7 +60,8 @@ public class ProjectViewCountService {
             Long views = Long.parseLong(value);
 
             projectRepository.findById(projectId).ifPresent(project -> {
-                Long newViewCount = project.getViewCount() + views;
+                Long currentViewCount = project.getViewCount() != null ? project.getViewCount() : 0L;
+                Long newViewCount = currentViewCount + views;
                 project.setViewCount(newViewCount);
                 projectRepository.save(project);
             });
