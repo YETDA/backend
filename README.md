@@ -89,7 +89,7 @@ $ npm run dev
 
 
 
-| <img src="https://github.com/codefish-sea.png" width="100" > |<img width="100" alt="스크린샷 2025-06-02 오후 5 55 11" src="https://github.com/user-attachments/assets/0be9b10c-8dce-43be-ac78-1a48e6d9cbb8" /> | <img src="https://github.com/user-attachments/assets/de92e8b8-5ed3-4b51-8598-c4c0e089de08" width="100" > | <img src="https://github.com/user-attachments/assets/903c4fd8-1c47-46e9-a660-2c42d2d0c3be" width="100"> |  <img src="https://github.com/user-attachments/assets/0a5f26dd-ed7d-4904-9365-f2a91f21bdec" width="100">|
+| <img src="https://github.com/codefish-sea.png" width="100" > |<img width="100" alt="스크린샷 2025-06-02 오후 5 55 11" src="https://github.com/user-attachments/assets/0be9b10c-8dce-43be-ac78-1a48e6d9cbb8" /> | <img src="https://github.com/user-attachments/assets/de92e8b8-5ed3-4b51-8598-c4c0e089de08" width="100" > | <img src="https://github.com/heeeun-ko.png" alt="고희은" width="100"> |  <img src="https://github.com/user-attachments/assets/0a5f26dd-ed7d-4904-9365-f2a91f21bdec" width="100">|
 |-------------------------------|-------------------------------|-------------------------------|-------------------------------|-------------------------------|
 | **김정욱** | **박혁** | **장지현** | **고희은** | **최보경** |
 | [GitHub](https://github.com/KIMB0B) | [GitHub](https://github.com/treejh) | [GitHub](https://github.com/treejh) | [GitHub](https://github.com/heeeun-ko) | [GitHub](https://github.com/chlqhrud) |
@@ -221,7 +221,7 @@ SSE(Server-Sent Events)를 활용한 실시간 알림 시스템을 구현하여 
 | 김정욱   | 	<ul><li>비품 통계</li><ul><li>카테고리 별 분석</li><li>월별 출고량 / 입고량</li><li>품목별 사용 빈도</li></ul><li>관리페이지</li><ul><li>관리페이지 CRUD</li></ul><li>비품 추천</li><li>비품 관리</li><ul><li>반납 요청</li><li>입고 내역</li><li>비품 구매</ul></li></ul>   |
 | 박혁    | <ul><li>회원</li><ul><li>최고 관리자, 매니저, 일반 회원 CRUD</li><li>회원/매니저 승인 · 반려</li><li>이메일/휴대폰 인증</li></ul><li>로그인 / 로그아웃</li><li>채팅</li><ul><li>1:1</li><li>고객센터</li><li>단체</li></ul><li>S3 이미지 CRUD</li></ul>   |
 |  장지현  |	<ul><li>검색</li><ul><li>비품명 검색</li><li>회원 검색</li><li>대시보드별 검색 제한</li></ul><li>카테고리</li><ul><li>카테고리 CRUD</li><li>카테고리별 비품 수 집계</li><li>회원구분별 기능 차등</li></ul></ul>  |
-| 고희은    | <ul><li>비품</li><ul><li>비품CRUD</li><li>출고내역</li><li>비품 요청서</li><li>개별자산</li><li>비품추적</li></ul><li>엑셀</li><ul><li>내보내기</li>
+| 고희은    | <ul><li>소셜 로그인</li><ul><li>KAKAO 로그인</li><li>GITHUB 로그인</li></ul><li>사용자 정보 (마이페이지)</li><ul><li>프로필(이름, 이미지, 소개글, 포트폴리오 주소) 수정</li><li>이메일 인증 및 변경</li><li>계좌 정보</li></ul><li>팔로우</li><ul><li>팔로우/팔로잉</li></ul><li>관리자 - 사용자 정보</li><ul><li>기본 조회</li><li>활동 조회</li><li>사용자 활성/정지</li>
 | 최보경    | <ul><li>부서</li><ul><li>부서 CRUD</li></ul><li>알림</li><ul><li>알림 CRUD</li><li>비품 관련</li><li>재고 관련</li><li>채팅</li><li>승인/거절</li><li>스케줄러</li></ul></ul>    |
 
 
@@ -257,6 +257,7 @@ SSE(Server-Sent Events)를 활용한 실시간 알림 시스템을 구현하여 
 
 <br/>
 <br/>
+
 # 7. Project Structure (프로젝트 구조) 
 
 
@@ -280,7 +281,6 @@ SSE(Server-Sent Events)를 활용한 실시간 알림 시스템을 구현하여 
  ┃ ┃ ┃ ┃ ┃ ┣ 📂pricingPlan
  ┃ ┃ ┃ ┃ ┃ ┣ 📂project
  ┃ ┃ ┃ ┃ ┃ ┣ 📂projectImage
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
  ┃ ┃ ┃ ┃ ┃ ┣ 📂projectSubCategory
  ┃ ┃ ┃ ┃ ┃ ┣ 📂purchase
  ┃ ┃ ┃ ┃ ┃ ┣ 📂purchaseCategory
@@ -289,8 +289,6 @@ SSE(Server-Sent Events)를 활용한 실시간 알림 시스템을 구현하여 
  ┃ ┃ ┃ ┃ ┃ ┣ 📂report
  ┃ ┃ ┃ ┃ ┃ ┣ 📂review
  ┃ ┃ ┃ ┃ ┃ ┣ 📂role
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂entity
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂repository
  ┃ ┃ ┃ ┃ ┃ ┣ 📂settlement
  ┃ ┃ ┃ ┃ ┃ ┣ 📂subjectCategory
  ┃ ┃ ┃ ┃ ┃ ┗ 📂user
@@ -326,8 +324,6 @@ SSE(Server-Sent Events)를 활용한 실시간 알림 시스템을 구현하여 
 ```
 
 
-
-
 <br/>
 <br/>
 
@@ -346,8 +342,6 @@ SSE(Server-Sent Events)를 활용한 실시간 알림 시스템을 구현하여 
       - **백엔드 API, 서비스 로직, DB 처리 등 백엔드 중심 작업 시 사용합니다.**
       - 팀원 각자의 기능 개발용 브랜치입니다.
       - 모든 기능 개발은 이 브랜치에서 진행되며, 완료 시 병합 요청합니다.
-
-</br>
 
 ## 8-2 커밋 컨벤션
 ```
@@ -375,11 +369,7 @@ SSE(Server-Sent Events)를 활용한 실시간 알림 시스템을 구현하여 
     - [ front / feat ] : 댓글버튼 숨기기
     - [ feat ] : 이메일 인증 구현 
 
-
-</br>
-
-
-## 8-4 태그 타입 종류 및 사용 예시
+## 8-5 태그 타입 종류 및 사용 예시
 
 | 태그     | 의미 및 사용 시점 |
 |----------|-------------------|
