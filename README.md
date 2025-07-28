@@ -257,6 +257,7 @@ SSE(Server-Sent Events)를 활용한 실시간 알림 시스템을 구현하여 
 
 <br/>
 <br/>
+
 # 7. Project Structure (프로젝트 구조) 
 
 
@@ -280,7 +281,6 @@ SSE(Server-Sent Events)를 활용한 실시간 알림 시스템을 구현하여 
  ┃ ┃ ┃ ┃ ┃ ┣ 📂pricingPlan
  ┃ ┃ ┃ ┃ ┃ ┣ 📂project
  ┃ ┃ ┃ ┃ ┃ ┣ 📂projectImage
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
  ┃ ┃ ┃ ┃ ┃ ┣ 📂projectSubCategory
  ┃ ┃ ┃ ┃ ┃ ┣ 📂purchase
  ┃ ┃ ┃ ┃ ┃ ┣ 📂purchaseCategory
@@ -289,8 +289,6 @@ SSE(Server-Sent Events)를 활용한 실시간 알림 시스템을 구현하여 
  ┃ ┃ ┃ ┃ ┃ ┣ 📂report
  ┃ ┃ ┃ ┃ ┃ ┣ 📂review
  ┃ ┃ ┃ ┃ ┃ ┣ 📂role
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂entity
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂repository
  ┃ ┃ ┃ ┃ ┃ ┣ 📂settlement
  ┃ ┃ ┃ ┃ ┃ ┣ 📂subjectCategory
  ┃ ┃ ┃ ┃ ┃ ┗ 📂user
@@ -326,8 +324,6 @@ SSE(Server-Sent Events)를 활용한 실시간 알림 시스템을 구현하여 
 ```
 
 
-
-
 <br/>
 <br/>
 
@@ -346,8 +342,6 @@ SSE(Server-Sent Events)를 활용한 실시간 알림 시스템을 구현하여 
       - **백엔드 API, 서비스 로직, DB 처리 등 백엔드 중심 작업 시 사용합니다.**
       - 팀원 각자의 기능 개발용 브랜치입니다.
       - 모든 기능 개발은 이 브랜치에서 진행되며, 완료 시 병합 요청합니다.
-
-</br>
 
 ## 8-2 커밋 컨벤션
 ```
@@ -375,11 +369,7 @@ SSE(Server-Sent Events)를 활용한 실시간 알림 시스템을 구현하여 
     - [ front / feat ] : 댓글버튼 숨기기
     - [ feat ] : 이메일 인증 구현 
 
-
-</br>
-
-
-## 8-4 태그 타입 종류 및 사용 예시
+## 8-5 태그 타입 종류 및 사용 예시
 
 | 태그     | 의미 및 사용 시점 |
 |----------|-------------------|
