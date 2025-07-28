@@ -18,7 +18,6 @@ public class BackendApplication {
         Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
         dotenv.entries().forEach(entry ->
                 {
-                    log.info("Loading {} as {}", entry.getKey(), entry.getValue());
                     System.setProperty(entry.getKey(), entry.getValue());
                 }
 
