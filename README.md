@@ -89,7 +89,7 @@ $ npm run dev
 
 
 
-| <img src="https://github.com/codefish-sea.png" width="100" > |<img width="100" alt="스크린샷 2025-06-02 오후 5 55 11" src="https://github.com/user-attachments/assets/0be9b10c-8dce-43be-ac78-1a48e6d9cbb8" /> | <img src="https://github.com/user-attachments/assets/de92e8b8-5ed3-4b51-8598-c4c0e089de08" width="100" > | <img src="https://github.com/user-attachments/assets/903c4fd8-1c47-46e9-a660-2c42d2d0c3be" width="100"> |  <img src="https://github.com/user-attachments/assets/0a5f26dd-ed7d-4904-9365-f2a91f21bdec" width="100">|
+| <img src="https://github.com/codefish-sea.png" width="100" > |<img width="100" alt="스크린샷 2025-06-02 오후 5 55 11" src="https://github.com/user-attachments/assets/0be9b10c-8dce-43be-ac78-1a48e6d9cbb8" /> | <img src="https://github.com/user-attachments/assets/de92e8b8-5ed3-4b51-8598-c4c0e089de08" width="100" > | <img src="https://github.com/heeeun-ko.png" alt="고희은" width="100"> |  <img src="https://github.com/user-attachments/assets/0a5f26dd-ed7d-4904-9365-f2a91f21bdec" width="100">|
 |-------------------------------|-------------------------------|-------------------------------|-------------------------------|-------------------------------|
 | **김정욱** | **박혁** | **장지현** | **고희은** | **최보경** |
 | [GitHub](https://github.com/KIMB0B) | [GitHub](https://github.com/treejh) | [GitHub](https://github.com/treejh) | [GitHub](https://github.com/heeeun-ko) | [GitHub](https://github.com/chlqhrud) |
